@@ -1,1 +1,0 @@
-# akilli-kutuphane-yonetim-sistemi
