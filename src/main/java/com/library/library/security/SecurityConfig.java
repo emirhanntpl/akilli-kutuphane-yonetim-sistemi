@@ -18,9 +18,6 @@ public class SecurityConfig {
 
     public static  final  String LOGIN = "/login";
     public static  final  String REGISTER = "/register";
-    public static  final  String BOOKS = "/books";
-    public static  final  String AUTHORS = "/authors";
-    public static  final  String CATEGORIES = "/categories";
     public static  final  String REFRESH_TOKEN = "/refreshToken";
 
    @Autowired
@@ -34,7 +31,7 @@ public class SecurityConfig {
        http
                .csrf(AbstractHttpConfigurer::disable)
                .authorizeHttpRequests(x ->
-                       x.requestMatchers(LOGIN,REGISTER,BOOKS,AUTHORS,CATEGORIES,REFRESH_TOKEN).permitAll()
+                       x.requestMatchers(LOGIN,REGISTER,REFRESH_TOKEN).permitAll()
                                .anyRequest()
                                .authenticated())
                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

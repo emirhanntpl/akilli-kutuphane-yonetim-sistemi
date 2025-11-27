@@ -9,6 +9,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -17,8 +18,7 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class User  extends  BaseEntity implements UserDetails {
-
+public class User extends BaseEntity implements UserDetails {
 
     private String name;
     private String username;
@@ -34,6 +34,8 @@ public class User  extends  BaseEntity implements UserDetails {
     @Column(name = "role", nullable = false)
     private Set<Role> role;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<Loan> loans = new HashSet<>();
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
