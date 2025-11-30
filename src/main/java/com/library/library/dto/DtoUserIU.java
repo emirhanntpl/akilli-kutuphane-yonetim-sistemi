@@ -1,8 +1,5 @@
 package com.library.library.dto;
 
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
@@ -12,7 +9,8 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 
-public class DtoUser extends DtoBaseEntity{
+public class DtoUserIU extends DtoBaseEntity{
+
     @NotNull
     private String name;
     @NotNull
@@ -20,7 +18,6 @@ public class DtoUser extends DtoBaseEntity{
     @NotNull
     private String password;
     private String email;
-
-
+    private  String address;
 
 }

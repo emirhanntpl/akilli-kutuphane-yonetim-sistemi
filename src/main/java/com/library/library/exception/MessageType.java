@@ -11,7 +11,12 @@ public enum MessageType {
     USERNAME_OR_PASSWORD_INVALID("1007","KULLANICI ADI VEYA ŞİFRE HATALI,TEKRAR DENEYİNİZ."),
     REFRESH_TOKEN_NOT_FOUND("1008","GEÇERSİZ REFRESH TOKEN"),
     REFRESH_TOKEN_IS_VALID("1009","TOKEN SÜRESİ DOLDU"),
-    REFRESH_TOKEN_ERROR("1010", "REFRESH TOKEN HATASI"), // Yeni eklenen hata
+    REFRESH_TOKEN_ERROR("1010", "REFRESH TOKEN HATASI"),
+    USER_HAS_UNRETURNED_BOOKS("1011", "Kullanıcının iade etmediği kitaplar bulunduğu için silinemez."),
+    INVALID_BOOK_NAME("1012","GEÇERSİZ KİTAP ADI LÜTFEN TEKRAR DENEYİNİZ"),
+    BOOK_ON_LOAN("1013","KİTAP ÖDÜNÇTE OLDUĞU İÇİN SİLİNEMEZ DAHA SONRA TEKRAR DENEYİNİZ. "),
+    AUTHOR_NOT_FOUND("1014","YAZAR BULUNAMADI"),
+    CATEGORY_NOT_FOUND("1015","KATEGORİ BULUNAMADI"),
     GENERAL_EXCEPTION("9999","Genel bir hata oluştu,Lütfen tekrar deneyiniz.");
 
     private final String code;
@@ -21,5 +26,4 @@ public enum MessageType {
         this.code = code;
         this.message = message;
     }
-
 }

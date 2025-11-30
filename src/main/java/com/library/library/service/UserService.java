@@ -1,24 +1,30 @@
 package com.library.library.service;
 
+import com.library.library.dto.DtoUserUpdate;
+import com.library.library.dto.UpdateUserRequest;
+import com.library.library.exception.BaseException;
+import com.library.library.exception.MessageType;
 import com.library.library.model.CreateUserRequest;
+import com.library.library.model.Loan;
 import com.library.library.model.User;
+import com.library.library.repository.LoanRepository;
 import com.library.library.repository.UserRepository;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.BeanUtils;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
+import java.util.List;
 import java.util.Optional;
 
 @AllArgsConstructor
 @Service
 public class UserService {
 
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private  BCryptPasswordEncoder passwordEncoder;
+    private final UserRepository userRepository;
+    private final BCryptPasswordEncoder passwordEncoder;
+    private final LoanRepository loanRepository;
 
     public Optional<User> getByUsername(String username) {
         return userRepository.findByUsername(username);
@@ -30,33 +36,38 @@ public class UserService {
                 .username(request.username())
                 .password(passwordEncoder.encode(request.password()))
                 .role(request.authorities())
-                .accountNonExpired(true)
-                .isEnabled(true)
-                .accountNonLocked(true)
-                .credentialsNonExpired(true)
                 .build();
         return userRepository.save(newUser);
     }
 
-    public User updateUser(Long userId, CreateUserRequest request) {
-        User existingUser = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
-
-        existingUser.setName(request.name());
-        existingUser.setUsername(request.username());
-        existingUser.setRole(request.authorities());
-
-        if (StringUtils.hasText(request.password())) {
-            existingUser.setPassword(passwordEncoder.encode(request.password()));
+    public DtoUserUpdate updateUser(Long userId, UpdateUserRequest request) {
+        Optional<User> OptUser = userRepository.findById(userId);
+        if (OptUser.isEmpty()) {
+            throw new BaseException(MessageType.NO_RECORD_EXIST, HttpStatus.NOT_FOUND);
         }
+        User user = OptUser.get();
+        user.setName(request.name());
+        user.setEmail(request.email());
+        user.setAddress(request.address());
 
-        return userRepository.save(existingUser);
+        User savedUser = userRepository.save(user);
+
+        return new DtoUserUpdate(
+                savedUser.getName(),
+                savedUser.getAddress(),
+                savedUser.getEmail());
     }
 
     public void deleteUser(Long userId) {
-        if (!userRepository.existsById(userId)) {
-            throw new RuntimeException("User not found with id: " + userId);
+        Optional<User> OptUser = userRepository.findById(userId);
+        if (OptUser.isEmpty()){
+            throw new BaseException(MessageType.NO_RECORD_EXIST, HttpStatus.NOT_FOUND);
+        }
+        List<Loan> OptLoans = loanRepository.findByUserIdAndReturnDateIsNull(userId);
+        if (!OptLoans.isEmpty()){
+            throw new BaseException(MessageType.USER_HAS_UNRETURNED_BOOKS,HttpStatus.BAD_REQUEST);
         }
         userRepository.deleteById(userId);
+        System.out.println( OptUser.get().getName()  +" adlı kullanıcı silindi.");
     }
 }

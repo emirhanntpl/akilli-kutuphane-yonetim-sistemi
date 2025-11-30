@@ -23,6 +23,10 @@ public class User extends BaseEntity implements UserDetails {
     private String name;
     private String username;
     private String password;
+    @Column (unique = true)
+    private String email;
+    private  Set<Role> roles;
+    private  String address;
     private boolean accountNonExpired;
     private boolean isEnabled;
     private boolean accountNonLocked;
