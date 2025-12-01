@@ -80,10 +80,16 @@ public class AuthenticationServiceImpll implements AuthenticationService {
 
     @Override
     public DtoUser register(CreateUserRequest request) {
-        User newUser = createUser(request);
-        User savedUser = userRepository.save(newUser);
+        User savedUser = createUser(request);
+
         DtoUser dtoUser = new DtoUser();
+        dtoUser.setName(savedUser.getName());
         dtoUser.setUsername(savedUser.getUsername());
+        dtoUser.setPassword(savedUser.getPassword());
+        dtoUser.setId(savedUser.getId());
+        dtoUser.setAddress(savedUser.getAddress());
+        dtoUser.setEmail(savedUser.getEmail());
+
         return dtoUser;
     }
 
