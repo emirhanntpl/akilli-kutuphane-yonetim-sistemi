@@ -27,10 +27,7 @@ public class User extends BaseEntity implements UserDetails {
     private String email;
     private  Set<Role> roles;
     private  String address;
-    private boolean accountNonExpired;
-    private boolean isEnabled;
-    private boolean accountNonLocked;
-    private boolean credentialsNonExpired;
+
 
     @ElementCollection(targetClass = Role.class, fetch = FetchType.EAGER)
     @CollectionTable(name = "authorities", joinColumns = @JoinColumn(name = "user_id"))

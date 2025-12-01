@@ -19,7 +19,10 @@ public class DtoUser extends DtoBaseEntity{
     private String username;
     @NotNull
     private String password;
+    @NotNull
     private String email;
+    @NotNull
+    private String address;
 
 
 
