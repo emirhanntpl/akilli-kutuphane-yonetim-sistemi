@@ -30,7 +30,7 @@ public class AuthenticationControllerImpl implements AuthenticationController {
 
     @PostMapping("/authenticate")
     @Override
-    public RootEntity<AuthResponse> authenticate(@Valid @RequestBody AuthResponse request) {
+    public RootEntity<AuthResponse> authenticate(@Valid @RequestBody AuthRequest request) {
         return ok(authenticationService.authenticate(request));
     }
 

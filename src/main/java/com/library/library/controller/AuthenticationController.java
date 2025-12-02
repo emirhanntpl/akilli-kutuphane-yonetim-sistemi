@@ -10,7 +10,7 @@ public interface AuthenticationController {
 
    public RootEntity<DtoUser> register(CreateUserRequest request);
 
-    public RootEntity<AuthResponse> authenticate(AuthResponse request);
+    public RootEntity<AuthResponse> authenticate(AuthRequest request);
 
     public RootEntity<AuthResponse> refreshToken(RefreshTokenRequest request);
 

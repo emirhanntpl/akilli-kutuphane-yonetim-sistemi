@@ -93,13 +93,12 @@ public class AuthenticationServiceImpll implements AuthenticationService {
         return dtoUser;
     }
 
-
     @Override
-    public AuthResponse authenticate(AuthResponse response) {
+    public AuthResponse authenticate(AuthRequest request) {
         try {
-            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(response.getUsername(), response.getPassword());
+            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword());
             authenticationProvider.authenticate(authenticationToken);
-            Optional<User> OptUser = userRepository.findByUsername(response.getUsername());
+            Optional<User> OptUser = userRepository.findByUsername(request.getUsername());
             String accesToken = jwtService.generateToken(OptUser.get());
             RefreshToken savedRefreshToken = refreshTokenRepository.save(createRefreshToken(OptUser.get()));
             return new AuthResponse(accesToken, savedRefreshToken.getRefreshToken());
@@ -109,6 +108,9 @@ public class AuthenticationServiceImpll implements AuthenticationService {
         }
 
     }
+
+
+
 
     @Override
     public AuthResponse refreshToken(RefreshTokenRequest request) {

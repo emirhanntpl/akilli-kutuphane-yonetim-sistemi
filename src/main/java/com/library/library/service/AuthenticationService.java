@@ -6,12 +6,16 @@ import com.library.library.dto.DtoUser;
 import com.library.library.dto.RefreshTokenRequest;
 import com.library.library.model.CreateUserRequest;
 
+import javax.xml.crypto.Data;
+
 public interface AuthenticationService  {
 
     public  DtoUser register(CreateUserRequest request);
 
-    public AuthResponse authenticate(AuthResponse response);
+    public AuthResponse authenticate(AuthRequest request);
 
     public AuthResponse refreshToken(RefreshTokenRequest request);
 
+
+    
 }

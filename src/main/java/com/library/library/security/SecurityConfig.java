@@ -16,7 +16,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 public class SecurityConfig {
 
-    public static  final  String LOGIN = "/login";
+    public static  final  String AUTHENTICATE = "/authenticate";
     public static  final  String REGISTER = "/register";
     public static  final  String REFRESH_TOKEN = "/refreshToken";
 
@@ -31,7 +31,7 @@ public class SecurityConfig {
        http
                .csrf(AbstractHttpConfigurer::disable)
                .authorizeHttpRequests(x ->
-                       x.requestMatchers(LOGIN,REGISTER,REFRESH_TOKEN).permitAll()
+                       x.requestMatchers(AUTHENTICATE,REGISTER,REFRESH_TOKEN).permitAll()
                                .anyRequest()
                                .authenticated())
                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
