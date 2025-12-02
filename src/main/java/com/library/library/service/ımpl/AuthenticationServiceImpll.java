@@ -98,13 +98,19 @@ public class AuthenticationServiceImpll implements AuthenticationService {
         try {
             UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword());
             authenticationProvider.authenticate(authenticationToken);
+
             Optional<User> OptUser = userRepository.findByUsername(request.getUsername());
+            if (OptUser.isEmpty()) {
+                throw new BaseException(MessageType.USERNAME_NOT_FOUND, HttpStatus.BAD_REQUEST);
+            }
+
             String accesToken = jwtService.generateToken(OptUser.get());
             RefreshToken savedRefreshToken = refreshTokenRepository.save(createRefreshToken(OptUser.get()));
             return new AuthResponse(accesToken, savedRefreshToken.getRefreshToken());
 
         } catch (Exception e) {
-            throw new BaseException(MessageType.USERNAME_OR_PASSWORD_INVALID, HttpStatus.BAD_REQUEST);
+            e.printStackTrace(); // Loglama ekleyerek hatayı konsola yazdır
+            throw new BaseException(MessageType.REFRESH_TOKEN_NOT_FOUND, HttpStatus.BAD_REQUEST);
         }
 
     }
@@ -127,5 +133,3 @@ public class AuthenticationServiceImpll implements AuthenticationService {
         return new AuthResponse(accessToken, savedRefreshToken.getRefreshToken());
     }
 }
-
-

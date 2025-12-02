@@ -13,7 +13,7 @@ import lombok.Setter;
 public class AuthResponse {
 
     @NotNull
-    private String username;
+    private String accessToken;
     @NotNull
-    private String password;
+    private String refreshToken;
 }

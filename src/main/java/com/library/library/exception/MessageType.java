@@ -17,6 +17,7 @@ public enum MessageType {
     BOOK_ON_LOAN("1013","KİTAP ÖDÜNÇTE OLDUĞU İÇİN SİLİNEMEZ DAHA SONRA TEKRAR DENEYİNİZ. "),
     AUTHOR_NOT_FOUND("1014","YAZAR BULUNAMADI"),
     CATEGORY_NOT_FOUND("1015","KATEGORİ BULUNAMADI"),
+    AUTHENTICATION_FAILED("1016","Kimlik doğrulama başarısız oldu."),
     GENERAL_EXCEPTION("9999","Genel bir hata oluştu,Lütfen tekrar deneyiniz.");
 
     private final String code;
