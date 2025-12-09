@@ -1,5 +1,7 @@
 package com.library.library.model;
 
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.ManyToMany;
@@ -26,6 +28,7 @@ public class Author extends BaseEntity {
     @NotNull
     private String lastName;
 
+    @JsonIgnore
     @ManyToMany(mappedBy = "authors", fetch = FetchType.LAZY)
     private Set<Book> books = new HashSet<>();
 }

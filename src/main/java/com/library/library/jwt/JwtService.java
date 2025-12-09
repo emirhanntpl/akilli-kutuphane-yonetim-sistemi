@@ -74,7 +74,12 @@ public class JwtService {
     public boolean isTokenValid(String token, UserDetails userDetails){
         final String username = getUsernameByToken(token);
         final Date expireDate = exportToken(token, Claims::getExpiration);
-        return (username.equals(userDetails.getUsername()) && !new Date().before(expireDate));
+        // Düzeltme: önceki versiyonda "!new Date().before(expireDate)" kullanılarak
+        // expiration kontrolü ters yapılmıştı. Burada null kontrolleri ile birlikte
+        // doğru mantığı uyguluyoruz: token'ın subject'i eşleşmeli ve expiration gelecekte olmalı.
+        if (username == null || userDetails == null) return false;
+        Date now = new Date();
+        return username.equals(userDetails.getUsername()) && expireDate != null && now.before(expireDate);
 
     }
 }

@@ -5,11 +5,8 @@ import com.library.library.controller.RestBaseController;
 import com.library.library.controller.RootEntity;
 import com.library.library.dto.DtoAuthor;
 import com.library.library.dto.DtoAuthorIU;
-import com.library.library.exception.BaseException;
-import com.library.library.exception.MessageType;
 import com.library.library.service.AuthorService;
 import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,7 +30,7 @@ public class AuthorControllerImpl  extends RestBaseController implements AuthorC
 
     @PutMapping("/api/admin/author/{id}")
     @Override
-    public RootEntity<DtoAuthor> updateAuthor(@RequestBody @Valid Long id, DtoAuthorIU dtoAuthorIU) {
+    public RootEntity<DtoAuthor> updateAuthor(@PathVariable("id") Long id, @RequestBody @Valid DtoAuthorIU dtoAuthorIU) {
         return ok(authorService.updateAuthor(id, dtoAuthorIU));
     }
 
@@ -43,8 +40,9 @@ public class AuthorControllerImpl  extends RestBaseController implements AuthorC
         return authorService.getAllAuthors();
     }
 
+    @DeleteMapping("/api/admin/author/{id}")
     @Override
-    public ResponseEntity<Void> deleteAuthor( @RequestBody @Valid Long authorId) {
+    public ResponseEntity<Void> deleteAuthor(@PathVariable("id") Long authorId) {
       authorService.deleteAuthor(authorId);
         return ResponseEntity.noContent().build();
     }

@@ -10,10 +10,7 @@ import com.library.library.model.Book;
 import com.library.library.service.BookService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("rest/api/books")
@@ -32,16 +29,16 @@ public class BookControllerImpl extends RestBaseController implements BookContro
         return ok(bookService.createBook(dtoBookIU));
     }
 
-    @PostMapping("/delete/{id}")
+    @PostMapping("/delete")
     @Override
     public ResponseEntity<Void> deleteBook(@RequestBody @Valid DtoBookIU dtoBookIU) {
         bookService.deleteBook(dtoBookIU);
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/update/{id}")
+    @PutMapping("/update/{id}")
     @Override
-    public RootEntity<DtoBook> updateBook(@RequestBody @Valid Long bookId, UpdateBookRequest request) {
+    public RootEntity<DtoBook> updateBook(@PathVariable("id") Long bookId, @RequestBody @Valid UpdateBookRequest request) {
         return ok(bookService.updateBook(bookId, request));
     }
 }

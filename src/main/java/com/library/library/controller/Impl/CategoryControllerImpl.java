@@ -22,35 +22,35 @@ public class CategoryControllerImpl extends RestBaseController implements Catego
     }
 
 
-    @PostMapping("api/admin/category")
+    @PostMapping("/api/admin/category")
     @Override
     public RootEntity<DtoCategory> saveCategory(@RequestBody @Valid DtoCategoryIU dtoCategoryIU) {
         return ok(categoryService.saveCategory(dtoCategoryIU));
     }
 
-    @PutMapping("api/admin/categoryUpdate/{id}")
+    @PutMapping("/api/admin/category/{id}")
     @Override
-    public RootEntity<DtoCategory> updateCategory( @RequestBody @Valid Long id, DtoCategoryIU dtoCategoryIU) {
+    public RootEntity<DtoCategory> updateCategory(@PathVariable("id") Long id, @RequestBody @Valid DtoCategoryIU dtoCategoryIU) {
         return ok(categoryService.updateCategory(id, dtoCategoryIU));
     }
 
-    @GetMapping("api/categoryAll")
+    @GetMapping("/api/categoryAll")
     @Override
     public RootEntity<List<DtoCategory>> getAllCategory() {
         return ok(categoryService.getAllCategory());
     }
 
-    @DeleteMapping("/api/admin/categoryDelete/{id}")
+    @DeleteMapping("/api/admin/category/{id}")
     @Override
-    public ResponseEntity<Void> deleteCategory(@RequestBody @Valid Long id) {
+    public ResponseEntity<Void> deleteCategory(@PathVariable("id") Long id) {
         categoryService.deleteCategory(id);
         return ResponseEntity.noContent().build();
     }
 
 
-    @GetMapping("api/categoryGet/{categoryId}")
+    @GetMapping("/api/categoryGet/{categoryId}")
     @Override
-    public RootEntity<DtoCategory> getCategoryById(@RequestBody @Valid Long categoryId) {
+    public RootEntity<DtoCategory> getCategoryById(@PathVariable("categoryId") Long categoryId) {
         return ok(categoryService.getCategoryById(categoryId));
     }
 }
