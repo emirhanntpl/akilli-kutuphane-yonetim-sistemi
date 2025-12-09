@@ -27,7 +27,10 @@ public class User extends BaseEntity implements UserDetails {
     private String email;
     private  Set<Role> roles;
     private  String address;
-
+    private double penalty;
+    public void addPenalty(double amount) {
+        this.penalty += amount;
+    }
 
     @ElementCollection(targetClass = Role.class, fetch = FetchType.EAGER)
     @CollectionTable(name = "authorities", joinColumns = @JoinColumn(name = "user_id"))

@@ -70,4 +70,5 @@ public class UserService {
         userRepository.deleteById(userId);
         System.out.println( OptUser.get().getName()  +" adlı kullanıcı silindi.");
     }
+
 }

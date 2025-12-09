@@ -8,16 +8,15 @@ import lombok.Setter;
 
 
 import java.time.LocalDate;
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-public class DtoLoan {
-    @Column(nullable = false)
-    private LocalDate loanDate;
 
-    @Column(nullable = false)
-    private LocalDate dueDate;
-
-    private LocalDate returnDate;
+public record DtoLoan(
+        Long id,
+        Long bookId,
+        String bookTitle,
+        Long userId,
+        String username,
+        LocalDate loanDate,
+        LocalDate dueDate,
+        LocalDate returnDate
+) {
 }

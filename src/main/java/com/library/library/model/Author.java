@@ -26,6 +26,6 @@ public class Author extends BaseEntity {
     @NotNull
     private String lastName;
 
-    @ManyToMany(mappedBy = "authors", fetch = FetchType.LAZY) // "author" -> "authors" olarak düzeltildi.
+    @ManyToMany(mappedBy = "authors", fetch = FetchType.LAZY)
     private Set<Book> books = new HashSet<>();
 }

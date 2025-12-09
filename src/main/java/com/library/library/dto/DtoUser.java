@@ -23,6 +23,7 @@ public class DtoUser extends DtoBaseEntity{
     private String email;
     @NotNull
     private String address;
+    private int penalty;
 
 
 

@@ -19,5 +19,6 @@ public class DtoUserIU extends DtoBaseEntity{
     private String password;
     private String email;
     private  String address;
+    private int penalty;
 
 }

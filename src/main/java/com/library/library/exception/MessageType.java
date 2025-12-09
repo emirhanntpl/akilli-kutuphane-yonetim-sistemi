@@ -18,6 +18,10 @@ public enum MessageType {
     AUTHOR_NOT_FOUND("1014","YAZAR BULUNAMADI"),
     CATEGORY_NOT_FOUND("1015","KATEGORİ BULUNAMADI"),
     AUTHENTICATION_FAILED("1016","Kimlik doğrulama başarısız oldu."),
+    INVALID_AUTHOR_ID("1017","Geçersiz yazar ID'si"),
+    INVALID_CATEGORY_ID("1018","Geçersiz kategori ID'si"),
+    BOOK_ALREADY_ON_LOAN("1019","KİTAP ÖDÜNÇTE OLDUĞU İÇİN  DAHA SONRA TEKRAR DENEYİN"),
+    NO_SUCH_RECORD_FOUND("1020","BÖYLE BİR KAYIT BULUNAMADI."),
     GENERAL_EXCEPTION("9999","Genel bir hata oluştu,Lütfen tekrar deneyiniz.");
 
     private final String code;
