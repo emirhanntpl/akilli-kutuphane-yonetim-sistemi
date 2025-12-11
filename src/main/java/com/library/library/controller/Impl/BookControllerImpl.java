@@ -25,20 +25,23 @@ public class BookControllerImpl extends RestBaseController implements BookContro
 
     @PostMapping("/create")
     @Override
-    public RootEntity<Book> createBook(@RequestBody @Valid DtoBookIU dtoBookIU) {
+    public RootEntity<Book> createBook(@RequestBody @Valid DtoBookIU dtoBookIU) {//çalışıyor.
         return ok(bookService.createBook(dtoBookIU));
     }
 
-    @PostMapping("/delete")
+    @DeleteMapping("/delete/{id}")
     @Override
-    public ResponseEntity<Void> deleteBook(@RequestBody @Valid DtoBookIU dtoBookIU) {
-        bookService.deleteBook(dtoBookIU);
+    public ResponseEntity<Void> deleteBook(@PathVariable("id") Long bookId ) {//çalışıyor.
+        // Servis mevcut olarak DtoBookIU bekliyor, minimal değişiklikle burada DtoBookIU oluşturalım
+        DtoBookIU dto = new DtoBookIU();
+        dto.setId(bookId);
+        bookService.deleteBook(dto);
         return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/update/{id}")
     @Override
-    public RootEntity<DtoBook> updateBook(@PathVariable("id") Long bookId, @RequestBody @Valid UpdateBookRequest request) {
+    public RootEntity<DtoBook> updateBook(@PathVariable("id") Long bookId, @RequestBody @Valid UpdateBookRequest request) {//çalışıyor
         return ok(bookService.updateBook(bookId, request));
     }
 }

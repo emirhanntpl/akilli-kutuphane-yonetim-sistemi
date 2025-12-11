@@ -8,6 +8,7 @@ import com.library.library.model.CreateUserRequest;
 import com.library.library.model.Loan;
 import com.library.library.model.User;
 import com.library.library.repository.LoanRepository;
+import com.library.library.repository.RefreshTokenRepository;
 import com.library.library.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
@@ -25,6 +26,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
     private final LoanRepository loanRepository;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     public Optional<User> getByUsername(String username) {
         return userRepository.findByUsername(username);
@@ -58,6 +60,13 @@ public class UserService {
                 savedUser.getEmail());
     }
 
+    // Debug: kullanıcıya ait refresh token sayısını döndürür
+    public int countRefreshTokens(Long userId) {
+        var tokens = refreshTokenRepository.findByUserId(userId);
+        return tokens == null ? 0 : tokens.size();
+    }
+
+    @org.springframework.transaction.annotation.Transactional
     public void deleteUser(Long userId) {
         Optional<User> OptUser = userRepository.findById(userId);
         if (OptUser.isEmpty()){
@@ -67,6 +76,9 @@ public class UserService {
         if (!OptLoans.isEmpty()){
             throw new BaseException(MessageType.USER_HAS_UNRETURNED_BOOKS,HttpStatus.BAD_REQUEST);
         }
+        // Önce refresh token kayıtlarını sil (DB'deki foreign key kısıtlamasını geçmek için)
+        int deletedTokens = refreshTokenRepository.deleteByUserId(userId);
+        System.out.println("Deleted refresh tokens for userId="+userId+": " + deletedTokens);
         userRepository.deleteById(userId);
         System.out.println( OptUser.get().getName()  +" adlı kullanıcı silindi.");
     }

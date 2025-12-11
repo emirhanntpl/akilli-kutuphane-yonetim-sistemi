@@ -22,27 +22,28 @@ public class AuthorControllerImpl  extends RestBaseController implements AuthorC
 
     }
 
-    @PostMapping("/api/author")
+    @PostMapping("/rest/api/author")
     @Override
-    public RootEntity<DtoAuthor> saveAuthor(@RequestBody @Valid DtoAuthorIU dtoAuthorIU) {
+    public RootEntity<DtoAuthor> saveAuthor(@RequestBody @Valid DtoAuthorIU dtoAuthorIU) {//çalışıyor.
         return ok(authorService.saveAuthor(dtoAuthorIU));
     }
 
     @PutMapping("/api/admin/author/{id}")
     @Override
-    public RootEntity<DtoAuthor> updateAuthor(@PathVariable("id") Long id, @RequestBody @Valid DtoAuthorIU dtoAuthorIU) {
+    public RootEntity<DtoAuthor> updateAuthor(@PathVariable("id") Long id, @RequestBody @Valid DtoAuthorIU dtoAuthorIU) {//çalışıyor
         return ok(authorService.updateAuthor(id, dtoAuthorIU));
     }
 
-    @GetMapping("/api/author")
+    @GetMapping("/api/author/getAll")
     @Override
     public List<DtoAuthor> getAllAuthors() {
+
         return authorService.getAllAuthors();
     }
 
     @DeleteMapping("/api/admin/author/{id}")
     @Override
-    public ResponseEntity<Void> deleteAuthor(@PathVariable("id") Long authorId) {
+    public ResponseEntity<Void> deleteAuthor(@PathVariable("id") Long authorId) {// çalışıyor.
       authorService.deleteAuthor(authorId);
         return ResponseEntity.noContent().build();
     }

@@ -22,33 +22,33 @@ public class CategoryControllerImpl extends RestBaseController implements Catego
     }
 
 
-    @PostMapping("/api/admin/category")
+    @PostMapping("/api/admin/category")//çalışıyor
     @Override
     public RootEntity<DtoCategory> saveCategory(@RequestBody @Valid DtoCategoryIU dtoCategoryIU) {
         return ok(categoryService.saveCategory(dtoCategoryIU));
     }
 
-    @PutMapping("/api/admin/category/{id}")
+    @PutMapping("/api/admin/category/{id}")//çalışıyor
     @Override
     public RootEntity<DtoCategory> updateCategory(@PathVariable("id") Long id, @RequestBody @Valid DtoCategoryIU dtoCategoryIU) {
         return ok(categoryService.updateCategory(id, dtoCategoryIU));
     }
 
-    @GetMapping("/api/categoryAll")
+    @GetMapping("/api/categoryAll")//çalışıyor
     @Override
     public RootEntity<List<DtoCategory>> getAllCategory() {
         return ok(categoryService.getAllCategory());
     }
 
-    @DeleteMapping("/api/admin/category/{id}")
+    @DeleteMapping("/api/admin/category/delete/{id}")
     @Override
-    public ResponseEntity<Void> deleteCategory(@PathVariable("id") Long id) {
+    public ResponseEntity<Void> deleteCategory(@PathVariable("id") Long id) {//çalışıyor.
         categoryService.deleteCategory(id);
         return ResponseEntity.noContent().build();
     }
 
 
-    @GetMapping("/api/categoryGet/{categoryId}")
+    @GetMapping("/api/categoryGet/{categoryId}")//çalışıyor.
     @Override
     public RootEntity<DtoCategory> getCategoryById(@PathVariable("categoryId") Long categoryId) {
         return ok(categoryService.getCategoryById(categoryId));

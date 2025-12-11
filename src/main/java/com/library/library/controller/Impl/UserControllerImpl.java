@@ -24,20 +24,27 @@ public class UserControllerImpl extends RestBaseController implements UserContro
 
     @PostMapping("/create")
     @Override
-    public RootEntity<User> createUser(@RequestBody @Valid   CreateUserRequest request) {
+    public RootEntity<User> createUser(@RequestBody @Valid   CreateUserRequest request) {//çalışıyor
         return ok(userService.createUser(request));
     }
 
-    @PutMapping("/update")
+    @PutMapping("/update/{userId}")
     @Override
-    public RootEntity<DtoUserUpdate> updateUser(@RequestBody @Valid  Long userId, @RequestBody @Valid  UpdateUserRequest request) {
+    public RootEntity<DtoUserUpdate> updateUser(@PathVariable("userId") Long userId, @RequestBody @Valid UpdateUserRequest request) {//çalışıyor
         return ok(userService.updateUser(userId, request));
     }
 
-    @DeleteMapping("/delete")
+    @DeleteMapping("/delete/{userId}")
     @Override
-    public ResponseEntity<Void> deleteUser(@RequestBody @Valid Long userId) {
+    public ResponseEntity<Void> deleteUser(@PathVariable("userId") Long userId) {
         userService.deleteUser(userId);
         return ResponseEntity.noContent().build();
     }
+
+
+    @GetMapping("/tokens/{userId}")
+    public ResponseEntity<Integer> countTokens(@PathVariable("userId") Long userId) {
+        return ResponseEntity.ok(userService.countRefreshTokens(userId));
+    }
+
 }

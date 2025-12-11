@@ -18,11 +18,9 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 public class BookServiceImpl implements BookService {
@@ -59,13 +57,17 @@ public class BookServiceImpl implements BookService {
         if (OptBookId.isEmpty()){
             throw new BaseException(MessageType.INVALID_BOOK_NAME, HttpStatus.BAD_REQUEST);
         }
-        Optional<Loan> OptLoanId = loanRepository.findById(dtoBookIU.getId());
-        if (!OptLoanId.isEmpty()){
+        //
+        Book book = OptBookId.get();
+        boolean onLoan = loanRepository.existsByBookIdAndReturnDateIsNull(book.getId());
+        if (onLoan){
             throw new BaseException(MessageType.BOOK_ON_LOAN,HttpStatus.BAD_REQUEST);
         }
-        bookRepository.deleteById(dtoBookIU.getId());
-        System.out.println(dtoBookIU.getTitle()  + " Adlı kitap  silindi.");
+        bookRepository.delete(book);
+        System.out.println(book.getTitle()  + " Adlı kitap  silindi.");
     }
+
+
 
     @Override
     public DtoBook updateBook(Long bookId, UpdateBookRequest request) {

@@ -12,6 +12,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.library.library.model.RefreshToken;
+
 @Entity
 @Table(name = "users")
 @Data
@@ -40,6 +42,10 @@ public class User extends BaseEntity implements UserDetails {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<Loan> loans = new HashSet<>();
+
+    // Kullanıcı silindiğinde ona ait refresh token'ların da silinmesi için
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private Set<RefreshToken> refreshTokens = new HashSet<>();
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

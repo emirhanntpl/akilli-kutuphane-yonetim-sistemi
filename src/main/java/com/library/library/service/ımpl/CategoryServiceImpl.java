@@ -5,11 +5,13 @@ import com.library.library.dto.DtoCategoryIU;
 import com.library.library.exception.BaseException;
 import com.library.library.exception.MessageType;
 import com.library.library.model.Category;
+import com.library.library.model.Book;
 import com.library.library.repository.CategoryRepository;
 import com.library.library.service.CategoryService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -60,14 +62,24 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
+    @Transactional
     public void deleteCategory(Long categoryId) {
         if (categoryId==null){
             throw new BaseException(MessageType.INVALID_CATEGORY_ID, HttpStatus.BAD_REQUEST);
         }
-        else{
-            categoryRepository.deleteById(categoryId);
-            System.out.println("Kategori silindi.");
+        // Önce varlığı kontrol et ve ilişkilendirmeleri temizle
+        Category category = categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new BaseException(MessageType.CATEGORY_NOT_FOUND, HttpStatus.BAD_REQUEST));
+
+        // Eğer kategorinin bağlı olduğu kitaplar varsa, her bir kitaptan bu kategoriyi kaldır
+        if (category.getBooks() != null && !category.getBooks().isEmpty()) {
+            for (Book book : category.getBooks()) {
+                book.getCategories().remove(category);
+            }
         }
+
+        categoryRepository.delete(category);
+        System.out.println("Kategori silindi.");
     }
 
     @Override
