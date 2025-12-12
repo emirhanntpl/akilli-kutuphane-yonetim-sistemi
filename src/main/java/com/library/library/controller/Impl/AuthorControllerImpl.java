@@ -34,7 +34,7 @@ public class AuthorControllerImpl  extends RestBaseController implements AuthorC
         return ok(authorService.updateAuthor(id, dtoAuthorIU));
     }
 
-    @GetMapping("/api/author/getAll")
+    @GetMapping("/api/author/getAll")//çalışıyor
     @Override
     public List<DtoAuthor> getAllAuthors() {
 
