@@ -36,8 +36,6 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(java.lang.Exception.class)
     public ResponseEntity<ErrorResponse> handleGenericException(java.lang.Exception ex) {
-        // Gerçek bir uygulamada, bu hatayı loglamak önemlidir.
-        // logger.error("An unexpected error occurred", ex);
         ErrorResponse errorResponse = new ErrorResponse(
                 "An unexpected error occurred",
                 "9999", // Genel hata kodu

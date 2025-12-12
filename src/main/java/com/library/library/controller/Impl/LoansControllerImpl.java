@@ -22,23 +22,25 @@ public class LoansControllerImpl extends RestBaseController implements LoansCont
 
     @PostMapping("/rest/api/loans")
     @Override
-    public RootEntity<DtoLoan> borrowBook(@RequestBody @Valid CreateLoanRequest request) {
+    public RootEntity<DtoLoan> borrowBook(@RequestBody @Valid CreateLoanRequest request) {//çalışıyor
         return ok(loansService.borrowBook(request.getUserId(), request.getBookId()));
     }
 
     @GetMapping("rest/api/loans/{borrowingId}")
     @Override
-    public RootEntity<DtoLoan> getBorrowingDetails(@PathVariable("id") @RequestBody @Valid Long borrowingId) {
+    public RootEntity<DtoLoan> getBorrowingDetails(@PathVariable("borrowingId")  Long borrowingId) {//çalışıyor
+        return ok(loansService.getBorrowingDetails(borrowingId));
+    }
+
+    @GetMapping("/rest/api/loans/user/{userId}")
+    @Override
+    public RootEntity<List<DtoLoan>> getLoansByUserId(@PathVariable("userId")Long userId) {//çalışıyor.
+        return ok(loansService.getLoansByUserId(userId));
+    }
+
+    @PutMapping("/rest/api/loans/returnBook/{borrowingId}")
+    @Override
+    public RootEntity<DtoLoan> returnBook(@PathVariable("borrowingId") Long borrowingId) {
         return ok(loansService.returnBook(borrowingId));
-    }
-
-    @Override
-    public RootEntity<List<DtoLoan>> getLoansByUserId(Long userId) {
-        return null;
-    }
-
-    @Override
-    public RootEntity<DtoLoan> returnBook(Long borrowingId) {
-        return null;
     }
 }

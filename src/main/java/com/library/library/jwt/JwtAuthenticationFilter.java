@@ -44,7 +44,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             username = jwtService.getUsernameByToken(token);
             if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-                // Token'ın hem geçerliliğini hem de kullanıcıyla eşleştiğini kontrol et
                 if (jwtService.isTokenValid(token, userDetails)) {
                     UsernamePasswordAuthenticationToken authenticationToken =
                             new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
@@ -54,9 +53,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
         }
         catch (Exception e) {
-            // Token ile ilgili bir hata olduğunda (süresi dolmuş, bozuk vs.)
-            // sadece loglama yapıp zincirin devam etmesine izin veriyoruz.
-            // Kullanıcı authenticate edilmediği için korunan kaynaklara erişemeyecektir.
             logger.warn("JWT token processing error: " + e.getMessage());
         }
         filterChain.doFilter(request, response);
