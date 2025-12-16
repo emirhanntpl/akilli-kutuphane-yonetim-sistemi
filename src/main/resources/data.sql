@@ -1,0 +1,1 @@
+UPDATE books SET stock = 10 WHERE stock = 0;

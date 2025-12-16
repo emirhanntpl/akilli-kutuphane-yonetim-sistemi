@@ -8,7 +8,6 @@ import com.library.library.exception.MessageType;
 import com.library.library.model.Author;
 import com.library.library.model.Book;
 import com.library.library.model.Category;
-import com.library.library.model.Loan;
 import com.library.library.repository.AuthorsRepository;
 import com.library.library.repository.BookRepository;
 import com.library.library.repository.CategoryRepository;
@@ -17,10 +16,13 @@ import com.library.library.service.BookService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class BookServiceImpl implements BookService {
@@ -38,18 +40,57 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public Book createBook(DtoBookIU dtoBookIU) {
-        Set<Author> authors = new HashSet<>(authorsRepository.findAllById(dtoBookIU.getAuthorIds()));
-        Set<Category> categories = new HashSet<>(categoryRepository.findAllById(dtoBookIU.getCategoryIds()));
-        Book book = new Book();
-        BeanUtils.copyProperties(dtoBookIU, book);
-        book.setAuthors(authors);
-        book.setCategories(categories);
-        System.out.println(dtoBookIU.getTitle()  + " Adlı kitap eklendi.");
-        return bookRepository.save(book);
-
+    public List<DtoBook> getAllBooks() {
+        return bookRepository.findAll().stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
     }
 
+    @Override
+    public List<DtoBook> getBooksByCategoryId(Long categoryId) {
+        return bookRepository.findBooksByCategoryId(categoryId).stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+    }
+
+    private DtoBook convertToDto(Book book) {
+        DtoBook dtoBook = new DtoBook();
+        dtoBook.setId(book.getId());
+        dtoBook.setTitle(book.getTitle());
+        dtoBook.setAuthors(book.getAuthors());
+        dtoBook.setCategories(book.getCategories());
+        dtoBook.setIsbn(book.getIsbn());
+        dtoBook.setProductionYear(book.getProductionYear());
+        dtoBook.setPageOfNumber(book.getPageOfNumber());
+        dtoBook.setStock(book.getStock());
+        return dtoBook;
+    }
+
+    @Override
+    @Transactional
+    public Book createBook(DtoBookIU dtoBookIU) {
+        Optional<Book> existingBookOpt = bookRepository.findByTitle(dtoBookIU.getTitle());
+
+        if (existingBookOpt.isPresent()) {
+            Book existingBook = existingBookOpt.get();
+            existingBook.setStock(existingBook.getStock() + dtoBookIU.getStock());
+            System.out.println("'" + existingBook.getTitle() + "' adlı kitabın stoğu " + dtoBookIU.getStock() + " kadar artırıldı.");
+            return bookRepository.save(existingBook);
+        } else {
+            Set<Author> authors = new HashSet<>(authorsRepository.findAllById(dtoBookIU.getAuthorIds()));
+            Set<Category> categories = new HashSet<>(categoryRepository.findAllById(dtoBookIU.getCategoryIds()));
+            
+            Book book = new Book();
+            BeanUtils.copyProperties(dtoBookIU, book);
+            book.setStock(dtoBookIU.getStock());
+            
+            book.setAuthors(authors);
+            book.setCategories(categories);
+            
+            System.out.println("'" + dtoBookIU.getTitle()  + "' adlı yeni kitap eklendi.");
+            return bookRepository.save(book);
+        }
+    }
 
     @Override
     public void deleteBook(DtoBookIU dtoBookIU) {
@@ -57,7 +98,6 @@ public class BookServiceImpl implements BookService {
         if (OptBookId.isEmpty()){
             throw new BaseException(MessageType.INVALID_BOOK_NAME, HttpStatus.BAD_REQUEST);
         }
-        //
         Book book = OptBookId.get();
         boolean onLoan = loanRepository.existsByBookIdAndReturnDateIsNull(book.getId());
         if (onLoan){
@@ -67,9 +107,8 @@ public class BookServiceImpl implements BookService {
         System.out.println(book.getTitle()  + " Adlı kitap  silindi.");
     }
 
-
-
     @Override
+    @Transactional
     public DtoBook updateBook(Long bookId, UpdateBookRequest request) {
         Optional<Book> OptBookId = bookRepository.findById(bookId);
         if (OptBookId.isEmpty()){
@@ -91,11 +130,18 @@ public class BookServiceImpl implements BookService {
         book.setAuthors(authors);
         book.setCategories(categories);
         book.setIsbn(request.isbn());
+        book.setStock(request.stock());
         Book savedBook = bookRepository.save(book);
-        DtoBook dtoBook = new DtoBook();
-        BeanUtils.copyProperties(savedBook,dtoBook);
+        
+        return convertToDto(savedBook);
+    }
 
-
-        return  dtoBook;
+    @Override
+    public void updateAllStocks(Integer stock) {
+        List<Book> books = bookRepository.findAll();
+        for (Book book : books) {
+            book.setStock(stock);
+        }
+        bookRepository.saveAll(books);
     }
 }

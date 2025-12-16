@@ -27,6 +27,10 @@ public class Book extends BaseEntity {
     @NotNull
     private int pageOfNumber;
 
+
+    @Column(columnDefinition = "integer default 0")
+    private Integer stock = 0;
+
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
     @JoinTable(
             name = "book_author",
@@ -46,8 +50,5 @@ public class Book extends BaseEntity {
 
     @OneToMany(mappedBy = "book",cascade = {CascadeType.PERSIST,CascadeType.MERGE})
     private Set<Loan> loans=new HashSet<>();
-
-
-
 
 }

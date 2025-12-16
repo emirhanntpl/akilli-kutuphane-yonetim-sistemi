@@ -1,18 +1,18 @@
 package com.library.library.dto;
 
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.library.library.model.Role;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
+
+import java.util.Set;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-
 public class DtoUser extends DtoBaseEntity{
+    
     @NotNull
     private String name;
     @NotNull
@@ -25,6 +25,6 @@ public class DtoUser extends DtoBaseEntity{
     private String address;
     private int penalty;
 
-
-
+    // YENİ EKLENEN ALAN
+    private Set<Role> roles;
 }

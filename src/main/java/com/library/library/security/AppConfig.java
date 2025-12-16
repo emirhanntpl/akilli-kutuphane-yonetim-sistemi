@@ -1,13 +1,10 @@
 package com.library.library.security;
 
-import com.library.library.exception.BaseException;
-import com.library.library.exception.MessageType;
 import com.library.library.model.User;
 import com.library.library.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -24,23 +21,14 @@ public class AppConfig {
     @Autowired
     private UserRepository userRepository;
 
-
     @Bean
-
-    public UserDetailsService userDetailsService(){
-        return  new UserDetailsService() {
-            @Override
-            public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-                Optional<User> OptUsername = userRepository.findByUsername(username);
-                if (OptUsername.isEmpty()){
-                    throw new BaseException(MessageType.USERNAME_OR_PASSWORD_INVALID, HttpStatus.BAD_REQUEST);
-                }
-                return OptUsername.get();
-            }
-        };
+    public UserDetailsService userDetailsService() {
+        return username -> userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("Kullanıcı bulunamadı: " + username));
     }
+
     @Bean
-    public  DaoAuthenticationProvider daoAuthenticationProvider(){
+    public DaoAuthenticationProvider daoAuthenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
         provider.setUserDetailsService(userDetailsService());
         provider.setPasswordEncoder(passwordEncoder());
@@ -48,10 +36,9 @@ public class AppConfig {
     }
 
     @Bean
-    public BCryptPasswordEncoder passwordEncoder(){
-        return new  BCryptPasswordEncoder();
+    public BCryptPasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
-
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {

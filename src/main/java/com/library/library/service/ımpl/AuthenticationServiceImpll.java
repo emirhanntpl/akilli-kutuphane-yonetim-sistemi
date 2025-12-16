@@ -23,7 +23,6 @@ import java.util.Set;
 import java.util.UUID;
 
 @Service
-
 public class AuthenticationServiceImpll implements AuthenticationService {
 
     private final UserRepository userRepository;
@@ -40,16 +39,6 @@ public class AuthenticationServiceImpll implements AuthenticationService {
         this.authenticationProvider = authenticationProvider;
     }
 
-
-    private RefreshToken craeteRefreshToken(User user) {
-        RefreshToken refreshToken = new RefreshToken();
-        refreshToken.setCreateTime(new Date());
-        refreshToken.setExpiredDate(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 4));
-        refreshToken.setRefreshToken(UUID.randomUUID().toString());
-        refreshToken.setUser(user);
-        return refreshToken;
-    }
-
     private User createUser(CreateUserRequest request) {
         User user = new User();
         user.setName(request.name());
@@ -57,26 +46,24 @@ public class AuthenticationServiceImpll implements AuthenticationService {
         user.setPassword(passwordEncoder.encode(request.password()));
         user.setEmail(request.email());
         user.setAddress(request.address());
-        user.setRole(Set.of(Role.ROLE_USER));
+        // DÜZELTİLDİ: Rolleri artık request'ten alıyor.
+        user.setRole(request.authorities()); 
         User savedUser = userRepository.save(user);
         return savedUser;
-
     }
-
 
     private RefreshToken createRefreshToken(User user) {
         RefreshToken refreshToken = new RefreshToken();
         refreshToken.setUser(user);
         refreshToken.setRefreshToken(UUID.randomUUID().toString());
-        refreshToken.setExpiredDate(new Date(System.currentTimeMillis() + 1000L * 60 * 60 * 4));
+        // 4 saatlik geçerlilik süresi
+        refreshToken.setExpiredDate(new Date(System.currentTimeMillis() + 1000L * 60 * 60 * 4)); 
         return refreshTokenRepository.save(refreshToken);
     }
-
 
     private boolean isValidRefreshToken(Date expiredDate) {
         return new Date().before(expiredDate);
     }
-
 
     @Override
     public DtoUser register(CreateUserRequest request) {
@@ -99,37 +86,33 @@ public class AuthenticationServiceImpll implements AuthenticationService {
             UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword());
             authenticationProvider.authenticate(authenticationToken);
 
-            Optional<User> OptUser = userRepository.findByUsername(request.getUsername());
-            if (OptUser.isEmpty()) {
+            Optional<User> optUser = userRepository.findByUsername(request.getUsername());
+            if (optUser.isEmpty()) {
                 throw new BaseException(MessageType.USERNAME_NOT_FOUND, HttpStatus.BAD_REQUEST);
             }
 
-            String accesToken = jwtService.generateToken(OptUser.get());
-            RefreshToken savedRefreshToken = refreshTokenRepository.save(createRefreshToken(OptUser.get()));
-            return new AuthResponse(accesToken, savedRefreshToken.getRefreshToken());
+            String accessToken = jwtService.generateToken(optUser.get());
+            RefreshToken savedRefreshToken = createRefreshToken(optUser.get());
+            return new AuthResponse(accessToken, savedRefreshToken.getRefreshToken());
 
         } catch (Exception e) {
-            e.printStackTrace(); // Loglama ekleyerek hatayı konsola yazdır
-            throw new BaseException(MessageType.REFRESH_TOKEN_NOT_FOUND, HttpStatus.BAD_REQUEST);
+            e.printStackTrace(); 
+            throw new BaseException(MessageType.AUTHENTICATION_FAILED, HttpStatus.BAD_REQUEST);
         }
-
     }
-
-
-
 
     @Override
     public AuthResponse refreshToken(RefreshTokenRequest request) {
-        Optional<RefreshToken> OptRefreshToken = refreshTokenRepository.findByRefreshToken(request.getRefreshToken());
-        if (OptRefreshToken.isEmpty()) {
+        Optional<RefreshToken> optRefreshToken = refreshTokenRepository.findByRefreshToken(request.getRefreshToken());
+        if (optRefreshToken.isEmpty()) {
             throw new BaseException(MessageType.REFRESH_TOKEN_NOT_FOUND, HttpStatus.BAD_REQUEST);
         }
-        if (!isValidRefreshToken(OptRefreshToken.get().getExpiredDate())) {
+        if (!isValidRefreshToken(optRefreshToken.get().getExpiredDate())) {
             throw new BaseException(MessageType.REFRESH_TOKEN_IS_VALID, HttpStatus.BAD_REQUEST);
         }
-        User user = OptRefreshToken.get().getUser();
+        User user = optRefreshToken.get().getUser();
         String accessToken = jwtService.generateToken(user);
-        RefreshToken savedRefreshToken = refreshTokenRepository.save(craeteRefreshToken(user));
+        RefreshToken savedRefreshToken = createRefreshToken(user);
         return new AuthResponse(accessToken, savedRefreshToken.getRefreshToken());
     }
 }

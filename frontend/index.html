@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kütüphane</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: sans-serif;
+            background-image: url('https://images.unsplash.com/photo-1521587760476-6c12a4b040da?q=80&w=2070&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            text-align: center;
+            position: relative; /* For positioning the quote */
+        }
+
+        .quote {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            font-family: 'Georgia', serif;
+            font-style: italic;
+            font-size: 1.5rem;
+            text-shadow: 1px 1px 2px #000000;
+            border-bottom: 1px solid white;
+            padding-bottom: 5px;
+        }
+
+        .buttons {
+            /* Buttons are already centered, no change needed here */
+        }
+
+        .buttons a {
+            text-decoration: none;
+            color: white;
+            background-color: rgba(0, 0, 0, 0.6);
+            padding: 1rem 2rem;
+            margin: 0 1rem;
+            border-radius: 5px;
+            font-size: 1.2rem;
+            transition: background-color 0.3s;
+        }
+
+        .buttons a:hover {
+            background-color: rgba(0, 0, 0, 0.8);
+        }
+    </style>
+</head>
+<body>
+    <div class="buttons">
+        <a href="/login.html">Giriş Yap</a>
+        <a href="/register.html">Kayıt Ol</a>
+        <a href="/staff-login.html">Personel Girişi</a>
+    </div>
+    <div class="quote">
+        En hakiki mürşit ilimdir.
+    </div>
+</body>
+</html>

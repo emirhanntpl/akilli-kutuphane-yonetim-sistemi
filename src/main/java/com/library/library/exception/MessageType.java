@@ -14,14 +14,19 @@ public enum MessageType {
     REFRESH_TOKEN_ERROR("1010", "REFRESH TOKEN HATASI"),
     USER_HAS_UNRETURNED_BOOKS("1011", "Kullanıcının iade etmediği kitaplar bulunduğu için silinemez."),
     INVALID_BOOK_NAME("1012","GEÇERSİZ KİTAP ADI LÜTFEN TEKRAR DENEYİNİZ"),
-    BOOK_ON_LOAN("1013","KİTAP ÖDÜNÇTE OLDUĞU İÇİN SİLİNEMEZ DAHA SONRA TEKRAR DENEYİNİZ. "),
+    BOOK_ON_LOAN("1013","KİTAP ÖDünçte olduğu için silinemez, daha sonra tekrar deneyiniz."),
     AUTHOR_NOT_FOUND("1014","YAZAR BULUNAMADI"),
     CATEGORY_NOT_FOUND("1015","KATEGORİ BULUNAMADI"),
     AUTHENTICATION_FAILED("1016","Kimlik doğrulama başarısız oldu."),
     INVALID_AUTHOR_ID("1017","Geçersiz yazar ID'si"),
     INVALID_CATEGORY_ID("1018","Geçersiz kategori ID'si"),
-    BOOK_ALREADY_ON_LOAN("1019","KİTAP ÖDÜNÇTE OLDUĞU İÇİN  DAHA SONRA TEKRAR DENEYİN"),
+    BOOK_ALREADY_ON_LOAN("1019","Bu kitap zaten başka bir kullanıcı tarafından ödünç alınmış."),
     NO_SUCH_RECORD_FOUND("1020","BÖYLE BİR KAYIT BULUNAMADI."),
+    
+
+    BOOK_NOT_IN_STOCK("1021", "Bu kitap stokta mevcut değil."),
+    BOOK_ALREADY_RETURNED("1022", "Bu kitap zaten iade edilmiş."),
+
     GENERAL_EXCEPTION("9999","Genel bir hata oluştu,Lütfen tekrar deneyiniz.");
 
     private final String code;

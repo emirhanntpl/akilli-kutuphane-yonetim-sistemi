@@ -13,38 +13,37 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-public class AuthorControllerImpl  extends RestBaseController implements AuthorController {
+@RequestMapping("/rest/api/authors")
+public class AuthorControllerImpl extends RestBaseController implements AuthorController {
 
     private final AuthorService authorService;
 
     public AuthorControllerImpl(AuthorService authorService) {
         this.authorService = authorService;
-
     }
 
-    @PostMapping("/rest/api/author")
+    @GetMapping
     @Override
-    public RootEntity<DtoAuthor> saveAuthor(@RequestBody @Valid DtoAuthorIU dtoAuthorIU) {//çalışıyor.
+    public RootEntity<List<DtoAuthor>> getAllAuthors() {
+        return ok(authorService.getAllAuthors());
+    }
+
+    @PostMapping
+    @Override
+    public RootEntity<DtoAuthor> saveAuthor(@RequestBody @Valid DtoAuthorIU dtoAuthorIU) {
         return ok(authorService.saveAuthor(dtoAuthorIU));
     }
 
-    @PutMapping("/api/admin/author/{id}")
+    @PutMapping("/{id}")
     @Override
-    public RootEntity<DtoAuthor> updateAuthor(@PathVariable("id") Long id, @RequestBody @Valid DtoAuthorIU dtoAuthorIU) {//çalışıyor
+    public RootEntity<DtoAuthor> updateAuthor(@PathVariable("id") Long id, @RequestBody @Valid DtoAuthorIU dtoAuthorIU) {
         return ok(authorService.updateAuthor(id, dtoAuthorIU));
     }
 
-    @GetMapping("/api/author/getAll")//çalışıyor
+    @DeleteMapping("/{id}")
     @Override
-    public List<DtoAuthor> getAllAuthors() {
-
-        return authorService.getAllAuthors();
-    }
-
-    @DeleteMapping("/api/admin/author/{id}")
-    @Override
-    public ResponseEntity<Void> deleteAuthor(@PathVariable("id") Long authorId) {// çalışıyor.
-      authorService.deleteAuthor(authorId);
+    public ResponseEntity<Void> deleteAuthor(@PathVariable("id") Long authorId) {
+        authorService.deleteAuthor(authorId);
         return ResponseEntity.noContent().build();
     }
 }

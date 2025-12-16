@@ -2,19 +2,19 @@ package com.library.library.controller.Impl;
 
 import com.library.library.controller.RestBaseController;
 import com.library.library.controller.RootEntity;
-import com.library.library.controller.UserController;
-import com.library.library.dto.DtoUserUpdate;
+import com.library.library.dto.DtoUser;
 import com.library.library.dto.UpdateUserRequest;
 import com.library.library.model.CreateUserRequest;
-import com.library.library.model.User;
 import com.library.library.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@RequestMapping("/api/users")
+import java.util.List;
+
 @RestController
-public class UserControllerImpl extends RestBaseController implements UserController {
+@RequestMapping("/rest/api/users")
+public class UserControllerImpl extends RestBaseController {
 
     private final UserService userService;
 
@@ -22,29 +22,26 @@ public class UserControllerImpl extends RestBaseController implements UserContro
         this.userService = userService;
     }
 
-    @PostMapping("/create")
-    @Override
-    public RootEntity<User> createUser(@RequestBody @Valid   CreateUserRequest request) {//çalışıyor
-        return ok(userService.createUser(request));
+    @GetMapping
+    public RootEntity<List<DtoUser>> getAllUsers() {
+        return ok(userService.getAllUsers());
     }
 
-    @PutMapping("/update/{userId}")
-    @Override
-    public RootEntity<DtoUserUpdate> updateUser(@PathVariable("userId") Long userId, @RequestBody @Valid UpdateUserRequest request) {//çalışıyor
-        return ok(userService.updateUser(userId, request));
+    @PostMapping
+    public RootEntity<DtoUser> createUser(@RequestBody @Valid CreateUserRequest request) {
+
+        userService.createUser(request);
+        return ok("Kullanıcı başarıyla oluşturuldu.");
     }
 
-    @DeleteMapping("/delete/{userId}")
-    @Override
-    public ResponseEntity<Void> deleteUser(@PathVariable("userId") Long userId) {
-        userService.deleteUser(userId);
-        return ResponseEntity.noContent().build();
+    @PutMapping("/{id}")
+    public RootEntity<DtoUser> updateUser(@PathVariable Long id, @RequestBody @Valid UpdateUserRequest request) {
+        return ok(userService.updateUser(id, request));
     }
 
-
-    @GetMapping("/tokens/{userId}")
-    public ResponseEntity<Integer> countTokens(@PathVariable("userId") Long userId) {
-        return ResponseEntity.ok(userService.countRefreshTokens(userId));
+    @DeleteMapping("/{id}")
+    public RootEntity<String> deleteUser(@PathVariable Long id) {
+        userService.deleteUser(id);
+        return ok("Kullanıcı başarıyla silindi.");
     }
-
 }

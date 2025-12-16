@@ -29,5 +29,8 @@ public class DtoBook extends DtoBaseEntity{
     private int productionYear;
     @NotNull
     private int pageOfNumber;
+    
+    // YENİ EKLENEN ALAN
+    private Integer stock; 
 
 }

@@ -12,33 +12,40 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@RequestMapping("/rest/api/loans") // Ana yolu buraya taşıdık
 public class LoansControllerImpl extends RestBaseController implements LoansController {
 
-    private final    LoansService loansService;
+    private final LoansService loansService;
 
     public LoansControllerImpl(LoansService loansService) {
         this.loansService = loansService;
     }
 
-    @PostMapping("/rest/api/loans")
+    // YENİ EKLENEN ENDPOINT
+    @GetMapping
+    public RootEntity<List<DtoLoan>> getAllLoans() {
+        return ok(loansService.getAllLoans());
+    }
+
+    @PostMapping
     @Override
-    public RootEntity<DtoLoan> borrowBook(@RequestBody @Valid CreateLoanRequest request) {//çalışıyor
+    public RootEntity<DtoLoan> borrowBook(@RequestBody @Valid CreateLoanRequest request) {
         return ok(loansService.borrowBook(request.getUserId(), request.getBookId()));
     }
 
-    @GetMapping("rest/api/loans/{borrowingId}")
+    @GetMapping("/{borrowingId}")
     @Override
-    public RootEntity<DtoLoan> getBorrowingDetails(@PathVariable("borrowingId")  Long borrowingId) {//çalışıyor
+    public RootEntity<DtoLoan> getBorrowingDetails(@PathVariable("borrowingId") Long borrowingId) {
         return ok(loansService.getBorrowingDetails(borrowingId));
     }
 
-    @GetMapping("/rest/api/loans/user/{userId}")
+    @GetMapping("/user/{userId}")
     @Override
-    public RootEntity<List<DtoLoan>> getLoansByUserId(@PathVariable("userId")Long userId) {//çalışıyor.
+    public RootEntity<List<DtoLoan>> getLoansByUserId(@PathVariable("userId") Long userId) {
         return ok(loansService.getLoansByUserId(userId));
     }
 
-    @PutMapping("/rest/api/loans/returnBook/{borrowingId}")
+    @PutMapping("/returnBook/{borrowingId}")
     @Override
     public RootEntity<DtoLoan> returnBook(@PathVariable("borrowingId") Long borrowingId) {
         return ok(loansService.returnBook(borrowingId));

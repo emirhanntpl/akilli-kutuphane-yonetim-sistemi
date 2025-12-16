@@ -38,7 +38,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleGenericException(java.lang.Exception ex) {
         ErrorResponse errorResponse = new ErrorResponse(
                 "An unexpected error occurred",
-                "9999", // Genel hata kodu
+                "9999",
                 org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR.value(),
                 LocalDateTime.now()
         );

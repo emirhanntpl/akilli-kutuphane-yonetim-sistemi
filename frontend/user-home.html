@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kütüphane Paneli</title>
+    <!-- İkonlar için FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: rgba(44, 62, 80, 0.95);
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --success-color: #2ecc71;
+            --warning-color: #f39c12;
+            --card-bg: rgba(255, 255, 255, 0.97);
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            background-image: url('https://images.unsplash.com/photo-1507842217343-583bb7270b66?q=80&w=2070&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 0.8rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+            backdrop-filter: blur(5px);
+        }
+
+        .navbar-brand {
+            font-size: 1.5rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-links { display: flex; gap: 20px; }
+
+        .nav-btn {
+            background: none; border: none;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1rem; cursor: pointer;
+            padding: 0.5rem 1rem;
+            transition: var(--transition);
+            border-radius: 5px; font-weight: 500;
+        }
+
+        .nav-btn:hover, .nav-btn.active {
+            color: white;
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .logout-btn {
+            background-color: var(--accent-color);
+            color: white; border: none;
+            padding: 0.5rem 1.2rem;
+            border-radius: 20px; cursor: pointer;
+            font-weight: bold; transition: var(--transition);
+            display: flex; align-items: center; gap: 5px;
+        }
+        .logout-btn:hover { background-color: #c0392b; transform: translateY(-2px); }
+
+        .container { max-width: 1200px; margin: 2rem auto; padding: 0 1rem; }
+        .search-wrapper { margin-bottom: 2rem; position: relative; }
+
+        .search-input {
+            width: 100%; padding: 1rem 1rem 1rem 3rem;
+            border: none; border-radius: 50px;
+            box-shadow: var(--shadow); font-size: 1rem;
+            outline: none; box-sizing: border-box;
+            background-color: rgba(255, 255, 255, 0.9);
+        }
+        .search-icon { position: absolute; left: 1.2rem; top: 50%; transform: translateY(-50%); color: #666; }
+
+        .tab-content { display: none; animation: fadeIn 0.5s; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 2rem; }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 12px; box-shadow: var(--shadow);
+            overflow: hidden; transition: var(--transition);
+            display: flex; flex-direction: column;
+        }
+        .card:hover { transform: translateY(-10px); box-shadow: 0 12px 20px rgba(0,0,0,0.4); }
+        
+        .category-card { cursor: pointer; }
+
+        .card-header-img { height: 150px; background-size: cover; background-position: center; }
+        .book-cover { background-image: url('https://images.unsplash.com/photo-1543002588-bfa74002ed7e?q=80&w=600&auto=format&fit=crop'); }
+        .author-cover { background-image: url('https://images.unsplash.com/photo-1455390582262-044cdead277a?q=80&w=600&auto=format&fit=crop'); }
+        .category-cover { background-image: url('https://images.unsplash.com/photo-1481627834876-b7833e8f5570?q=80&w=600&auto=format&fit=crop'); }
+        .loan-cover { background-image: url('https://images.unsplash.com/photo-1481627834876-b7833e8f5570?q=80&w=600&auto=format&fit=crop'); }
+
+        .card-body { padding: 1.5rem; flex-grow: 1; display: flex; flex-direction: column; }
+        .card-title { margin: 0 0 0.5rem 0; color: #2c3e50; font-size: 1.25rem; }
+        .card-info { color: #555; font-size: 0.9rem; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 8px; }
+        .card-info i { color: var(--secondary-color); width: 16px; }
+        .badge { display: inline-block; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.8rem; font-weight: bold; background-color: #eef2f7; color: var(--secondary-color); margin-top: 1rem; }
+        
+        .card-footer { margin-top: auto; padding-top: 1rem; }
+        .borrow-btn {
+            width: 100%; background-color: var(--success-color);
+            color: white; border: none; padding: 0.8rem;
+            border-radius: 8px; cursor: pointer;
+            font-size: 1rem; font-weight: bold;
+            transition: var(--transition);
+        }
+        .borrow-btn:hover { background-color: #27ae60; }
+        .borrow-btn:disabled { background-color: #95a5a6; cursor: not-allowed; }
+
+        .return-btn {
+            width: 100%; background-color: var(--warning-color);
+            color: white; border: none; padding: 0.8rem;
+            border-radius: 8px; cursor: pointer;
+            font-size: 1rem; font-weight: bold;
+            transition: var(--transition);
+        }
+        .return-btn:hover { background-color: #e67e22; }
+
+        .loader { text-align: center; padding: 2rem; color: white; font-size: 1.2rem; text-shadow: 1px 1px 2px black; }
+
+        /* MODAL STİLLERİ */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            display: flex; justify-content: center; align-items: center;
+            z-index: 2000; opacity: 0; visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        .modal-overlay.active { opacity: 1; visibility: visible; }
+
+        .modal {
+            background-color: white; padding: 2rem; border-radius: 15px;
+            width: 90%; max-width: 400px; text-align: center;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            transform: scale(0.8); transition: all 0.3s ease;
+        }
+        .modal-overlay.active .modal { transform: scale(1); }
+
+        .modal-icon { font-size: 3rem; margin-bottom: 1rem; }
+        .modal-icon.success { color: var(--success-color); }
+        .modal-icon.error { color: var(--accent-color); }
+        .modal-icon.confirm { color: var(--secondary-color); }
+
+        .modal-title { font-size: 1.5rem; margin-bottom: 0.5rem; color: #333; }
+        .modal-message { color: #666; margin-bottom: 1.5rem; }
+
+        .modal-buttons { display: flex; justify-content: center; gap: 10px; }
+        .modal-btn {
+            padding: 0.7rem 1.5rem; border: none; border-radius: 8px;
+            cursor: pointer; font-weight: bold; font-size: 1rem;
+            transition: var(--transition);
+        }
+        .btn-confirm { background-color: var(--secondary-color); color: white; }
+        .btn-confirm:hover { background-color: #2980b9; }
+        .btn-cancel { background-color: #95a5a6; color: white; }
+        .btn-cancel:hover { background-color: #7f8c8d; }
+        .btn-ok { background-color: var(--success-color); color: white; width: 100%; }
+        .btn-ok:hover { background-color: #27ae60; }
+
+        @media (max-width: 768px) {
+            .navbar { flex-direction: column; gap: 1rem; }
+            .nav-links { width: 100%; justify-content: center; flex-wrap: wrap; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="navbar-brand"><i class="fas fa-book-open"></i> Kütüphane</div>
+        <div class="nav-links">
+            <button class="nav-btn active" onclick="switchTab('books')"><i class="fas fa-book"></i> Kitaplar</button>
+            <button class="nav-btn" onclick="switchTab('authors')"><i class="fas fa-feather-alt"></i> Yazarlar</button>
+            <button class="nav-btn" onclick="switchTab('categories')"><i class="fas fa-tags"></i> Kategoriler</button>
+            <button class="nav-btn" onclick="switchTab('my-loans')"><i class="fas fa-hand-holding-heart"></i> Ödünç Aldıklarım</button>
+            <button class="nav-btn" onclick="switchTab('history')"><i class="fas fa-history"></i> Geçmiş</button>
+        </div>
+        <button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Çıkış</button>
+    </nav>
+
+    <div class="container">
+        <div class="search-wrapper">
+            <i class="fas fa-search search-icon"></i>
+            <input type="text" id="searchInput" class="search-input" placeholder="Ara..." onkeyup="filterItems()">
+        </div>
+
+        <div id="books" class="tab-content active"><div id="books-container" class="grid-container"><div class="loader"><i class="fas fa-spinner fa-spin"></i> Kitaplar yükleniyor...</div></div></div>
+        <div id="authors" class="tab-content"><div id="authors-container" class="grid-container"><div class="loader"><i class="fas fa-spinner fa-spin"></i> Yazarlar yükleniyor...</div></div></div>
+        <div id="categories" class="tab-content"><div id="categories-container" class="grid-container"><div class="loader"><i class="fas fa-spinner fa-spin"></i> Kategoriler yükleniyor...</div></div></div>
+        <div id="my-loans" class="tab-content"><div id="my-loans-container" class="grid-container"><div class="loader"><i class="fas fa-spinner fa-spin"></i> Ödünç aldıklarınız yükleniyor...</div></div></div>
+        <div id="history" class="tab-content"><div id="history-container" class="grid-container"><div class="loader"><i class="fas fa-spinner fa-spin"></i> Geçmiş yükleniyor...</div></div></div>
+    </div>
+
+    <!-- MODAL YAPISI -->
+    <div id="customModal" class="modal-overlay">
+        <div class="modal">
+            <div id="modalIcon" class="modal-icon"></div>
+            <h3 id="modalTitle" class="modal-title"></h3>
+            <p id="modalMessage" class="modal-message"></p>
+            <div id="modalButtons" class="modal-buttons"></div>
+        </div>
+    </div>
+
+    <script>
+        let currentUserId = null;
+        const token = localStorage.getItem('accessToken');
+
+        function showModal(type, title, message, onConfirm = null) {
+            const modal = document.getElementById('customModal');
+            const icon = document.getElementById('modalIcon');
+            const titleEl = document.getElementById('modalTitle');
+            const msgEl = document.getElementById('modalMessage');
+            const btnsEl = document.getElementById('modalButtons');
+
+            titleEl.textContent = title;
+            msgEl.textContent = message;
+            btnsEl.innerHTML = '';
+
+            if (type === 'success') {
+                icon.className = 'modal-icon success fas fa-check-circle';
+                btnsEl.innerHTML = `<button class="modal-btn btn-ok" onclick="closeModal()">Tamam</button>`;
+            } else if (type === 'error') {
+                icon.className = 'modal-icon error fas fa-times-circle';
+                btnsEl.innerHTML = `<button class="modal-btn btn-cancel" onclick="closeModal()">Kapat</button>`;
+            } else if (type === 'confirm') {
+                icon.className = 'modal-icon confirm fas fa-question-circle';
+                const confirmBtn = document.createElement('button');
+                confirmBtn.className = 'modal-btn btn-confirm';
+                confirmBtn.textContent = 'Evet';
+                confirmBtn.onclick = () => { closeModal(); if(onConfirm) onConfirm(); };
+                
+                const cancelBtn = document.createElement('button');
+                cancelBtn.className = 'modal-btn btn-cancel';
+                cancelBtn.textContent = 'İptal';
+                cancelBtn.onclick = closeModal;
+
+                btnsEl.appendChild(cancelBtn);
+                btnsEl.appendChild(confirmBtn);
+            }
+
+            modal.classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('customModal').classList.remove('active');
+        }
+
+        function logout() {
+            if(confirm("Çıkış yapmak istediğinize emin misiniz?")) {
+                localStorage.clear();
+                window.location.href = '/index.html';
+            }
+        }
+
+        // GÜNCELLENMİŞ FONKSİYON: loadData parametresi eklendi
+        function switchTab(tabName, loadData = true) {
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            
+            // Eğer tabName 'books' değilse, ilgili butonu aktif yap
+            // 'books' sekmesi kategori filtresiyle açıldığında buton aktifliği karışmasın diye
+            if (tabName !== 'books' || loadData) {
+                const btn = document.querySelector(`.nav-btn[onclick="switchTab('${tabName}')"]`);
+                if (btn) btn.classList.add('active');
+            } else {
+                // Kitaplar sekmesi filtreli açıldıysa, kitaplar butonunu aktif yap
+                const btn = document.querySelector(`.nav-btn[onclick="switchTab('books')"]`);
+                if (btn) btn.classList.add('active');
+            }
+
+            document.getElementById(tabName).classList.add('active');
+            document.getElementById('searchInput').value = '';
+            filterItems();
+            
+            // Eğer loadData false ise, veri yükleme işlemini atla
+            if (!loadData) return;
+
+            if (tabName === 'my-loans') {
+                fetchMyLoans();
+            } else if (tabName === 'history') {
+                fetchLoanHistory();
+            } else if (tabName === 'books') {
+                fetchData('/rest/api/books', 'books-container', renderBook);
+            } else if (tabName === 'authors') {
+                fetchData('/rest/api/authors', 'authors-container', renderAuthor);
+            } else if (tabName === 'categories') {
+                fetchData('/rest/api/categories', 'categories-container', renderCategory);
+            }
+        }
+
+        function filterItems() {
+            const filter = document.getElementById('searchInput').value.toLowerCase();
+            const cards = document.querySelector('.tab-content.active .grid-container').getElementsByClassName('card');
+            for (let card of cards) {
+                const title = card.querySelector('.card-title').textContent.toLowerCase();
+                card.style.display = title.includes(filter) ? "" : "none";
+            }
+        }
+
+        function getUserIdFromToken(jwt) {
+            try {
+                const base64Url = jwt.split('.')[1];
+                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                const jsonPayload = decodeURIComponent(window.atob(base64).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
+                const payload = JSON.parse(jsonPayload);
+                return payload.userId; 
+            } catch (e) {
+                console.error("Token'dan kullanıcı ID'si alınamadı:", e);
+                return null;
+            }
+        }
+
+        function initiateBorrow(bookId, buttonElement) {
+            if (!currentUserId) {
+                showModal('error', 'Hata', 'Kullanıcı kimliği bulunamadı. Lütfen tekrar giriş yapın.');
+                return;
+            }
+
+            showModal('confirm', 'Onay', 'Bu kitabı ödünç almak istediğinize emin misiniz?', () => {
+                performBorrow(bookId, buttonElement);
+            });
+        }
+
+        async function performBorrow(bookId, buttonElement) {
+            buttonElement.disabled = true;
+            buttonElement.innerHTML = '<i class="fas fa-spinner fa-spin"></i> İşleniyor...';
+
+            const requestBody = {
+                userId: currentUserId,
+                bookId: bookId
+            };
+            
+            try {
+                const response = await fetch('/rest/api/loans', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(requestBody)
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    showModal('success', 'Başarılı', 'Kitap başarıyla ödünç alındı!');
+                    buttonElement.textContent = "Ödünç Alındı";
+                    const stockInfo = buttonElement.closest('.card-body').querySelector('.stock-info');
+                    if (stockInfo) {
+                        let currentStock = parseInt(stockInfo.textContent.split(': ')[1]);
+                        if (!isNaN(currentStock) && currentStock > 0) {
+                            stockInfo.textContent = `Stok: ${currentStock - 1}`;
+                        }
+                    }
+                } else {
+                    const errorMessage = result.errorMessage || "İşlem başarısız oldu.";
+                    showModal('error', 'Hata', errorMessage);
+                    buttonElement.disabled = false;
+                    buttonElement.textContent = "Ödünç Al";
+                }
+            } catch (error) {
+                console.error("Ödünç alma hatası:", error);
+                showModal('error', 'Hata', 'Bir ağ hatası oluştu. Lütfen tekrar deneyin.');
+                buttonElement.disabled = false;
+                buttonElement.textContent = "Ödünç Al";
+            }
+        }
+
+        function initiateReturn(loanId, buttonElement) {
+            showModal('confirm', 'İade Onayı', 'Bu kitabı iade etmek istediğinize emin misiniz?', () => {
+                performReturn(loanId, buttonElement);
+            });
+        }
+
+        async function performReturn(loanId, buttonElement) {
+            buttonElement.disabled = true;
+            buttonElement.innerHTML = '<i class="fas fa-spinner fa-spin"></i> İşleniyor...';
+
+            try {
+                const response = await fetch(`/rest/api/loans/returnBook/${loanId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    showModal('success', 'Başarılı', 'Kitap başarıyla iade edildi!');
+                    buttonElement.closest('.card').remove();
+                } else {
+                    const errorMessage = result.errorMessage || "İade işlemi başarısız oldu.";
+                    showModal('error', 'Hata', errorMessage);
+                    buttonElement.disabled = false;
+                    buttonElement.textContent = "İade Et";
+                }
+            } catch (error) {
+                console.error("İade etme hatası:", error);
+                showModal('error', 'Hata', 'Bir ağ hatası oluştu. Lütfen tekrar deneyin.');
+                buttonElement.disabled = false;
+                buttonElement.textContent = "İade Et";
+            }
+        }
+
+        async function fetchMyLoans() {
+            if (!currentUserId) return;
+            
+            const container = document.getElementById('my-loans-container');
+            container.innerHTML = '<div class="loader"><i class="fas fa-spinner fa-spin"></i> Ödünç aldıklarınız yükleniyor...</div>';
+
+            try {
+                const response = await fetch(`/rest/api/loans/user/${currentUserId}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+                const data = await response.json();
+                const loans = data.payload;
+
+                if (Array.isArray(loans) && loans.length > 0) {
+                    container.innerHTML = '';
+                    let hasActiveLoans = false;
+
+                    loans.forEach(loan => {
+                        if (loan.returnDate) return; 
+                        hasActiveLoans = true;
+
+                        const loanDate = new Date(loan.loanDate).toLocaleDateString('tr-TR');
+                        
+                        const cardHtml = `
+                            <div class="card">
+                                <div class="card-header-img loan-cover"></div>
+                                <div class="card-body">
+                                    <h3 class="card-title">${loan.bookTitle || 'Kitap Adı Yok'}</h3>
+                                    <div class="card-info"><i class="fas fa-calendar-alt"></i> Alınma Tarihi: ${loanDate}</div>
+                                    <div class="card-footer">
+                                        <button class="return-btn" onclick="initiateReturn(${loan.id}, this)">
+                                            İade Et
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                        container.innerHTML += cardHtml;
+                    });
+
+                    if (!hasActiveLoans) {
+                        container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: white; text-shadow: 1px 1px 2px black;">Şu anda ödünç aldığınız kitap bulunmamaktadır.</p>';
+                    }
+
+                } else {
+                    container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: white; text-shadow: 1px 1px 2px black;">Şu anda ödünç aldığınız kitap bulunmamaktadır.</p>';
+                }
+            } catch (error) {
+                console.error("Ödünç listesi hatası:", error);
+                container.innerHTML = '<p style="color: #ff6b6b; grid-column: 1/-1; text-align: center; text-shadow: 1px 1px 2px black; font-weight: bold;">Veriler yüklenirken bir hata oluştu.</p>';
+            }
+        }
+
+        async function fetchLoanHistory() {
+            if (!currentUserId) return;
+            
+            const container = document.getElementById('history-container');
+            container.innerHTML = '<div class="loader"><i class="fas fa-spinner fa-spin"></i> Geçmiş yükleniyor...</div>';
+
+            try {
+                const response = await fetch(`/rest/api/loans/user/${currentUserId}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+                const data = await response.json();
+                const loans = data.payload;
+
+                if (Array.isArray(loans) && loans.length > 0) {
+                    container.innerHTML = '';
+                    let hasHistory = false;
+
+                    loans.forEach(loan => {
+                        if (!loan.returnDate) return;
+                        hasHistory = true;
+
+                        const loanDate = new Date(loan.loanDate).toLocaleDateString('tr-TR');
+                        const returnDate = new Date(loan.returnDate).toLocaleDateString('tr-TR');
+                        
+                        const cardHtml = `
+                            <div class="card">
+                                <div class="card-header-img loan-cover" style="filter: grayscale(100%);"></div>
+                                <div class="card-body">
+                                    <h3 class="card-title">${loan.bookTitle || 'Kitap Adı Yok'}</h3>
+                                    <div class="card-info"><i class="fas fa-calendar-alt"></i> Alınma: ${loanDate}</div>
+                                    <div class="card-info"><i class="fas fa-check-circle"></i> İade: ${returnDate}</div>
+                                    <span class="badge" style="background-color: #95a5a6; color: white;">İade Edildi</span>
+                                </div>
+                            </div>
+                        `;
+                        container.innerHTML += cardHtml;
+                    });
+
+                    if (!hasHistory) {
+                        container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: white; text-shadow: 1px 1px 2px black;">Geçmiş kaydı bulunmamaktadır.</p>';
+                    }
+
+                } else {
+                    container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: white; text-shadow: 1px 1px 2px black;">Geçmiş kaydı bulunmamaktadır.</p>';
+                }
+            } catch (error) {
+                console.error("Geçmiş listesi hatası:", error);
+                container.innerHTML = '<p style="color: #ff6b6b; grid-column: 1/-1; text-align: center; text-shadow: 1px 1px 2px black; font-weight: bold;">Veriler yüklenirken bir hata oluştu.</p>';
+            }
+        }
+
+        async function fetchData(url, containerId, renderFn) {
+            const container = document.getElementById(containerId);
+            if(container.innerHTML.trim() === '') {
+                container.innerHTML = '<div class="loader"><i class="fas fa-spinner fa-spin"></i> Yükleniyor...</div>';
+            }
+            
+            try {
+                const response = await fetch(url, { headers: { 'Authorization': `Bearer ${token}` } });
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                const data = await response.json();
+                const items = data.payload;
+                
+                if (Array.isArray(items) && items.length > 0) {
+                    container.innerHTML = '';
+                    items.forEach(item => container.innerHTML += renderFn(item));
+                } else {
+                    container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: white; text-shadow: 1px 1px 2px black;">Kayıt bulunamadı.</p>';
+                }
+            } catch (error) {
+                console.error(`Veri çekme hatası (${url}):`, error);
+                container.innerHTML = '<p style="color: #ff6b6b; grid-column: 1/-1; text-align: center; text-shadow: 1px 1px 2px black; font-weight: bold;">Veriler yüklenirken bir hata oluştu.</p>';
+            }
+        }
+
+        function renderBook(book) {
+            const authorNames = book.authors.map(a => `${a.firstName} ${a.lastName}`).join(', ');
+            const categoryNames = book.categories.map(c => c.category).join(', ');
+            const stock = book.stock ?? 0;
+
+            return `
+                <div class="card">
+                    <div class="card-header-img book-cover"></div>
+                    <div class="card-body">
+                        <h3 class="card-title">${book.title || 'İsimsiz Kitap'}</h3>
+                        <div class="card-info"><i class="fas fa-user"></i> ${authorNames || 'Yazar Bilinmiyor'}</div>
+                        <div class="card-info"><i class="fas fa-bookmark"></i> ${categoryNames || 'Kategori Yok'}</div>
+                        <div class="card-info stock-info"><i class="fas fa-cubes"></i> Stok: ${stock}</div>
+                        <div class="card-footer">
+                            <button class="borrow-btn" onclick="initiateBorrow(${book.id}, this)" ${stock <= 0 ? 'disabled' : ''}>
+                                ${stock > 0 ? 'Ödünç Al' : 'Stokta Yok'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderAuthor(author) {
+            const fullName = `${author.firstName || ''} ${author.lastName || ''}`.trim();
+            return `<div class="card"><div class="card-header-img author-cover"></div><div class="card-body"><h3 class="card-title">${fullName || 'İsimsiz Yazar'}</h3></div></div>`;
+        }
+
+        function renderCategory(category) {
+            return `
+                <div class="card category-card" onclick="filterBooksByCategory(${category.id}, this)">
+                    <div class="card-header-img category-cover"></div>
+                    <div class="card-body">
+                        <h3 class="card-title">${category.category || 'İsimsiz Kategori'}</h3>
+                        <div class="card-info"><i class="fas fa-info-circle"></i> ${category.description || 'Açıklama yok'}</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // GÜNCELLENMİŞ FONKSİYON
+        function filterBooksByCategory(categoryId, element) {
+            document.querySelectorAll('.category-card').forEach(c => c.style.border = 'none');
+            element.style.border = '2px solid var(--secondary-color)';
+
+            // switchTab'i çağır ama veri yüklemesini engelle (loadData = false)
+            switchTab('books', false);
+            
+            // Filtrelenmiş veriyi manuel olarak yükle
+            fetchData(`/rest/api/books/category/${categoryId}`, 'books-container', renderBook);
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            if (!token) {
+                window.location.href = '/login.html';
+                return;
+            }
+            currentUserId = getUserIdFromToken(token);
+            if (!currentUserId) {
+                console.error("Token'dan 'userId' claim'i okunamadı.");
+            }
+
+            fetchData('/rest/api/books', 'books-container', renderBook);
+            fetchData('/rest/api/authors', 'authors-container', renderAuthor);
+            fetchData('/rest/api/categories', 'categories-container', renderCategory);
+        });
+    </script>
+</body>
+</html>

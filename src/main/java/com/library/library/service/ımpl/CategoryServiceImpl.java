@@ -16,37 +16,36 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
 @Service
 public class CategoryServiceImpl implements CategoryService {
 
-       private final  CategoryRepository categoryRepository;
+    private final CategoryRepository categoryRepository;
 
     public CategoryServiceImpl(CategoryRepository categoryRepository) {
         this.categoryRepository = categoryRepository;
-
     }
 
     @Override
     public DtoCategory saveCategory(DtoCategoryIU dtoCategoryIU) {
-        Category category=new Category();
+        Category category = new Category();
         category.setCategory(dtoCategoryIU.getCategory());
         category.setCreateTime(new Date());
         Category savedCategory = categoryRepository.save(category);
-        DtoCategory dtoCategory=new DtoCategory();
+        DtoCategory dtoCategory = new DtoCategory();
         BeanUtils.copyProperties(savedCategory, dtoCategory);
         return dtoCategory;
     }
 
     @Override
     public DtoCategory updateCategory(Long id, DtoCategoryIU dtoCategoryIU) {
-        Category category=categoryRepository.findById(id).orElseThrow(() -> new BaseException(MessageType.CATEGORY_NOT_FOUND, HttpStatus.BAD_REQUEST));
+        Category category = categoryRepository.findById(id).orElseThrow(() -> new BaseException(MessageType.CATEGORY_NOT_FOUND, HttpStatus.BAD_REQUEST));
         category.setCategory(dtoCategoryIU.getCategory());
-        Category savedCategory=categoryRepository.save(category);
-        DtoCategory dtoCategory=new DtoCategory();
-        BeanUtils.copyProperties(savedCategory,dtoCategory);
+        Category savedCategory = categoryRepository.save(category);
+        DtoCategory dtoCategory = new DtoCategory();
+        BeanUtils.copyProperties(savedCategory, dtoCategory);
         return dtoCategory;
     }
-
 
     @Override
     public List<DtoCategory> getAllCategory() {
@@ -58,20 +57,18 @@ public class CategoryServiceImpl implements CategoryService {
             dtoCategory.setCategory(category.getCategory());
             dtoCategoryResponses.add(dtoCategory);
         }
-        return  dtoCategoryResponses;
+        return dtoCategoryResponses;
     }
 
     @Override
     @Transactional
     public void deleteCategory(Long categoryId) {
-        if (categoryId==null){
+        if (categoryId == null) {
             throw new BaseException(MessageType.INVALID_CATEGORY_ID, HttpStatus.BAD_REQUEST);
         }
-        // Önce varlığı kontrol et ve ilişkilendirmeleri temizle
         Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new BaseException(MessageType.CATEGORY_NOT_FOUND, HttpStatus.BAD_REQUEST));
 
-        // Eğer kategorinin bağlı olduğu kitaplar varsa, her bir kitaptan bu kategoriyi kaldır
         if (category.getBooks() != null && !category.getBooks().isEmpty()) {
             for (Book book : category.getBooks()) {
                 book.getCategories().remove(category);
@@ -84,8 +81,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public DtoCategory getCategoryById(Long categoryId) {
-        categoryRepository.findById(categoryId).orElseThrow(() -> new BaseException(MessageType.CATEGORY_NOT_FOUND, HttpStatus.BAD_REQUEST));
-        Category category = categoryRepository.findById(categoryId).get();
+        Category category = categoryRepository.findById(categoryId).orElseThrow(() -> new BaseException(MessageType.CATEGORY_NOT_FOUND, HttpStatus.BAD_REQUEST));
         DtoCategory dtoCategory = new DtoCategory();
         BeanUtils.copyProperties(category, dtoCategory);
         return dtoCategory;

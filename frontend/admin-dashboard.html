@@ -1,0 +1,1088 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yönetici Paneli</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: rgba(44, 62, 80, 0.95); /* Yarı saydam sidebar */
+            --secondary-color: #e67e22; /* Admin için turuncu tema */
+            --accent-color: #e74c3c;
+            --success-color: #2ecc71;
+            --warning-color: #f39c12;
+            --info-color: #3498db;
+            --bg-color: #ecf0f1;
+            --card-bg: rgba(255, 255, 255, 0.95); /* Yarı saydam kartlar */
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            /* Arka Plan Resmi */
+            background-image: url('https://images.unsplash.com/photo-1481627834876-b7833e8f5570?q=80&w=2070&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+        }
+
+        /* Sidebar Tasarımı */
+        .sidebar {
+            width: 250px;
+            background-color: var(--primary-color);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            padding: 2rem 1.5rem; /* Padding artırıldı */
+            position: fixed;
+            height: 100%;
+            overflow-y: auto;
+            backdrop-filter: blur(5px);
+            box-shadow: 2px 0 10px rgba(0,0,0,0.3);
+        }
+
+        .sidebar-header {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 2rem; /* Başlık ile admin info arası mesafe */
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        /* Admin Bilgisi Alanı */
+        .admin-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 1rem;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            margin-bottom: 3rem; /* Menü ile admin info arası mesafe artırıldı */
+        }
+        .admin-avatar {
+            width: 40px;
+            height: 40px;
+            background-color: var(--secondary-color);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+        .admin-name {
+            font-weight: 500;
+            font-size: 1rem;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 15px; /* İkon ile yazı arası mesafe artırıldı */
+            padding: 1.2rem; /* Padding artırıldı */
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            border-radius: 8px;
+            margin-bottom: 1rem; /* Sekmeler arası mesafe artırıldı */
+            transition: var(--transition);
+            cursor: pointer;
+            font-size: 1.05rem; /* Yazı boyutu biraz büyütüldü */
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background-color: var(--secondary-color);
+            color: white;
+            transform: translateX(5px); /* Hover efektine hareket eklendi */
+        }
+
+        .logout-btn {
+            margin-top: 3rem; /* Çıkış butonu daha aşağı alındı */
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: var(--transition);
+        }
+
+        .logout-btn:hover {
+            background-color: #c0392b;
+        }
+
+        /* Ana İçerik */
+        .main-content {
+            flex-grow: 1;
+            margin-left: 280px;
+            padding: 3rem; /* İçerik padding'i artırıldı */
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            background-color: var(--card-bg);
+            padding: 1.5rem 2rem; /* Header padding'i artırıldı */
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+        }
+
+        .header h2 { margin: 0; color: #2c3e50; }
+
+        .action-btn {
+            background-color: var(--success-color);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: var(--transition);
+        }
+
+        .action-btn:hover { background-color: #27ae60; transform: translateY(-2px); }
+
+        /* Tablo Tasarımı */
+        .data-table {
+            width: 100%;
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            border-collapse: collapse;
+            overflow: hidden;
+        }
+
+        .data-table th, .data-table td {
+            padding: 1.2rem; /* Tablo hücre boşlukları artırıldı */
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .data-table th {
+            background-color: rgba(248, 249, 250, 0.9);
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+        .data-table tr:hover { background-color: rgba(241, 241, 241, 0.8); }
+
+        .btn-sm {
+            padding: 0.4rem 0.8rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            margin-right: 5px;
+            transition: var(--transition);
+        }
+
+        .btn-edit { background-color: var(--info-color); color: white; }
+        .btn-edit:hover { background-color: #2980b9; }
+
+        .btn-delete { background-color: var(--accent-color); color: white; }
+        .btn-delete:hover { background-color: #c0392b; }
+
+        .status-badge {
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            color: white;
+        }
+        .status-active { background-color: var(--success-color); }
+        .status-returned { background-color: #7f8c8d; }
+        .status-overdue { background-color: var(--accent-color); }
+
+        /* Sekme İçerikleri */
+        .tab-pane { display: none; animation: fadeIn 0.3s; }
+        .tab-pane.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.6);
+            display: flex; justify-content: center; align-items: center;
+            z-index: 2000; opacity: 0; visibility: hidden;
+            transition: var(--transition);
+            backdrop-filter: blur(3px);
+        }
+        .modal-overlay.active { opacity: 1; visibility: visible; }
+
+        .modal {
+            background-color: white; padding: 2rem; border-radius: 12px;
+            width: 90%; max-width: 500px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            transform: scale(0.8); transition: var(--transition);
+        }
+        .modal-overlay.active .modal { transform: scale(1); }
+
+        .modal h3 { margin-top: 0; color: #2c3e50; }
+
+        .form-group { margin-bottom: 1rem; }
+        .form-group label { display: block; margin-bottom: 0.5rem; font-weight: 500; }
+        .form-group input, .form-group select {
+            width: 100%; padding: 0.8rem;
+            border: 1px solid #ddd; border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        .modal-footer {
+            display: flex; justify-content: flex-end; gap: 10px; margin-top: 1.5rem;
+        }
+
+        /* UYARI/ONAY MODALI */
+        #alertModal .modal {
+            text-align: center;
+            max-width: 400px;
+        }
+        .modal-icon { font-size: 3rem; margin-bottom: 1rem; }
+        .modal-icon.success { color: var(--success-color); }
+        .modal-icon.error { color: var(--accent-color); }
+        .modal-icon.confirm { color: var(--secondary-color); }
+        
+        .modal-title { font-size: 1.5rem; margin-bottom: 0.5rem; color: #333; }
+        .modal-message { color: #666; margin-bottom: 1.5rem; font-size: 1.1rem; }
+        
+        .modal-buttons { display: flex; justify-content: center; gap: 10px; }
+        .modal-btn {
+            padding: 0.7rem 1.5rem; border: none; border-radius: 8px;
+            cursor: pointer; font-weight: bold; font-size: 1rem;
+            transition: var(--transition);
+        }
+        .btn-confirm { background-color: var(--secondary-color); color: white; }
+        .btn-confirm:hover { background-color: #d35400; }
+        .btn-cancel { background-color: #95a5a6; color: white; }
+        .btn-cancel:hover { background-color: #7f8c8d; }
+        .btn-ok { background-color: var(--success-color); color: white; width: 100%; }
+        .btn-ok:hover { background-color: #27ae60; }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <i class="fas fa-user-shield"></i> Yönetici Paneli
+        </div>
+        
+        <!-- Admin Bilgisi -->
+        <div class="admin-info">
+            <div class="admin-avatar" id="adminAvatar">A</div>
+            <div class="admin-name" id="adminName">Admin</div>
+        </div>
+
+        <div class="nav-link active" onclick="switchTab('books')">
+            <i class="fas fa-book"></i> Kitap Yönetimi
+        </div>
+        <div class="nav-link" onclick="switchTab('authors')">
+            <i class="fas fa-feather-alt"></i> Yazar Yönetimi
+        </div>
+        <div class="nav-link" onclick="switchTab('categories')">
+            <i class="fas fa-tags"></i> Kategori Yönetimi
+        </div>
+        <div class="nav-link" onclick="switchTab('users')">
+            <i class="fas fa-users"></i> Okur Yönetimi
+        </div>
+        <div class="nav-link" onclick="switchTab('loans')">
+            <i class="fas fa-hand-holding"></i> Ödünç Takibi
+        </div>
+        
+        <!-- Çıkış Yap Butonu -->
+        <button class="logout-btn" onclick="logout()">
+            <i class="fas fa-sign-out-alt"></i> Çıkış Yap
+        </button>
+    </div>
+
+    <!-- Ana İçerik -->
+    <div class="main-content">
+        
+        <!-- Kitap Yönetimi -->
+        <div id="books" class="tab-pane active">
+            <div class="header">
+                <h2>Kitap Listesi</h2>
+                <button class="action-btn" onclick="openBookModal()"><i class="fas fa-plus"></i> Yeni Kitap Ekle</button>
+            </div>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Kitap Adı</th>
+                        <th>Yazar</th>
+                        <th>Kategori</th>
+                        <th>Stok</th>
+                        <th>İşlemler</th>
+                    </tr>
+                </thead>
+                <tbody id="books-table-body"></tbody>
+            </table>
+        </div>
+
+        <!-- Yazar Yönetimi -->
+        <div id="authors" class="tab-pane">
+            <div class="header">
+                <h2>Yazar Listesi</h2>
+                <button class="action-btn" onclick="openAuthorModal()"><i class="fas fa-plus"></i> Yeni Yazar Ekle</button>
+            </div>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Ad Soyad</th>
+                        <th>İşlemler</th>
+                    </tr>
+                </thead>
+                <tbody id="authors-table-body"></tbody>
+            </table>
+        </div>
+
+        <!-- Kategori Yönetimi -->
+        <div id="categories" class="tab-pane">
+            <div class="header">
+                <h2>Kategori Listesi</h2>
+                <button class="action-btn" onclick="openCategoryModal()"><i class="fas fa-plus"></i> Yeni Kategori Ekle</button>
+            </div>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Kategori Adı</th>
+                        <th>İşlemler</th>
+                    </tr>
+                </thead>
+                <tbody id="categories-table-body"></tbody>
+            </table>
+        </div>
+
+        <!-- Okur Yönetimi -->
+        <div id="users" class="tab-pane">
+            <div class="header">
+                <h2>Okur Listesi</h2>
+                <button class="action-btn" onclick="openUserModal()"><i class="fas fa-plus"></i> Yeni Okur Ekle</button>
+            </div>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Ad</th>
+                        <th>Kullanıcı Adı</th>
+                        <th>Email</th>
+                        <th>Roller</th>
+                        <th>İşlemler</th>
+                    </tr>
+                </thead>
+                <tbody id="users-table-body"></tbody>
+            </table>
+        </div>
+
+        <!-- Ödünç Takibi -->
+        <div id="loans" class="tab-pane">
+            <div class="header">
+                <h2>Ödünç Alınan Kitaplar</h2>
+            </div>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Kullanıcı</th>
+                        <th>Kitap</th>
+                        <th>Alınma Tarihi</th>
+                        <th>Son İade Tarihi</th>
+                        <th>Durum</th>
+                    </tr>
+                </thead>
+                <tbody id="loans-table-body"></tbody>
+            </table>
+        </div>
+
+    </div>
+
+    <!-- MODALLAR -->
+    
+    <!-- Kitap Modalı -->
+    <div id="bookModal" class="modal-overlay">
+        <div class="modal">
+            <h3 id="bookModalTitle">Kitap Ekle</h3>
+            <form id="bookForm">
+                <input type="hidden" id="bookId">
+                <div class="form-group">
+                    <label>Kitap Adı</label>
+                    <input type="text" id="bookTitle" required>
+                </div>
+                <div class="form-group">
+                    <label>ISBN</label>
+                    <input type="text" id="bookIsbn" required>
+                </div>
+                <div class="form-group">
+                    <label>Yayın Yılı</label>
+                    <input type="number" id="bookYear" required>
+                </div>
+                <div class="form-group">
+                    <label>Sayfa Sayısı</label>
+                    <input type="number" id="bookPage" required>
+                </div>
+                <div class="form-group">
+                    <label>Stok</label>
+                    <input type="number" id="bookStock" required>
+                </div>
+                <div class="form-group">
+                    <label>Yazar ID (Virgülle ayırın)</label>
+                    <input type="text" id="bookAuthorIds" placeholder="Örn: 1, 2" required>
+                </div>
+                <div class="form-group">
+                    <label>Kategori ID (Virgülle ayırın)</label>
+                    <input type="text" id="bookCategoryIds" placeholder="Örn: 1, 2" required>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-sm btn-delete" onclick="closeModal('bookModal')">İptal</button>
+                    <button type="submit" class="btn-sm btn-edit">Kaydet</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Yazar Modalı -->
+    <div id="authorModal" class="modal-overlay">
+        <div class="modal">
+            <h3 id="authorModalTitle">Yazar Ekle</h3>
+            <form id="authorForm">
+                <input type="hidden" id="authorId">
+                <div class="form-group">
+                    <label>Ad</label>
+                    <input type="text" id="authorFirstName" required>
+                </div>
+                <div class="form-group">
+                    <label>Soyad</label>
+                    <input type="text" id="authorLastName" required>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-sm btn-delete" onclick="closeModal('authorModal')">İptal</button>
+                    <button type="submit" class="btn-sm btn-edit">Kaydet</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Kategori Modalı -->
+    <div id="categoryModal" class="modal-overlay">
+        <div class="modal">
+            <h3 id="categoryModalTitle">Kategori Ekle</h3>
+            <form id="categoryForm">
+                <input type="hidden" id="categoryId">
+                <div class="form-group">
+                    <label>Kategori Adı</label>
+                    <input type="text" id="categoryName" required>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-sm btn-delete" onclick="closeModal('categoryModal')">İptal</button>
+                    <button type="submit" class="btn-sm btn-edit">Kaydet</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Okur Modalı -->
+    <div id="userModal" class="modal-overlay">
+        <div class="modal">
+            <h3 id="userModalTitle">Okur Ekle</h3>
+            <form id="userForm">
+                <input type="hidden" id="userId">
+                <div class="form-group">
+                    <label>Ad</label>
+                    <input type="text" id="userName" required>
+                </div>
+                <div class="form-group">
+                    <label>Kullanıcı Adı</label>
+                    <input type="text" id="userUsername" required>
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="userEmail" required>
+                </div>
+                <div class="form-group">
+                    <label>Adres</label>
+                    <input type="text" id="userAddress" required>
+                </div>
+                <div class="form-group">
+                    <label>Şifre (Sadece yeni kullanıcı için)</label>
+                    <input type="password" id="userPassword">
+                </div>
+                <div class="form-group">
+                    <label>Roller (Virgülle ayırın: ROLE_USER, ROLE_ADMIN)</label>
+                    <input type="text" id="userRoles" placeholder="Örn: ROLE_USER, ROLE_ADMIN" required>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-sm btn-delete" onclick="closeModal('userModal')">İptal</button>
+                    <button type="submit" class="btn-sm btn-edit">Kaydet</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- UYARI/ONAY MODALI -->
+    <div id="alertModal" class="modal-overlay">
+        <div class="modal">
+            <div id="modalIcon" class="modal-icon"></div>
+            <h3 id="modalTitle" class="modal-title"></h3>
+            <p id="modalMessage" class="modal-message"></p>
+            <div id="modalButtons" class="modal-buttons"></div>
+        </div>
+    </div>
+
+    <script>
+        const token = localStorage.getItem('accessToken');
+
+        function showAlert(type, title, message, onConfirm = null) {
+            const modal = document.getElementById('alertModal');
+            const icon = document.getElementById('modalIcon');
+            const titleEl = document.getElementById('modalTitle');
+            const msgEl = document.getElementById('modalMessage');
+            const btnsEl = document.getElementById('modalButtons');
+
+            titleEl.textContent = title;
+            msgEl.textContent = message;
+            btnsEl.innerHTML = '';
+
+            if (type === 'success') {
+                icon.className = 'modal-icon success fas fa-check-circle';
+                btnsEl.innerHTML = `<button class="modal-btn btn-ok" onclick="closeAlert()">Tamam</button>`;
+            } else if (type === 'error') {
+                icon.className = 'modal-icon error fas fa-times-circle';
+                btnsEl.innerHTML = `<button class="modal-btn btn-cancel" onclick="closeAlert()">Kapat</button>`;
+            } else if (type === 'confirm') {
+                icon.className = 'modal-icon confirm fas fa-question-circle';
+                const confirmBtn = document.createElement('button');
+                confirmBtn.className = 'modal-btn btn-confirm';
+                confirmBtn.textContent = 'Evet';
+                confirmBtn.onclick = () => { closeAlert(); if(onConfirm) onConfirm(); };
+                
+                const cancelBtn = document.createElement('button');
+                cancelBtn.className = 'modal-btn btn-cancel';
+                cancelBtn.textContent = 'İptal';
+                cancelBtn.onclick = closeAlert;
+
+                btnsEl.appendChild(cancelBtn);
+                btnsEl.appendChild(confirmBtn);
+            }
+
+            modal.classList.add('active');
+        }
+
+        function closeAlert() {
+            document.getElementById('alertModal').classList.remove('active');
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            if (!token) {
+                window.location.href = '/staff-login.html';
+                return;
+            }
+            
+            // Admin Adını Göster
+            try {
+                const base64Url = token.split('.')[1];
+                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                const jsonPayload = decodeURIComponent(window.atob(base64).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
+                const payload = JSON.parse(jsonPayload);
+                
+                const username = payload.sub || 'Admin';
+                document.getElementById('adminName').textContent = username;
+                document.getElementById('adminAvatar').textContent = username.charAt(0).toUpperCase();
+            } catch (e) {
+                console.error("Token okunamadı", e);
+            }
+
+            loadBooks();
+        });
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+            
+            document.getElementById(tabName).classList.add('active');
+            event.currentTarget.classList.add('active');
+
+            if(tabName === 'books') loadBooks();
+            if(tabName === 'authors') loadAuthors();
+            if(tabName === 'categories') loadCategories();
+            if(tabName === 'users') loadUsers();
+            if(tabName === 'loans') loadLoans();
+        }
+
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.classList.remove('active');
+                const form = modal.querySelector('form');
+                if (form) form.reset();
+            }
+        }
+
+        function logout() {
+            showAlert('confirm', 'Çıkış', 'Çıkış yapmak istediğinize emin misiniz?', () => {
+                localStorage.clear();
+                window.location.href = '/index.html';
+            });
+        }
+
+        // --- KİTAP İŞLEMLERİ ---
+        async function loadBooks() {
+            const tbody = document.getElementById('books-table-body');
+            tbody.innerHTML = '<tr><td colspan="6">Yükleniyor...</td></tr>';
+            try {
+                const response = await fetch('/rest/api/books', { headers: { 'Authorization': `Bearer ${token}` } });
+                const data = await response.json();
+                const books = data.payload;
+                tbody.innerHTML = '';
+                books.forEach(book => {
+                    const authorNames = book.authors.map(a => `${a.firstName} ${a.lastName}`).join(', ');
+                    const categoryNames = book.categories.map(c => c.category).join(', ');
+                    const row = `
+                        <tr>
+                            <td>${book.id}</td>
+                            <td>${book.title}</td>
+                            <td>${authorNames}</td>
+                            <td>${categoryNames}</td>
+                            <td>${book.stock ?? 0}</td>
+                            <td>
+                                <button class="btn-sm btn-edit" onclick='openBookModal(${JSON.stringify(book)})'><i class="fas fa-edit"></i></button>
+                                <button class="btn-sm btn-delete" onclick="deleteBook(${book.id})"><i class="fas fa-trash"></i></button>
+                            </td>
+                        </tr>`;
+                    tbody.innerHTML += row;
+                });
+            } catch (e) { console.error(e); tbody.innerHTML = '<tr><td colspan="6">Hata!</td></tr>'; }
+        }
+
+        function openBookModal(book = null) {
+            const modal = document.getElementById('bookModal');
+            const title = document.getElementById('bookModalTitle');
+            
+            if (book) {
+                title.textContent = 'Kitap Düzenle';
+                document.getElementById('bookId').value = book.id;
+                document.getElementById('bookTitle').value = book.title;
+                document.getElementById('bookIsbn').value = book.isbn;
+                document.getElementById('bookYear').value = book.productionYear;
+                document.getElementById('bookPage').value = book.pageOfNumber;
+                document.getElementById('bookStock').value = book.stock;
+                document.getElementById('bookAuthorIds').value = book.authors.map(a => a.id).join(', ');
+                document.getElementById('bookCategoryIds').value = book.categories.map(c => c.id).join(', ');
+            } else {
+                title.textContent = 'Yeni Kitap Ekle';
+                document.getElementById('bookForm').reset();
+                document.getElementById('bookId').value = '';
+            }
+            modal.classList.add('active');
+        }
+
+        document.getElementById('bookForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('bookId').value;
+            const method = id ? 'PUT' : 'POST';
+            const url = id ? `/rest/api/books/update/${id}` : '/rest/api/books/create';
+            
+            const body = {
+                title: document.getElementById('bookTitle').value,
+                isbn: document.getElementById('bookIsbn').value,
+                productionYear: parseInt(document.getElementById('bookYear').value),
+                pageOfNumber: parseInt(document.getElementById('bookPage').value),
+                stock: parseInt(document.getElementById('bookStock').value),
+                authorIds: document.getElementById('bookAuthorIds').value.split(',').map(s => parseInt(s.trim())),
+                categoryIds: document.getElementById('bookCategoryIds').value.split(',').map(s => parseInt(s.trim()))
+            };
+
+            try {
+                const response = await fetch(url, {
+                    method: method,
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify(body)
+                });
+                const data = await response.json();
+                if(response.ok) {
+                    showAlert('success', 'Başarılı', 'İşlem başarıyla tamamlandı.');
+                    closeModal('bookModal');
+                    loadBooks();
+                } else { 
+                    showAlert('error', 'Hata', 'Alanları doğru doldurunuz');
+                }
+            } catch (err) { console.error(err); showAlert('error', 'Hata', 'Bir hata oluştu!'); }
+        });
+
+        async function deleteBook(id) {
+            showAlert('confirm', 'Silme Onayı', 'Bu kitabı silmek istediğinize emin misiniz?', async () => {
+                try {
+                    const response = await fetch(`/rest/api/books/delete/${id}`, {
+                        method: 'DELETE',
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    const data = await response.json();
+                    if(response.ok) {
+                        showAlert('success', 'Başarılı', data.payload || 'Kitap silindi.');
+                        loadBooks();
+                    } else {
+                        showAlert('error', 'Hata', data.errorMessage || 'Bilinmeyen hata');
+                    }
+                } catch (e) { console.error(e); showAlert('error', 'Hata', 'Bir hata oluştu!'); }
+            });
+        }
+
+        // --- YAZAR İŞLEMLERİ ---
+        async function loadAuthors() {
+            const tbody = document.getElementById('authors-table-body');
+            tbody.innerHTML = '<tr><td colspan="3">Yükleniyor...</td></tr>';
+            try {
+                const response = await fetch('/rest/api/authors', { headers: { 'Authorization': `Bearer ${token}` } });
+                const authors = await response.json();
+                tbody.innerHTML = '';
+                authors.forEach(author => {
+                    const row = `
+                        <tr>
+                            <td>${author.id}</td>
+                            <td>${author.firstName} ${author.lastName}</td>
+                            <td>
+                                <button class="btn-sm btn-edit" onclick='openAuthorModal(${JSON.stringify(author)})'><i class="fas fa-edit"></i></button>
+                                <button class="btn-sm btn-delete" onclick="deleteAuthor(${author.id})"><i class="fas fa-trash"></i></button>
+                            </td>
+                        </tr>`;
+                    tbody.innerHTML += row;
+                });
+            } catch (e) { console.error(e); tbody.innerHTML = '<tr><td colspan="3">Hata!</td></tr>'; }
+        }
+
+        function openAuthorModal(author = null) {
+            const modal = document.getElementById('authorModal');
+            const title = document.getElementById('authorModalTitle');
+            if (author) {
+                title.textContent = 'Yazar Düzenle';
+                document.getElementById('authorId').value = author.id;
+                document.getElementById('authorFirstName').value = author.firstName;
+                document.getElementById('authorLastName').value = author.lastName;
+            } else {
+                title.textContent = 'Yeni Yazar Ekle';
+                document.getElementById('authorForm').reset();
+                document.getElementById('authorId').value = '';
+            }
+            modal.classList.add('active');
+        }
+
+        document.getElementById('authorForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('authorId').value;
+            const method = id ? 'PUT' : 'POST';
+            const url = id ? `/rest/api/authors/${id}` : '/rest/api/authors';
+            
+            const body = {
+                firstName: document.getElementById('authorFirstName').value,
+                lastName: document.getElementById('authorLastName').value
+            };
+
+            try {
+                const response = await fetch(url, {
+                    method: method,
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify(body)
+                });
+                const data = await response.json();
+                if(response.ok) { 
+                    showAlert('success', 'Başarılı', 'İşlem başarıyla tamamlandı.');
+                    closeModal('authorModal'); 
+                    loadAuthors(); 
+                }
+                else { showAlert('error', 'Hata', 'Alanları doğru doldurunuz'); }
+            } catch (err) { showAlert('error', 'Hata', 'Bir hata oluştu!'); }
+        });
+
+        async function deleteAuthor(id) {
+            showAlert('confirm', 'Silme Onayı', 'Bu yazarı silmek istediğinize emin misiniz?', async () => {
+                try {
+                    const response = await fetch(`/rest/api/authors/${id}`, {
+                        method: 'DELETE',
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    if(response.ok) { 
+                        showAlert('success', 'Başarılı', 'Yazar silindi.');
+                        loadAuthors(); 
+                    }
+                    else { 
+                        showAlert('error', 'Hata', 'Silinemedi: İlişkili kitaplar olabilir.');
+                    }
+                } catch (e) { showAlert('error', 'Hata', 'Bir hata oluştu!'); }
+            });
+        }
+
+        // --- KATEGORİ İŞLEMLERİ ---
+        async function loadCategories() {
+            const tbody = document.getElementById('categories-table-body');
+            tbody.innerHTML = '<tr><td colspan="3">Yükleniyor...</td></tr>';
+            try {
+                const response = await fetch('/rest/api/categories', { headers: { 'Authorization': `Bearer ${token}` } });
+                const data = await response.json();
+                const categories = data.payload;
+                tbody.innerHTML = '';
+                categories.forEach(cat => {
+                    const row = `
+                        <tr>
+                            <td>${cat.id}</td>
+                            <td>${cat.category}</td>
+                            <td>
+                                <button class="btn-sm btn-edit" onclick='openCategoryModal(${JSON.stringify(cat)})'><i class="fas fa-edit"></i></button>
+                                <button class="btn-sm btn-delete" onclick="deleteCategory(${cat.id})"><i class="fas fa-trash"></i></button>
+                            </td>
+                        </tr>`;
+                    tbody.innerHTML += row;
+                });
+            } catch (e) { console.error(e); tbody.innerHTML = '<tr><td colspan="3">Hata!</td></tr>'; }
+        }
+
+        function openCategoryModal(category = null) {
+            const modal = document.getElementById('categoryModal');
+            const title = document.getElementById('categoryModalTitle');
+            if (category) {
+                title.textContent = 'Kategori Düzenle';
+                document.getElementById('categoryId').value = category.id;
+                document.getElementById('categoryName').value = category.category;
+            } else {
+                title.textContent = 'Yeni Kategori Ekle';
+                document.getElementById('categoryForm').reset();
+                document.getElementById('categoryId').value = '';
+            }
+            modal.classList.add('active');
+        }
+
+        document.getElementById('categoryForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('categoryId').value;
+            const method = id ? 'PUT' : 'POST';
+            const url = id ? `/rest/api/categories/${id}` : '/rest/api/categories';
+            
+            const body = { category: document.getElementById('categoryName').value };
+
+            try {
+                const response = await fetch(url, {
+                    method: method,
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify(body)
+                });
+                const data = await response.json();
+                if(response.ok) { 
+                    showAlert('success', 'Başarılı', 'İşlem başarıyla tamamlandı.');
+                    closeModal('categoryModal'); 
+                    loadCategories(); 
+                }
+                else { showAlert('error', 'Hata', 'Alanları doğru doldurunuz'); }
+            } catch (err) { showAlert('error', 'Hata', 'Bir hata oluştu!'); }
+        });
+
+        async function deleteCategory(id) {
+            showAlert('confirm', 'Silme Onayı', 'Bu kategoriyi silmek istediğinize emin misiniz?', async () => {
+                try {
+                    const response = await fetch(`/rest/api/categories/${id}`, {
+                        method: 'DELETE',
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    if(response.ok) { 
+                        showAlert('success', 'Başarılı', 'Kategori silindi.');
+                        loadCategories(); 
+                    }
+                    else { 
+                        showAlert('error', 'Hata', 'Silinemedi: İlişkili kitaplar olabilir.');
+                    }
+                } catch (e) { showAlert('error', 'Hata', 'Bir hata oluştu!'); }
+            });
+        }
+
+        // --- OKUR İŞLEMLERİ ---
+        async function loadUsers() {
+            const tbody = document.getElementById('users-table-body');
+            tbody.innerHTML = '<tr><td colspan="6">Yükleniyor...</td></tr>';
+            try {
+                const response = await fetch('/rest/api/users', { headers: { 'Authorization': `Bearer ${token}` } });
+                const data = await response.json();
+                const users = data.payload;
+                tbody.innerHTML = '';
+                users.forEach(user => {
+                    const roles = user.roles.map(r => r.replace('ROLE_', '')).join(', ');
+                    const row = `
+                        <tr>
+                            <td>${user.id}</td>
+                            <td>${user.name}</td>
+                            <td>${user.username}</td>
+                            <td>${user.email}</td>
+                            <td>${roles}</td>
+                            <td>
+                                <button class="btn-sm btn-edit" onclick='openUserModal(${JSON.stringify(user)})'><i class="fas fa-edit"></i></button>
+                                <button class="btn-sm btn-delete" onclick="deleteUser(${user.id})"><i class="fas fa-trash"></i></button>
+                            </td>
+                        </tr>`;
+                    tbody.innerHTML += row;
+                });
+            } catch (e) { console.error(e); tbody.innerHTML = '<tr><td colspan="6">Hata!</td></tr>'; }
+        }
+
+        function openUserModal(user = null) {
+            const modal = document.getElementById('userModal');
+            const title = document.getElementById('userModalTitle');
+            const passwordField = document.getElementById('userPassword');
+            
+            if (user) {
+                title.textContent = 'Okur Düzenle';
+                document.getElementById('userId').value = user.id;
+                document.getElementById('userName').value = user.name;
+                document.getElementById('userUsername').value = user.username;
+                document.getElementById('userEmail').value = user.email;
+                document.getElementById('userAddress').value = user.address;
+                document.getElementById('userRoles').value = user.roles.join(', ');
+                passwordField.placeholder = "Değiştirmek istemiyorsanız boş bırakın";
+                passwordField.required = false;
+            } else {
+                title.textContent = 'Yeni Okur Ekle';
+                document.getElementById('userForm').reset();
+                document.getElementById('userId').value = '';
+                passwordField.placeholder = "Şifre";
+                passwordField.required = true;
+            }
+            modal.classList.add('active');
+        }
+
+        document.getElementById('userForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('userId').value;
+            
+            if (id) {
+                showAlert('confirm', 'Güncelleme Onayı', 'Kullanıcıyı güncellemek istiyor musunuz?', () => {
+                    submitUserForm(id);
+                });
+            } else {
+                submitUserForm(id);
+            }
+        });
+
+        async function submitUserForm(id) {
+            const method = id ? 'PUT' : 'POST';
+            const url = id ? `/rest/api/users/${id}` : '/rest/api/users';
+            
+            let body;
+            if (id) { // Güncelleme
+                body = {
+                    name: document.getElementById('userName').value,
+                    email: document.getElementById('userEmail').value,
+                    address: document.getElementById('userAddress').value,
+                    roles: document.getElementById('userRoles').value.split(',').map(s => s.trim())
+                };
+            } else { // Ekleme
+                body = {
+                    name: document.getElementById('userName').value,
+                    username: document.getElementById('userUsername').value,
+                    password: document.getElementById('userPassword').value,
+                    email: document.getElementById('userEmail').value,
+                    address: document.getElementById('userAddress').value,
+                    authorities: document.getElementById('userRoles').value.split(',').map(s => s.trim())
+                };
+            }
+
+            try {
+                const response = await fetch(url, {
+                    method: method,
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify(body)
+                });
+                const data = await response.json();
+                if(response.ok) {
+                    if (id) {
+                        showAlert('success', 'Başarılı', 'Kullanıcı başarıyla güncellendi.');
+                    } else {
+                        showAlert('success', 'Başarılı', 'Yeni bir kullanıcı eklendi.');
+                    }
+                    closeModal('userModal');
+                    loadUsers();
+                } else { 
+                    showAlert('error', 'Hata', `Başarısız: ${data.errorMessage || 'Alanları doğru doldurunuz'}`);
+                }
+            } catch (err) { console.error(err); showAlert('error', 'Hata', 'Bir hata oluştu!'); }
+        }
+
+        async function deleteUser(id) {
+            showAlert('confirm', 'Silme Onayı', 'Kullanıcıyı gerçekten silmek istiyor musunuz?', async () => {
+                try {
+                    const response = await fetch(`/rest/api/users/${id}`, {
+                        method: 'DELETE',
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    const data = await response.json();
+                    if(response.ok) {
+                        showAlert('success', 'Başarılı', data.payload || 'Kullanıcı silindi.');
+                        loadUsers();
+                    } else {
+                        showAlert('error', 'Hata', data.errorMessage || 'Bilinmeyen hata');
+                    }
+                } catch (e) { console.error(e); showAlert('error', 'Hata', 'Bir hata oluştu!'); }
+            });
+        }
+
+        // --- ÖDÜNÇ İŞLEMLERİ ---
+        async function loadLoans() {
+            const tbody = document.getElementById('loans-table-body');
+            tbody.innerHTML = '<tr><td colspan="6">Yükleniyor...</td></tr>';
+            
+            try {
+                const response = await fetch('/rest/api/loans', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await response.json();
+                const loans = data.payload;
+
+                tbody.innerHTML = '';
+                loans.forEach(loan => {
+                    const loanDate = new Date(loan.takingDate).toLocaleDateString('tr-TR');
+                    const dueDate = new Date(loan.dueDate).toLocaleDateString('tr-TR');
+                    const isReturned = loan.returnDate != null;
+                    const isOverdue = !isReturned && new Date(loan.dueDate) < new Date();
+
+                    let statusBadge;
+                    if (isReturned) {
+                        statusBadge = `<span class="status-badge status-returned">İade Edildi</span>`;
+                    } else if (isOverdue) {
+                        statusBadge = `<span class="status-badge status-overdue">Gecikmiş</span>`;
+                    } else {
+                        statusBadge = `<span class="status-badge status-active">Aktif</span>`;
+                    }
+
+                    const row = `
+                        <tr>
+                            <td>${loan.id}</td>
+                            <td>${loan.userName}</td>
+                            <td>${loan.bookName}</td>
+                            <td>${loanDate}</td>
+                            <td>${dueDate}</td>
+                            <td>${statusBadge}</td>
+                        </tr>
+                    `;
+                    tbody.innerHTML += row;
+                });
+            } catch (error) {
+                console.error(error);
+                tbody.innerHTML = '<tr><td colspan="6" style="color:red">Hata oluştu!</td></tr>';
+            }
+        }
+    </script>
+</body>
+</html>

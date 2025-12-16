@@ -12,6 +12,8 @@ import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("rest/api/books")
 public class BookControllerImpl extends RestBaseController implements BookController {
@@ -20,28 +22,43 @@ public class BookControllerImpl extends RestBaseController implements BookContro
 
     public BookControllerImpl(BookService bookService) {
         this.bookService = bookService;
+    }
 
+    @GetMapping("/update-all-stocks")
+    public RootEntity<String> updateAllStocks() {
+        bookService.updateAllStocks(10);
+        return ok("Tüm kitapların stoğu 10 olarak güncellendi.");
+    }
+
+    @GetMapping
+    public RootEntity<List<DtoBook>> getAllBooks() {
+        return ok(bookService.getAllBooks());
+    }
+
+
+    @GetMapping("/category/{categoryId}")
+    public RootEntity<List<DtoBook>> getBooksByCategoryId(@PathVariable Long categoryId) {
+        return ok(bookService.getBooksByCategoryId(categoryId));
     }
 
     @PostMapping("/create")
     @Override
-    public RootEntity<Book> createBook(@RequestBody @Valid DtoBookIU dtoBookIU) {//çalışıyor.
+    public RootEntity<Book> createBook(@RequestBody @Valid DtoBookIU dtoBookIU) {
         return ok(bookService.createBook(dtoBookIU));
     }
 
     @DeleteMapping("/delete/{id}")
     @Override
-    public ResponseEntity<Void> deleteBook(@PathVariable("id") Long bookId ) {//çalışıyor.
-        // Servis mevcut olarak DtoBookIU bekliyor, minimal değişiklikle burada DtoBookIU oluşturalım
+    public RootEntity<String> deleteBook(@PathVariable("id") Long bookId ) {
         DtoBookIU dto = new DtoBookIU();
         dto.setId(bookId);
         bookService.deleteBook(dto);
-        return ResponseEntity.noContent().build();
+        return ok("Kitap başarıyla silindi.");
     }
 
     @PutMapping("/update/{id}")
     @Override
-    public RootEntity<DtoBook> updateBook(@PathVariable("id") Long bookId, @RequestBody @Valid UpdateBookRequest request) {//çalışıyor
+    public RootEntity<DtoBook> updateBook(@PathVariable("id") Long bookId, @RequestBody @Valid UpdateBookRequest request) {
         return ok(bookService.updateBook(bookId, request));
     }
 }

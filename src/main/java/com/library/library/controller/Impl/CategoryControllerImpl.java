@@ -11,9 +11,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-@RestController
-public class CategoryControllerImpl extends RestBaseController implements CategoryController {
 
+@RestController
+@RequestMapping("/rest/api/categories") // Ana yolu buraya taşıdık
+public class CategoryControllerImpl extends RestBaseController implements CategoryController {
 
     private final CategoryService categoryService;
 
@@ -21,34 +22,32 @@ public class CategoryControllerImpl extends RestBaseController implements Catego
         this.categoryService = categoryService;
     }
 
-
-    @PostMapping("/api/admin/category")//çalışıyor
-    @Override
-    public RootEntity<DtoCategory> saveCategory(@RequestBody @Valid DtoCategoryIU dtoCategoryIU) {
-        return ok(categoryService.saveCategory(dtoCategoryIU));
-    }
-
-    @PutMapping("/api/admin/category/{id}")//çalışıyor
-    @Override
-    public RootEntity<DtoCategory> updateCategory(@PathVariable("id") Long id, @RequestBody @Valid DtoCategoryIU dtoCategoryIU) {
-        return ok(categoryService.updateCategory(id, dtoCategoryIU));
-    }
-
-    @GetMapping("/api/categoryAll")//çalışıyor
+    @GetMapping
     @Override
     public RootEntity<List<DtoCategory>> getAllCategory() {
         return ok(categoryService.getAllCategory());
     }
 
-    @DeleteMapping("/api/admin/category/delete/{id}")
+    @PostMapping
     @Override
-    public ResponseEntity<Void> deleteCategory(@PathVariable("id") Long id) {//çalışıyor.
+    public RootEntity<DtoCategory> saveCategory(@RequestBody @Valid DtoCategoryIU dtoCategoryIU) {
+        return ok(categoryService.saveCategory(dtoCategoryIU));
+    }
+
+    @PutMapping("/{id}")
+    @Override
+    public RootEntity<DtoCategory> updateCategory(@PathVariable("id") Long id, @RequestBody @Valid DtoCategoryIU dtoCategoryIU) {
+        return ok(categoryService.updateCategory(id, dtoCategoryIU));
+    }
+
+    @DeleteMapping("/{id}")
+    @Override
+    public ResponseEntity<Void> deleteCategory(@PathVariable("id") Long id) {
         categoryService.deleteCategory(id);
         return ResponseEntity.noContent().build();
     }
 
-
-    @GetMapping("/api/categoryGet/{categoryId}")//çalışıyor.
+    @GetMapping("/{categoryId}")
     @Override
     public RootEntity<DtoCategory> getCategoryById(@PathVariable("categoryId") Long categoryId) {
         return ok(categoryService.getCategoryById(categoryId));

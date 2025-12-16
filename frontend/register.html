@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kayıt Ol</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: sans-serif;
+            background-image: url('https://images.unsplash.com/photo-1532012197267-da84d127e765?q=80&w=1887&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .register-container {
+            background-color: rgba(0, 0, 0, 0.75);
+            padding: 3rem;
+            border-radius: 15px;
+            width: 320px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.5);
+            text-align: center;
+        }
+
+        .register-container h2 {
+            margin-bottom: 2rem;
+            font-size: 2rem;
+        }
+
+        .register-container input {
+            width: 100%;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+            box-sizing: border-box;
+        }
+
+        .register-container button {
+            width: 100%;
+            padding: 1rem;
+            background-color: #5cb85c;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: background-color 0.3s;
+        }
+
+        .register-container button:hover {
+            background-color: #4cae4c;
+        }
+
+        .back-link {
+            margin-top: 1.5rem;
+            display: inline-block;
+            color: #eee;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .back-link:hover {
+            color: white;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="register-container">
+        <h2>Kayıt Ol</h2>
+        <form id="register-form">
+            <input type="text" id="name" placeholder="Ad" required>
+            <input type="text" id="username" placeholder="Kullanıcı Adı" required>
+            <input type="password" id="password" placeholder="Şifre" required>
+            <input type="email" id="email" placeholder="E-posta" required>
+            <input type="text" id="address" placeholder="Adres" required>
+            <button type="submit">Kayıt Ol</button>
+        </form>
+        <a href="/index.html" class="back-link">Ana Sayfaya Dön</a>
+    </div>
+
+    <script>
+        document.getElementById('register-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const name = document.getElementById('name').value;
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const email = document.getElementById('email').value;
+            const address = document.getElementById('address').value;
+
+            const response = await fetch('/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    name,
+                    username,
+                    password,
+                    email,
+                    address,
+                    authorities: ['ROLE_USER'] // Rolleri tekrar sabitledik
+                })
+            });
+
+            if (response.ok) {
+                alert('Kayıt başarılı! Lütfen giriş yapın.');
+                window.location.href = '/login.html';
+            } else {
+                alert('Kayıt başarısız! Lütfen bilgileri kontrol edin.');
+            }
+        });
+    </script>
+</body>
+</html>

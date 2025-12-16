@@ -10,26 +10,25 @@ import com.library.library.repository.BookRepository;
 import com.library.library.repository.LoansRepository;
 import com.library.library.repository.UserRepository;
 import com.library.library.service.LoansService;
-import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
-import static org.springframework.http.HttpStatus.*;
+import static com.library.library.exception.MessageType.*;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 @Service
 public class LoansServiceImpl implements LoansService {
 
-
-     private  final LoansRepository loansRepository;
-     private final BookRepository bookRepository;
-     private final UserRepository userRepository;
-
+    private final LoansRepository loansRepository;
+    private final BookRepository bookRepository;
+    private final UserRepository userRepository;
 
     public LoansServiceImpl(LoansRepository loansRepository, BookRepository bookRepository, UserRepository userRepository) {
         this.loansRepository = loansRepository;
@@ -38,79 +37,81 @@ public class LoansServiceImpl implements LoansService {
     }
 
     @Override
+    public List<DtoLoan> getAllLoans() {
+        return loansRepository.findAll().stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+    }
+
+    private DtoLoan convertToDto(Loan loan) {
+        return new DtoLoan(
+                loan.getId(),
+                loan.getBook().getId(),
+                loan.getBook().getTitle(),
+                loan.getUser().getId(),
+                loan.getUser().getUsername(),
+                loan.getLoanDate(),
+                loan.getDueDate(),
+                loan.getReturnDate()
+        );
+    }
+
+    @Override
+    @Transactional
     public DtoLoan borrowBook(Long userId, Long bookId) {
-        User user=userRepository.findById(userId).orElseThrow(()-> new BaseException(MessageType.USERNAME_NOT_FOUND,BAD_REQUEST));
-        Book book=bookRepository.findById(bookId).orElseThrow(()-> new BaseException(MessageType.INVALID_BOOK_NAME,BAD_REQUEST));
-        boolean isBookOnLoan = loansRepository.existsByBookIdAndReturnDateIsNull(bookId);
-        if (isBookOnLoan) {
-            throw new BaseException(MessageType.BOOK_ALREADY_ON_LOAN, HttpStatus.BAD_REQUEST);
+        User user = userRepository.findById(userId).orElseThrow(() -> new BaseException(USERNAME_NOT_FOUND, BAD_REQUEST));
+        Book book = bookRepository.findById(bookId).orElseThrow(() -> new BaseException(INVALID_BOOK_NAME, BAD_REQUEST));
+
+
+        if (book.getStock() <= 0) {
+            throw new BaseException(BOOK_NOT_IN_STOCK, HttpStatus.BAD_REQUEST);
         }
-        Loan loan=new Loan();
+        
+
+        book.setStock(book.getStock() - 1);
+        bookRepository.saveAndFlush(book);
+
+        Loan loan = new Loan();
         loan.setUser(user);
         loan.setBook(book);
         loan.setLoanDate(LocalDate.now());
         loan.setDueDate(LocalDate.now().plusDays(14));
         loan.setReturnDate(null);
         Loan savedLoan = loansRepository.save(loan);
-        return new DtoLoan(
-                savedLoan.getId(),
-                savedLoan.getBook().getId(),
-                savedLoan.getBook().getTitle(),
-                savedLoan.getUser().getId(),
-                savedLoan.getUser().getUsername(),
-                savedLoan.getLoanDate(),
-                savedLoan.getDueDate(),
-                savedLoan.getReturnDate()
-        );
+
+        return convertToDto(savedLoan);
     }
 
     @Override
     public DtoLoan getBorrowingDetails(Long borrowingId) {
-        Loan loans = loansRepository.findById(borrowingId).orElseThrow(() -> new BaseException(MessageType.NO_SUCH_RECORD_FOUND, BAD_REQUEST));
-
-
-        return new DtoLoan(
-                loans.getId(),
-                loans.getBook().getId(),
-                loans.getBook().getTitle(),
-                loans.getUser().getId(),
-                loans.getUser().getUsername(),
-                loans.getLoanDate(),
-                loans.getDueDate(),
-                loans.getReturnDate()
-        );
+        Loan loan = loansRepository.findById(borrowingId).orElseThrow(() -> new BaseException(NO_SUCH_RECORD_FOUND, BAD_REQUEST));
+        return convertToDto(loan);
     }
 
     @Override
     public List<DtoLoan> getLoansByUserId(Long userId) {
         if (!userRepository.existsById(userId)) {
-            throw new BaseException(MessageType.USERNAME_NOT_FOUND, BAD_REQUEST);
+            throw new BaseException(USERNAME_NOT_FOUND, BAD_REQUEST);
         }
-        List<Loan> userLoans = loansRepository.findByUserId(userId);
-        List<DtoLoan> dtoLoans = new ArrayList<>();
-        for (Loan loan : userLoans) {
-            DtoLoan dtoLoan = new DtoLoan(
-                    loan.getId(),
-                    loan.getBook().getId(),
-                    loan.getBook().getTitle(),
-                    loan.getUser().getId(),
-                    loan.getUser().getUsername(),
-                    loan.getLoanDate(),
-                    loan.getDueDate(),
-                    loan.getReturnDate()
-            );
-            dtoLoans.add(dtoLoan);
-
-        }
-        return dtoLoans;
+        return loansRepository.findByUserId(userId).stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
     }
 
     @Override
+    @Transactional
     public DtoLoan returnBook(Long borrowingId) {
-        Loan loanReturn = loansRepository.findById(borrowingId).orElseThrow(() -> new BaseException(MessageType.NO_SUCH_RECORD_FOUND, BAD_REQUEST));
+        Loan loanReturn = loansRepository.findById(borrowingId).orElseThrow(() -> new BaseException(NO_SUCH_RECORD_FOUND, BAD_REQUEST));
         if (loanReturn.getReturnDate() != null) {
-            throw new BaseException(MessageType.BOOK_ALREADY_ON_LOAN, BAD_REQUEST);
+            throw new BaseException(BOOK_ALREADY_RETURNED, BAD_REQUEST);
         }
+
+        Long bookId = loanReturn.getBook().getId();
+        Book book = bookRepository.findById(bookId).orElseThrow(() -> new BaseException(INVALID_BOOK_NAME, BAD_REQUEST));
+        
+        book.setStock(book.getStock() + 1);
+        bookRepository.saveAndFlush(book);
+
         LocalDate dueDate = loanReturn.getDueDate();
         LocalDate returnDate = LocalDate.now();
 
@@ -123,22 +124,9 @@ public class LoansServiceImpl implements LoansService {
             userRepository.save(user);
         }
 
-
         loanReturn.setReturnDate(returnDate);
-
-
         Loan savedLoan = loansRepository.save(loanReturn);
 
-
-        return new DtoLoan(
-                savedLoan.getId(),
-                savedLoan.getBook().getId(),
-                savedLoan.getBook().getTitle(),
-                savedLoan.getUser().getId(),
-                savedLoan.getUser().getUsername(),
-                savedLoan.getLoanDate(),
-                savedLoan.getDueDate(),
-                savedLoan.getReturnDate()
-        );
+        return convertToDto(savedLoan);
     }
 }

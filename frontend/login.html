@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giriş Yap</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: sans-serif;
+            background-image: url('https://images.unsplash.com/photo-1507842217343-583bb7270b66?q=80&w=2070&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .login-container {
+            background-color: rgba(0, 0, 0, 0.75);
+            padding: 3rem;
+            border-radius: 15px;
+            width: 320px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.5);
+            text-align: center;
+        }
+
+        .login-container h2 {
+            margin-bottom: 2rem;
+            font-size: 2rem;
+        }
+
+        .login-container input {
+            width: 100%;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+            box-sizing: border-box;
+        }
+
+        .login-container button {
+            width: 100%;
+            padding: 1rem;
+            background-color: #5cb85c;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: background-color 0.3s;
+        }
+
+        .login-container button:hover {
+            background-color: #4cae4c;
+        }
+
+        .back-link {
+            margin-top: 1.5rem;
+            display: inline-block;
+            color: #eee;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .back-link:hover {
+            color: white;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h2>Giriş Yap</h2>
+        <form id="login-form">
+            <input type="text" id="username" placeholder="Kullanıcı Adı" required>
+            <input type="password" id="password" placeholder="Şifre" required>
+            <button type="submit">Giriş Yap</button>
+        </form>
+        <a href="/index.html" class="back-link">Ana Sayfaya Dön</a>
+    </div>
+
+    <script>
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            try {
+                const response = await fetch('/authenticate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        username,
+                        password
+                    })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    
+                    // DÜZELTME: Gelen veri RootEntity olduğu için payload'ı kontrol et
+                    const authPayload = data.payload;
+
+                    if (!authPayload || !authPayload.accessToken) {
+                        console.error("Sunucudan beklenen formatta veri gelmedi:", data);
+                        alert('Giriş başarılı ancak token alınamadı.');
+                        return;
+                    }
+
+                    try {
+                        const accessToken = authPayload.accessToken;
+                        const refreshToken = authPayload.refreshToken;
+
+                        const base64Url = accessToken.split('.')[1];
+                        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                        const jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function(c) {
+                            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+                        }).join(''));
+
+                        const tokenPayload = JSON.parse(jsonPayload);
+                        console.log("Token Payload:", tokenPayload);
+
+                        const roles = tokenPayload.roles || tokenPayload.authorities || tokenPayload.role || [];
+                        const rolesArray = Array.isArray(roles) ? roles : [roles];
+                        const isUser = rolesArray.includes('ROLE_USER');
+
+                        if (isUser) {
+                            localStorage.setItem('accessToken', accessToken);
+                            localStorage.setItem('refreshToken', refreshToken);
+                            window.location.href = '/user-home.html';
+                        } else {
+                            console.warn("Kullanıcı yetkisi yok. Roller:", rolesArray);
+                            alert('Bu giriş sadece kullanıcılar içindir. Personel girişi için lütfen Personel Girişi sayfasını kullanın.');
+                        }
+                    } catch (tokenError) {
+                        console.error("Token çözümleme hatası:", tokenError);
+                        console.log("Hatalı Token:", authPayload.accessToken);
+                        alert('Token işlenirken bir hata oluştu. Lütfen konsolu kontrol edin.');
+                    }
+
+                } else {
+                    alert('Giriş başarısız! Kullanıcı adı veya şifre hatalı.');
+                }
+            } catch (networkError) {
+                console.error("Ağ hatası:", networkError);
+                alert('Sunucuya bağlanırken bir hata oluştu.');
+            }
+        });
+    </script>
+</body>
+</html>

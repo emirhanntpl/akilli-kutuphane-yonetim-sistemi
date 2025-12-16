@@ -12,8 +12,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.library.library.model.RefreshToken;
-
 @Entity
 @Table(name = "users")
 @Data
@@ -25,11 +23,11 @@ public class User extends BaseEntity implements UserDetails {
     private String name;
     private String username;
     private String password;
-    @Column (unique = true)
+    @Column(unique = true)
     private String email;
-    private  Set<Role> roles;
-    private  String address;
+    private String address;
     private double penalty;
+
     public void addPenalty(double amount) {
         this.penalty += amount;
     }
@@ -42,6 +40,7 @@ public class User extends BaseEntity implements UserDetails {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<Loan> loans = new HashSet<>();
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private Set<RefreshToken> refreshTokens = new HashSet<>();
 

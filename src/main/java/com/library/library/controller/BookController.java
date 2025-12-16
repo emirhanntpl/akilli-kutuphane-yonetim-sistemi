@@ -12,8 +12,8 @@ public interface BookController  {
 
     public RootEntity<Book> createBook(DtoBookIU dtoBookIU);
 
-
-    ResponseEntity<Void> deleteBook(Long bookId);
+    // Dönüş tipi RootEntity<String> olarak güncellendi
+    RootEntity<String> deleteBook(Long bookId);
 
     public RootEntity<DtoBook> updateBook(Long bookId, UpdateBookRequest request);
 }
