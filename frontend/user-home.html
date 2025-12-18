@@ -13,6 +13,7 @@
             --accent-color: #e74c3c;
             --success-color: #2ecc71;
             --warning-color: #f39c12;
+            --info-color: #9b59b6;
             --card-bg: rgba(255, 255, 255, 0.97);
             --shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
             --transition: all 0.3s ease;
@@ -42,50 +43,24 @@
             backdrop-filter: blur(5px);
         }
 
-        .navbar-brand {
-            font-size: 1.5rem;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
+        .navbar-left { display: flex; align-items: center; gap: 20px; }
+        .navbar-brand { font-size: 1.5rem; font-weight: bold; display: flex; align-items: center; gap: 10px; }
+        .user-info { display: flex; align-items: center; gap: 10px; background-color: rgba(255, 255, 255, 0.1); padding: 0.5rem 1rem; border-radius: 20px; }
+        .user-avatar { width: 35px; height: 35px; background-color: var(--secondary-color); border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 1.1rem; }
+        .user-details { display: flex; flex-direction: column; line-height: 1.2; }
+        .user-name { font-weight: 600; font-size: 0.95rem; }
+        .user-role { font-size: 0.8rem; opacity: 0.8; }
+        .navbar-right { display: flex; align-items: center; gap: 20px; }
+        .penalty-info { background-color: var(--warning-color); padding: 0.5rem 1rem; border-radius: 20px; font-weight: bold; font-size: 0.9rem; display: flex; align-items: center; gap: 5px; }
         .nav-links { display: flex; gap: 20px; }
-
-        .nav-btn {
-            background: none; border: none;
-            color: rgba(255, 255, 255, 0.8);
-            font-size: 1rem; cursor: pointer;
-            padding: 0.5rem 1rem;
-            transition: var(--transition);
-            border-radius: 5px; font-weight: 500;
-        }
-
-        .nav-btn:hover, .nav-btn.active {
-            color: white;
-            background-color: rgba(255, 255, 255, 0.2);
-        }
-
-        .logout-btn {
-            background-color: var(--accent-color);
-            color: white; border: none;
-            padding: 0.5rem 1.2rem;
-            border-radius: 20px; cursor: pointer;
-            font-weight: bold; transition: var(--transition);
-            display: flex; align-items: center; gap: 5px;
-        }
+        .nav-btn { background: none; border: none; color: rgba(255, 255, 255, 0.8); font-size: 1rem; cursor: pointer; padding: 0.5rem 1rem; transition: var(--transition); border-radius: 5px; font-weight: 500; }
+        .nav-btn:hover, .nav-btn.active { color: white; background-color: rgba(255, 255, 255, 0.2); }
+        .logout-btn { background-color: var(--accent-color); color: white; border: none; padding: 0.5rem 1.2rem; border-radius: 20px; cursor: pointer; font-weight: bold; transition: var(--transition); display: flex; align-items: center; gap: 5px; }
         .logout-btn:hover { background-color: #c0392b; transform: translateY(-2px); }
 
         .container { max-width: 1200px; margin: 2rem auto; padding: 0 1rem; }
         .search-wrapper { margin-bottom: 2rem; position: relative; }
-
-        .search-input {
-            width: 100%; padding: 1rem 1rem 1rem 3rem;
-            border: none; border-radius: 50px;
-            box-shadow: var(--shadow); font-size: 1rem;
-            outline: none; box-sizing: border-box;
-            background-color: rgba(255, 255, 255, 0.9);
-        }
+        .search-input { width: 100%; padding: 1rem 1rem 1rem 3rem; border: none; border-radius: 50px; box-shadow: var(--shadow); font-size: 1rem; outline: none; box-sizing: border-box; background-color: rgba(255, 255, 255, 0.9); }
         .search-icon { position: absolute; left: 1.2rem; top: 50%; transform: translateY(-50%); color: #666; }
 
         .tab-content { display: none; animation: fadeIn 0.5s; }
@@ -93,89 +68,96 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 2rem; }
-
-        .card {
-            background-color: var(--card-bg);
-            border-radius: 12px; box-shadow: var(--shadow);
-            overflow: hidden; transition: var(--transition);
-            display: flex; flex-direction: column;
-        }
+        .card { background-color: var(--card-bg); border-radius: 12px; box-shadow: var(--shadow); overflow: hidden; transition: var(--transition); display: flex; flex-direction: column; position: relative; }
         .card:hover { transform: translateY(-10px); box-shadow: 0 12px 20px rgba(0,0,0,0.4); }
-        
         .category-card { cursor: pointer; }
+        
+        .favorite-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255,255,255,0.8);
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            color: #ccc;
+            transition: all 0.2s;
+            z-index: 10;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        .favorite-btn:hover { color: var(--accent-color); transform: scale(1.1); }
+        .favorite-btn.favorited { color: var(--accent-color); }
 
         .card-header-img { height: 150px; background-size: cover; background-position: center; }
         .book-cover { background-image: url('https://images.unsplash.com/photo-1543002588-bfa74002ed7e?q=80&w=600&auto=format&fit=crop'); }
         .author-cover { background-image: url('https://images.unsplash.com/photo-1455390582262-044cdead277a?q=80&w=600&auto=format&fit=crop'); }
         .category-cover { background-image: url('https://images.unsplash.com/photo-1481627834876-b7833e8f5570?q=80&w=600&auto=format&fit=crop'); }
         .loan-cover { background-image: url('https://images.unsplash.com/photo-1481627834876-b7833e8f5570?q=80&w=600&auto=format&fit=crop'); }
-
+        .announcement-cover { background-image: url('https://images.unsplash.com/photo-1507525428034-b723a9ce6899?q=80&w=600&auto=format&fit=crop'); }
         .card-body { padding: 1.5rem; flex-grow: 1; display: flex; flex-direction: column; }
         .card-title { margin: 0 0 0.5rem 0; color: #2c3e50; font-size: 1.25rem; }
         .card-info { color: #555; font-size: 0.9rem; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 8px; }
         .card-info i { color: var(--secondary-color); width: 16px; }
         .badge { display: inline-block; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.8rem; font-weight: bold; background-color: #eef2f7; color: var(--secondary-color); margin-top: 1rem; }
+        .card-footer { margin-top: auto; padding-top: 1rem; display: flex; flex-direction: column; gap: 10px; }
         
-        .card-footer { margin-top: auto; padding-top: 1rem; }
-        .borrow-btn {
-            width: 100%; background-color: var(--success-color);
-            color: white; border: none; padding: 0.8rem;
-            border-radius: 8px; cursor: pointer;
-            font-size: 1rem; font-weight: bold;
-            transition: var(--transition);
-        }
+        .borrow-btn, .reviews-btn, .view-reviews-btn { width: 100%; color: white; border: none; padding: 0.8rem; border-radius: 8px; cursor: pointer; font-size: 1rem; font-weight: bold; transition: var(--transition); }
+        .borrow-btn { background-color: var(--success-color); }
         .borrow-btn:hover { background-color: #27ae60; }
         .borrow-btn:disabled { background-color: #95a5a6; cursor: not-allowed; }
-
-        .return-btn {
-            width: 100%; background-color: var(--warning-color);
-            color: white; border: none; padding: 0.8rem;
-            border-radius: 8px; cursor: pointer;
-            font-size: 1rem; font-weight: bold;
-            transition: var(--transition);
-        }
+        .reviews-btn { background-color: var(--secondary-color); }
+        .reviews-btn:hover { background-color: #2980b9; }
+        .view-reviews-btn { background-color: var(--info-color); }
+        .view-reviews-btn:hover { background-color: #8e44ad; }
+        .return-btn { width: 100%; background-color: var(--warning-color); color: white; border: none; padding: 0.8rem; border-radius: 8px; cursor: pointer; font-size: 1rem; font-weight: bold; transition: var(--transition); }
         .return-btn:hover { background-color: #e67e22; }
-
         .loader { text-align: center; padding: 2rem; color: white; font-size: 1.2rem; text-shadow: 1px 1px 2px black; }
 
         /* MODAL STİLLERİ */
-        .modal-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-color: rgba(0, 0, 0, 0.6);
-            display: flex; justify-content: center; align-items: center;
-            z-index: 2000; opacity: 0; visibility: hidden;
-            transition: all 0.3s ease;
-        }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.6); display: flex; justify-content: center; align-items: center; z-index: 2000; opacity: 0; visibility: hidden; transition: all 0.3s ease; backdrop-filter: blur(3px); }
         .modal-overlay.active { opacity: 1; visibility: visible; }
-
-        .modal {
-            background-color: white; padding: 2rem; border-radius: 15px;
-            width: 90%; max-width: 400px; text-align: center;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-            transform: scale(0.8); transition: all 0.3s ease;
-        }
+        .modal { background-color: white; padding: 2rem; border-radius: 15px; width: 90%; max-width: 600px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); transform: scale(0.8); transition: all 0.3s ease; position: relative; }
         .modal-overlay.active .modal { transform: scale(1); }
+        
+        .modal-close-btn { position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #666; }
+        .modal-close-btn:hover { color: #333; }
 
         .modal-icon { font-size: 3rem; margin-bottom: 1rem; }
         .modal-icon.success { color: var(--success-color); }
         .modal-icon.error { color: var(--accent-color); }
         .modal-icon.confirm { color: var(--secondary-color); }
-
         .modal-title { font-size: 1.5rem; margin-bottom: 0.5rem; color: #333; }
         .modal-message { color: #666; margin-bottom: 1.5rem; }
-
         .modal-buttons { display: flex; justify-content: center; gap: 10px; }
-        .modal-btn {
-            padding: 0.7rem 1.5rem; border: none; border-radius: 8px;
-            cursor: pointer; font-weight: bold; font-size: 1rem;
-            transition: var(--transition);
-        }
+        .modal-btn { padding: 0.7rem 1.5rem; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 1rem; transition: var(--transition); }
         .btn-confirm { background-color: var(--secondary-color); color: white; }
-        .btn-confirm:hover { background-color: #2980b9; }
+        .btn-confirm:hover { background-color: #d35400; }
         .btn-cancel { background-color: #95a5a6; color: white; }
         .btn-cancel:hover { background-color: #7f8c8d; }
         .btn-ok { background-color: var(--success-color); color: white; width: 100%; }
         .btn-ok:hover { background-color: #27ae60; }
+
+        /* Yorum Modalı Stilleri */
+        #reviewModal .modal-body { max-height: 300px; overflow-y: auto; text-align: left; margin-bottom: 1rem; padding-right: 10px; }
+        .review { border-bottom: 1px solid #eee; padding: 1rem 0; }
+        .review:last-child { border-bottom: none; }
+        .review-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; }
+        .review-author { font-weight: bold; color: var(--primary-color); }
+        .review-rating .fa-star { color: #f1c40f; }
+        .review-comment { color: #555; font-style: italic; }
+        #reviewForm { margin-top: 1rem; border-top: 2px solid #eee; padding-top: 1rem; }
+        #reviewForm h4 { margin-top: 0; color: var(--secondary-color); }
+        #reviewForm textarea { width: 100%; padding: 0.8rem; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; resize: vertical; }
+        .star-rating { display: flex; flex-direction: row-reverse; justify-content: flex-end; margin-bottom: 1rem; }
+        .star-rating input { display: none; }
+        .star-rating label { font-size: 1.5rem; color: #ddd; cursor: pointer; transition: color 0.2s; margin-right: 5px; }
+        .star-rating input:checked ~ label, .star-rating label:hover, .star-rating label:hover ~ label { color: #f1c40f; }
 
         @media (max-width: 768px) {
             .navbar { flex-direction: column; gap: 1rem; }
@@ -186,15 +168,29 @@
 <body>
 
     <nav class="navbar">
-        <div class="navbar-brand"><i class="fas fa-book-open"></i> Kütüphane</div>
-        <div class="nav-links">
-            <button class="nav-btn active" onclick="switchTab('books')"><i class="fas fa-book"></i> Kitaplar</button>
-            <button class="nav-btn" onclick="switchTab('authors')"><i class="fas fa-feather-alt"></i> Yazarlar</button>
-            <button class="nav-btn" onclick="switchTab('categories')"><i class="fas fa-tags"></i> Kategoriler</button>
-            <button class="nav-btn" onclick="switchTab('my-loans')"><i class="fas fa-hand-holding-heart"></i> Ödünç Aldıklarım</button>
-            <button class="nav-btn" onclick="switchTab('history')"><i class="fas fa-history"></i> Geçmiş</button>
+        <div class="navbar-left">
+            <div class="navbar-brand"><i class="fas fa-book-open"></i> Kütüphane</div>
+            <div class="user-info">
+                <div class="user-avatar" id="userAvatar">U</div>
+                <div class="user-details">
+                    <span class="user-name" id="userName">Kullanıcı</span>
+                    <span class="user-role" id="userRole">Okur</span>
+                </div>
+            </div>
         </div>
-        <button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Çıkış</button>
+        <div class="navbar-right">
+            <div class="nav-links">
+                <button class="nav-btn active" onclick="switchTab('books')"><i class="fas fa-book"></i> Kitaplar</button>
+                <button class="nav-btn" onclick="switchTab('favorites')"><i class="fas fa-heart"></i> Favorilerim</button>
+                <button class="nav-btn" onclick="switchTab('authors')"><i class="fas fa-feather-alt"></i> Yazarlar</button>
+                <button class="nav-btn" onclick="switchTab('categories')"><i class="fas fa-tags"></i> Kategoriler</button>
+                <button class="nav-btn" onclick="switchTab('announcements')"><i class="fas fa-bullhorn"></i> Duyurular</button>
+                <button class="nav-btn" onclick="switchTab('my-loans')"><i class="fas fa-hand-holding-heart"></i> Ödünç Aldıklarım</button>
+                <button class="nav-btn" onclick="switchTab('history')"><i class="fas fa-history"></i> Geçmiş</button>
+            </div>
+            <div class="penalty-info" id="penaltyInfo"><i class="fas fa-coins"></i> Borç: 0.00 TL</div>
+            <button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Çıkış</button>
+        </div>
     </nav>
 
     <div class="container">
@@ -202,16 +198,45 @@
             <i class="fas fa-search search-icon"></i>
             <input type="text" id="searchInput" class="search-input" placeholder="Ara..." onkeyup="filterItems()">
         </div>
-
-        <div id="books" class="tab-content active"><div id="books-container" class="grid-container"><div class="loader"><i class="fas fa-spinner fa-spin"></i> Kitaplar yükleniyor...</div></div></div>
-        <div id="authors" class="tab-content"><div id="authors-container" class="grid-container"><div class="loader"><i class="fas fa-spinner fa-spin"></i> Yazarlar yükleniyor...</div></div></div>
-        <div id="categories" class="tab-content"><div id="categories-container" class="grid-container"><div class="loader"><i class="fas fa-spinner fa-spin"></i> Kategoriler yükleniyor...</div></div></div>
-        <div id="my-loans" class="tab-content"><div id="my-loans-container" class="grid-container"><div class="loader"><i class="fas fa-spinner fa-spin"></i> Ödünç aldıklarınız yükleniyor...</div></div></div>
-        <div id="history" class="tab-content"><div id="history-container" class="grid-container"><div class="loader"><i class="fas fa-spinner fa-spin"></i> Geçmiş yükleniyor...</div></div></div>
+        <div id="books" class="tab-content active"><div id="books-container" class="grid-container"></div></div>
+        <div id="favorites" class="tab-content"><div id="favorites-container" class="grid-container"></div></div>
+        <div id="authors" class="tab-content"><div id="authors-container" class="grid-container"></div></div>
+        <div id="categories" class="tab-content"><div id="categories-container" class="grid-container"></div></div>
+        <div id="announcements" class="tab-content"><div id="announcements-container" class="grid-container"></div></div>
+        <div id="my-loans" class="tab-content"><div id="my-loans-container" class="grid-container"></div></div>
+        <div id="history" class="tab-content"><div id="history-container" class="grid-container"></div></div>
     </div>
 
-    <!-- MODAL YAPISI -->
-    <div id="customModal" class="modal-overlay">
+    <!-- MODALLAR -->
+    <div id="customModal" class="modal-overlay">...</div>
+    
+    <!-- Yorum Modalı -->
+    <div id="reviewModal" class="modal-overlay">
+        <div class="modal">
+            <button class="modal-close-btn" onclick="closeModal('reviewModal')">&times;</button>
+            <h3 id="reviewModalTitle">Kitap Yorumları</h3>
+            
+            <!-- Yorum Listesi -->
+            <div class="modal-body" id="reviewList"></div>
+            
+            <!-- Yorum Yapma Formu -->
+            <form id="reviewForm">
+                <h4>Yorum Yap</h4>
+                <input type="hidden" id="reviewBookId">
+                <div class="star-rating">
+                    <input type="radio" id="star5" name="rating" value="5" /><label for="star5" title="5 stars">★</label>
+                    <input type="radio" id="star4" name="rating" value="4" /><label for="star4" title="4 stars">★</label>
+                    <input type="radio" id="star3" name="rating" value="3" /><label for="star3" title="3 stars">★</label>
+                    <input type="radio" id="star2" name="rating" value="2" /><label for="star2" title="2 stars">★</label>
+                    <input type="radio" id="star1" name="rating" value="1" /><label for="star1" title="1 star">★</label>
+                </div>
+                <textarea id="reviewComment" rows="3" placeholder="Bu kitap hakkında ne düşünüyorsunuz?" required></textarea>
+                <button type="submit" class="borrow-btn" style="margin-top: 1rem;">Yorumu Gönder</button>
+            </form>
+        </div>
+    </div>
+    
+    <div id="alertModal" class="modal-overlay">
         <div class="modal">
             <div id="modalIcon" class="modal-icon"></div>
             <h3 id="modalTitle" class="modal-title"></h3>
@@ -222,10 +247,11 @@
 
     <script>
         let currentUserId = null;
+        let favoriteBookIds = new Set();
         const token = localStorage.getItem('accessToken');
 
         function showModal(type, title, message, onConfirm = null) {
-            const modal = document.getElementById('customModal');
+            const modal = document.getElementById('alertModal');
             const icon = document.getElementById('modalIcon');
             const titleEl = document.getElementById('modalTitle');
             const msgEl = document.getElementById('modalMessage');
@@ -237,31 +263,39 @@
 
             if (type === 'success') {
                 icon.className = 'modal-icon success fas fa-check-circle';
-                btnsEl.innerHTML = `<button class="modal-btn btn-ok" onclick="closeModal()">Tamam</button>`;
+                btnsEl.innerHTML = `<button class="modal-btn btn-ok" onclick="closeAlert()">Tamam</button>`;
             } else if (type === 'error') {
                 icon.className = 'modal-icon error fas fa-times-circle';
-                btnsEl.innerHTML = `<button class="modal-btn btn-cancel" onclick="closeModal()">Kapat</button>`;
+                btnsEl.innerHTML = `<button class="modal-btn btn-cancel" onclick="closeAlert()">Kapat</button>`;
             } else if (type === 'confirm') {
                 icon.className = 'modal-icon confirm fas fa-question-circle';
                 const confirmBtn = document.createElement('button');
                 confirmBtn.className = 'modal-btn btn-confirm';
                 confirmBtn.textContent = 'Evet';
-                confirmBtn.onclick = () => { closeModal(); if(onConfirm) onConfirm(); };
+                confirmBtn.onclick = () => { closeAlert(); if(onConfirm) onConfirm(); };
                 
                 const cancelBtn = document.createElement('button');
                 cancelBtn.className = 'modal-btn btn-cancel';
                 cancelBtn.textContent = 'İptal';
-                cancelBtn.onclick = closeModal;
+                cancelBtn.onclick = closeAlert;
 
                 btnsEl.appendChild(cancelBtn);
                 btnsEl.appendChild(confirmBtn);
             }
-
             modal.classList.add('active');
         }
 
-        function closeModal() {
-            document.getElementById('customModal').classList.remove('active');
+        function closeAlert() { document.getElementById('alertModal').classList.remove('active'); }
+
+        function closeModal(modalId = 'reviewModal') {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        // Modal dışına tıklayınca kapatma
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal-overlay')) {
+                event.target.classList.remove('active');
+            }
         }
 
         function logout() {
@@ -271,19 +305,15 @@
             }
         }
 
-        // GÜNCELLENMİŞ FONKSİYON: loadData parametresi eklendi
         function switchTab(tabName, loadData = true) {
             document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
             
-            // Eğer tabName 'books' değilse, ilgili butonu aktif yap
-            // 'books' sekmesi kategori filtresiyle açıldığında buton aktifliği karışmasın diye
             if (tabName !== 'books' || loadData) {
-                const btn = document.querySelector(`.nav-btn[onclick="switchTab('${tabName}')"]`);
+                const btn = document.querySelector(`.nav-btn[onclick*="switchTab('${tabName}')"]`);
                 if (btn) btn.classList.add('active');
             } else {
-                // Kitaplar sekmesi filtreli açıldıysa, kitaplar butonunu aktif yap
-                const btn = document.querySelector(`.nav-btn[onclick="switchTab('books')"]`);
+                const btn = document.querySelector(`.nav-btn[onclick*="switchTab('books')"]`);
                 if (btn) btn.classList.add('active');
             }
 
@@ -291,20 +321,15 @@
             document.getElementById('searchInput').value = '';
             filterItems();
             
-            // Eğer loadData false ise, veri yükleme işlemini atla
             if (!loadData) return;
 
-            if (tabName === 'my-loans') {
-                fetchMyLoans();
-            } else if (tabName === 'history') {
-                fetchLoanHistory();
-            } else if (tabName === 'books') {
-                fetchData('/rest/api/books', 'books-container', renderBook);
-            } else if (tabName === 'authors') {
-                fetchData('/rest/api/authors', 'authors-container', renderAuthor);
-            } else if (tabName === 'categories') {
-                fetchData('/rest/api/categories', 'categories-container', renderCategory);
-            }
+            if (tabName === 'my-loans') fetchMyLoans();
+            else if (tabName === 'history') fetchLoanHistory();
+            else if (tabName === 'favorites') fetchFavorites();
+            else if (tabName === 'books') fetchData('/rest/api/books', 'books-container', renderBook);
+            else if (tabName === 'authors') fetchData('/rest/api/authors', 'authors-container', renderAuthor);
+            else if (tabName === 'categories') fetchData('/rest/api/categories', 'categories-container', renderCategory);
+            else if (tabName === 'announcements') fetchData('/rest/api/announcements', 'announcements-container', renderAnnouncement);
         }
 
         function filterItems() {
@@ -560,9 +585,15 @@
             const authorNames = book.authors.map(a => `${a.firstName} ${a.lastName}`).join(', ');
             const categoryNames = book.categories.map(c => c.category).join(', ');
             const stock = book.stock ?? 0;
+            const isFavorited = favoriteBookIds.has(book.id);
+            
+            const safeTitle = book.title.replace(/'/g, "\\'");
 
             return `
                 <div class="card">
+                    <button class="favorite-btn ${isFavorited ? 'favorited' : ''}" onclick="toggleFavorite(${book.id}, this)">
+                        <i class="fas fa-heart"></i>
+                    </button>
                     <div class="card-header-img book-cover"></div>
                     <div class="card-body">
                         <h3 class="card-title">${book.title || 'İsimsiz Kitap'}</h3>
@@ -572,6 +603,9 @@
                         <div class="card-footer">
                             <button class="borrow-btn" onclick="initiateBorrow(${book.id}, this)" ${stock <= 0 ? 'disabled' : ''}>
                                 ${stock > 0 ? 'Ödünç Al' : 'Stokta Yok'}
+                            </button>
+                            <button class="reviews-btn" onclick="openReviewModal(${book.id}, '${safeTitle}')">
+                                <i class="fas fa-star"></i> Yorumlar
                             </button>
                         </div>
                     </div>
@@ -596,31 +630,216 @@
             `;
         }
 
-        // GÜNCELLENMİŞ FONKSİYON
+        function renderAnnouncement(ann) {
+            const createdDate = new Date(ann.createTime).toLocaleDateString('tr-TR');
+            return `
+                <div class="card" style="grid-column: 1 / -1;">
+                    <div class="card-body">
+                        <h3 class="card-title">${ann.title}</h3>
+                        <p class="card-info" style="margin-bottom: 1rem;">${ann.content}</p>
+                        <span class="badge">${createdDate}</span>
+                    </div>
+                </div>
+            `;
+        }
+
         function filterBooksByCategory(categoryId, element) {
             document.querySelectorAll('.category-card').forEach(c => c.style.border = 'none');
             element.style.border = '2px solid var(--secondary-color)';
 
-            // switchTab'i çağır ama veri yüklemesini engelle (loadData = false)
             switchTab('books', false);
-            
-            // Filtrelenmiş veriyi manuel olarak yükle
             fetchData(`/rest/api/books/category/${categoryId}`, 'books-container', renderBook);
         }
 
-        window.addEventListener('DOMContentLoaded', () => {
+        async function fetchPenalty() {
+            if (!currentUserId) return;
+            try {
+                const response = await fetch(`/rest/api/users/${currentUserId}/penalty`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await response.json();
+                if (response.ok) {
+                    const penalty = data.payload || 0;
+                    document.getElementById('penaltyInfo').innerHTML = `<i class="fas fa-coins"></i> Borç: ${penalty.toFixed(2)} TL`;
+                }
+            } catch (error) {
+                console.error("Borç bilgisi alınamadı:", error);
+            }
+        }
+
+        // --- FAVORİ İŞLEMLERİ ---
+        async function fetchFavorites() {
+            if (!currentUserId) return;
+            const container = document.getElementById('favorites-container');
+            container.innerHTML = '<div class="loader"><i class="fas fa-spinner fa-spin"></i> Favoriler yükleniyor...</div>';
+            
+            try {
+                const response = await fetch(`/rest/api/users/${currentUserId}/favorites`, { headers: { 'Authorization': `Bearer ${token}` } });
+                const data = await response.json();
+                const favoriteBooks = data.payload;
+                
+                favoriteBookIds.clear();
+                if (Array.isArray(favoriteBooks) && favoriteBooks.length > 0) {
+                    container.innerHTML = '';
+                    favoriteBooks.forEach(book => {
+                        favoriteBookIds.add(book.id);
+                        container.innerHTML += renderBook(book);
+                    });
+                } else {
+                    container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: white; text-shadow: 1px 1px 2px black;">Henüz favori kitabınız yok.</p>';
+                }
+            } catch (error) {
+                console.error("Favoriler yüklenemedi:", error);
+                container.innerHTML = '<p style="color: #ff6b6b;">Favoriler yüklenirken bir hata oluştu.</p>';
+            }
+        }
+
+        async function toggleFavorite(bookId, buttonElement) {
+            if (!currentUserId) return;
+            
+            const isFavorited = favoriteBookIds.has(bookId);
+            const method = isFavorited ? 'DELETE' : 'POST';
+            const url = `/rest/api/users/${currentUserId}/favorites/${bookId}`;
+
+            try {
+                const response = await fetch(url, {
+                    method: method,
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (response.ok) {
+                    if (isFavorited) {
+                        favoriteBookIds.delete(bookId);
+                        buttonElement.classList.remove('favorited');
+                    } else {
+                        favoriteBookIds.add(bookId);
+                        buttonElement.classList.add('favorited');
+                    }
+                } else {
+                    console.error("Favori işlemi başarısız oldu.");
+                }
+            } catch (error) {
+                console.error("Favori işlemi hatası:", error);
+            }
+        }
+
+        // --- YORUM İŞLEMLERİ ---
+        async function openReviewModal(bookId, bookTitle) {
+            document.getElementById('reviewModalTitle').textContent = `${bookTitle} - Yorumlar`;
+            document.getElementById('reviewBookId').value = bookId;
+            document.getElementById('reviewForm').reset();
+            
+            const reviewList = document.getElementById('reviewList');
+            reviewList.innerHTML = '<p>Yorumlar yükleniyor...</p>';
+            
+            const modal = document.getElementById('reviewModal');
+            modal.classList.add('active');
+
+            try {
+                const response = await fetch(`/rest/api/reviews/book/${bookId}`, { headers: { 'Authorization': `Bearer ${token}` } });
+                const data = await response.json();
+                const reviews = data.payload;
+
+                reviewList.innerHTML = '';
+                if (reviews && reviews.length > 0) {
+                    reviews.forEach(review => {
+                        const stars = '★'.repeat(review.rating) + '☆'.repeat(5 - review.rating);
+                        const reviewDate = new Date(review.createTime).toLocaleDateString('tr-TR');
+                        reviewList.innerHTML += `
+                            <div class="review">
+                                <div class="review-header">
+                                    <span class="review-author">${review.username}</span>
+                                    <span class="review-rating">${stars}</span>
+                                </div>
+                                <p class="review-comment">${review.comment}</p>
+                                <small>${reviewDate}</small>
+                            </div>
+                        `;
+                    });
+                } else {
+                    reviewList.innerHTML = '<p>Bu kitap için henüz yorum yapılmamış.</p>';
+                }
+            } catch (e) {
+                console.error("Yorumlar yüklenemedi:", e);
+                reviewList.innerHTML = '<p style="color:red;">Yorumlar yüklenirken bir hata oluştu.</p>';
+            }
+        }
+
+        document.getElementById('reviewForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const bookId = document.getElementById('reviewBookId').value;
+            const rating = document.querySelector('input[name="rating"]:checked');
+            const comment = document.getElementById('reviewComment').value;
+
+            if (!rating) {
+                alert('Lütfen bir puan seçin.');
+                return;
+            }
+
+            const body = {
+                userId: currentUserId,
+                bookId: parseInt(bookId),
+                rating: parseInt(rating.value),
+                comment: comment
+            };
+
+            try {
+                const response = await fetch('/rest/api/reviews', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify(body)
+                });
+                if (response.ok) {
+                    alert('Yorumunuz için teşekkürler!');
+                    // Yorumları yeniden yükle
+                    const bookTitle = document.getElementById('reviewModalTitle').textContent.split(' - ')[0];
+                    openReviewModal(bookId, bookTitle);
+                } else {
+                    const errorData = await response.json();
+                    alert(`Hata: ${errorData.errorMessage || 'Yorum gönderilemedi.'}`);
+                }
+            } catch (err) {
+                console.error("Yorum gönderme hatası:", err);
+                alert('Bir hata oluştu.');
+            }
+        });
+
+        window.addEventListener('DOMContentLoaded', async () => {
             if (!token) {
                 window.location.href = '/login.html';
                 return;
             }
-            currentUserId = getUserIdFromToken(token);
+            
+            try {
+                const base64Url = token.split('.')[1];
+                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                const jsonPayload = decodeURIComponent(window.atob(base64).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
+                const payload = JSON.parse(jsonPayload);
+                
+                const username = payload.sub || 'Kullanıcı';
+                const roles = payload.roles || payload.authorities || [];
+                const roleText = roles.includes('ROLE_ADMIN') ? 'Yönetici' : 'Okur';
+                
+                document.getElementById('userName').textContent = username;
+                document.getElementById('userRole').textContent = roleText;
+                document.getElementById('userAvatar').textContent = username.charAt(0).toUpperCase();
+                
+                currentUserId = payload.userId;
+            } catch (e) {
+                console.error("Token okunamadı", e);
+            }
+
             if (!currentUserId) {
                 console.error("Token'dan 'userId' claim'i okunamadı.");
+            } else {
+                await fetchFavorites(); // Önce favorileri çek
+                fetchPenalty();
             }
 
             fetchData('/rest/api/books', 'books-container', renderBook);
             fetchData('/rest/api/authors', 'authors-container', renderAuthor);
             fetchData('/rest/api/categories', 'categories-container', renderCategory);
+            fetchData('/rest/api/announcements', 'announcements-container', renderAnnouncement);
         });
     </script>
 </body>

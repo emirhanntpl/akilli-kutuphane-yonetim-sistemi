@@ -1,12 +1,12 @@
 package com.library.library.service;
 
+import com.library.library.dto.DtoBook;
 import com.library.library.dto.DtoUser;
 import com.library.library.dto.UpdateUserRequest;
 import com.library.library.exception.BaseException;
 import com.library.library.exception.MessageType;
-import com.library.library.model.CreateUserRequest;
-import com.library.library.model.Loan;
-import com.library.library.model.User;
+import com.library.library.model.*;
+import com.library.library.repository.BookRepository;
 import com.library.library.repository.LoanRepository;
 import com.library.library.repository.RefreshTokenRepository;
 import com.library.library.repository.UserRepository;
@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @AllArgsConstructor
@@ -25,6 +26,7 @@ import java.util.stream.Collectors;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final BookRepository bookRepository;
     private final BCryptPasswordEncoder passwordEncoder;
     private final LoanRepository loanRepository;
     private final RefreshTokenRepository refreshTokenRepository;
@@ -43,6 +45,7 @@ public class UserService {
         dtoUser.setEmail(user.getEmail());
         dtoUser.setAddress(user.getAddress());
         dtoUser.setRoles(user.getRole());
+        dtoUser.setPenalty((int) user.getPenalty());
         return dtoUser;
     }
 
@@ -50,49 +53,69 @@ public class UserService {
         return userRepository.findByUsername(username);
     }
 
-    // GÜNCELLENMİŞ METOT
     public User createUser(CreateUserRequest request) {
         User newUser = User.builder()
                 .name(request.name())
                 .username(request.username())
                 .password(passwordEncoder.encode(request.password()))
-                .email(request.email())     // EKLENDİ
-                .address(request.address()) // EKLENDİ
+                .email(request.email())
+                .address(request.address())
                 .role(request.authorities())
                 .build();
         return userRepository.save(newUser);
     }
 
     public DtoUser updateUser(Long userId, UpdateUserRequest request) {
-        Optional<User> OptUser = userRepository.findById(userId);
-        if (OptUser.isEmpty()) {
-            throw new BaseException(MessageType.NO_RECORD_EXIST, HttpStatus.NOT_FOUND);
-        }
-        User user = OptUser.get();
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new BaseException(MessageType.USERNAME_NOT_FOUND, HttpStatus.NOT_FOUND));
         user.setName(request.name());
         user.setEmail(request.email());
         user.setAddress(request.address());
         if (request.roles() != null && !request.roles().isEmpty()) {
             user.setRole(request.roles());
         }
-
         User savedUser = userRepository.save(user);
-
         return convertToDto(savedUser);
     }
 
     @Transactional
     public void deleteUser(Long userId) {
-        Optional<User> OptUser = userRepository.findById(userId);
-        if (OptUser.isEmpty()){
+        if (!userRepository.existsById(userId)) {
             throw new BaseException(MessageType.NO_RECORD_EXIST, HttpStatus.NOT_FOUND);
         }
-        List<Loan> OptLoans = loanRepository.findByUserIdAndReturnDateIsNull(userId);
-        if (!OptLoans.isEmpty()){
-            throw new BaseException(MessageType.USER_HAS_UNRETURNED_BOOKS,HttpStatus.BAD_REQUEST);
+        List<Loan> activeLoans = loanRepository.findByUserIdAndReturnDateIsNull(userId);
+        if (!activeLoans.isEmpty()){
+            throw new BaseException(MessageType.USER_HAS_UNRETURNED_BOOKS, HttpStatus.BAD_REQUEST);
         }
-        refreshTokenRepository.deleteByUserId(userId);
         userRepository.deleteById(userId);
-        System.out.println( OptUser.get().getName()  +" adlı kullanıcı silindi.");
+    }
+
+    public Double getPenalty(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new BaseException(MessageType.USERNAME_NOT_FOUND, HttpStatus.NOT_FOUND));
+        return user.getPenalty();
+    }
+
+    // --- FAVORİ İŞLEMLERİ ---
+
+    @Transactional
+    public void addFavorite(Long userId, Long bookId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new BaseException(MessageType.USERNAME_NOT_FOUND, HttpStatus.NOT_FOUND));
+        Book book = bookRepository.findById(bookId).orElseThrow(() -> new BaseException(MessageType.INVALID_BOOK_NAME, HttpStatus.NOT_FOUND));
+        user.getFavoriteBooks().add(book);
+        userRepository.save(user);
+    }
+
+    @Transactional
+    public void removeFavorite(Long userId, Long bookId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new BaseException(MessageType.USERNAME_NOT_FOUND, HttpStatus.NOT_FOUND));
+        Book book = bookRepository.findById(bookId).orElseThrow(() -> new BaseException(MessageType.INVALID_BOOK_NAME, HttpStatus.NOT_FOUND));
+        user.getFavoriteBooks().remove(book);
+        userRepository.save(user);
+    }
+
+    public Set<Book> getFavorites(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new BaseException(MessageType.USERNAME_NOT_FOUND, HttpStatus.NOT_FOUND));
+        return user.getFavoriteBooks();
     }
 }

@@ -43,16 +43,18 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(req ->
                         req.requestMatchers(WHITE_LIST_URLS).permitAll()
-                                // Ödünç alma ve iade etme işlemlerine USER ve ADMIN erişebilir
+                                // KULLANICIYA ÖZEL İZİNLER (Admin kurallarından önce gelmeli)
+                                .requestMatchers("/rest/api/reviews/**").authenticated()
                                 .requestMatchers("/rest/api/loans/**").hasAnyRole("USER", "ADMIN")
-                                
-                                // Admin'e özel diğer endpoint'ler (Kitap, Yazar, Kategori, Kullanıcı yönetimi)
+                                .requestMatchers("/rest/api/users/{userId}/favorites/**").hasAnyRole("USER", "ADMIN")
+
+                                // ADMİN'E ÖZEL YAZMA İZİNLERİ
                                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                                 .requestMatchers(HttpMethod.POST, "/rest/api/**").hasRole("ADMIN")
                                 .requestMatchers(HttpMethod.PUT, "/rest/api/**").hasRole("ADMIN")
                                 .requestMatchers(HttpMethod.DELETE, "/rest/api/**").hasRole("ADMIN")
                                 
-                                // Geri kalan tüm istekler için kimlik doğrulaması yeterli
+                                // Geri kalan tüm GET istekleri ve diğerleri için kimlik doğrulaması yeterli
                                 .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

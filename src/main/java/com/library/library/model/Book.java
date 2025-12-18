@@ -1,7 +1,7 @@
 package com.library.library.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,37 +18,39 @@ import java.util.Set;
 @AllArgsConstructor
 public class Book extends BaseEntity {
 
-    @NotNull
+    @Column(nullable = false)
     private String title;
-    @NotNull
+
+    @Column(nullable = false)
     private String isbn;
-    @NotNull
+
+    @Column(nullable = false)
     private int productionYear;
-    @NotNull
+
+    @Column(nullable = false)
     private int pageOfNumber;
 
-
     @Column(columnDefinition = "integer default 0")
-    private Integer stock = 0;
+    private Integer stock;
 
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
-    @JoinTable(
-            name = "book_author",
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(name = "book_author",
             joinColumns = @JoinColumn(name = "book_id"),
-            inverseJoinColumns = @JoinColumn(name = "author_id")
-    )
+            inverseJoinColumns = @JoinColumn(name = "author_id"))
     private Set<Author> authors = new HashSet<>();
 
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
-    @JoinTable(
-            name = "book_category",
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(name = "book_category",
             joinColumns = @JoinColumn(name = "book_id"),
-            inverseJoinColumns = @JoinColumn(name = "category_id")
-    )
+            inverseJoinColumns = @JoinColumn(name = "category_id"))
     private Set<Category> categories = new HashSet<>();
 
+    @OneToMany(mappedBy = "book", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private Set<Review> reviews = new HashSet<>();
 
-    @OneToMany(mappedBy = "book",cascade = {CascadeType.PERSIST,CascadeType.MERGE})
-    private Set<Loan> loans=new HashSet<>();
-
+    // YENİ İLİŞKİ
+    @ManyToMany(mappedBy = "favoriteBooks")
+    @JsonIgnore
+    private Set<User> favoritedByUsers = new HashSet<>();
 }

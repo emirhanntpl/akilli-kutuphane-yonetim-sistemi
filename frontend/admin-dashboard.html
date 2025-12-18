@@ -7,14 +7,14 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary-color: rgba(44, 62, 80, 0.95); /* Yarı saydam sidebar */
-            --secondary-color: #e67e22; /* Admin için turuncu tema */
+            --primary-color: rgba(44, 62, 80, 0.95);
+            --secondary-color: #e67e22;
             --accent-color: #e74c3c;
             --success-color: #2ecc71;
             --warning-color: #f39c12;
             --info-color: #3498db;
             --bg-color: #ecf0f1;
-            --card-bg: rgba(255, 255, 255, 0.95); /* Yarı saydam kartlar */
+            --card-bg: rgba(255, 255, 255, 0.95);
             --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             --transition: all 0.3s ease;
         }
@@ -22,7 +22,6 @@
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
-            /* Arka Plan Resmi */
             background-image: url('https://images.unsplash.com/photo-1481627834876-b7833e8f5570?q=80&w=2070&auto=format&fit=crop');
             background-size: cover;
             background-position: center;
@@ -32,14 +31,13 @@
             display: flex;
         }
 
-        /* Sidebar Tasarımı */
         .sidebar {
             width: 250px;
             background-color: var(--primary-color);
             color: white;
             display: flex;
             flex-direction: column;
-            padding: 2rem 1.5rem; /* Padding artırıldı */
+            padding: 2rem 1.5rem;
             position: fixed;
             height: 100%;
             overflow-y: auto;
@@ -50,7 +48,7 @@
         .sidebar-header {
             font-size: 1.5rem;
             font-weight: bold;
-            margin-bottom: 2rem; /* Başlık ile admin info arası mesafe */
+            margin-bottom: 2rem;
             display: flex;
             align-items: center;
             gap: 10px;
@@ -58,7 +56,6 @@
             border-bottom: 1px solid rgba(255,255,255,0.1);
         }
 
-        /* Admin Bilgisi Alanı */
         .admin-info {
             display: flex;
             align-items: center;
@@ -66,7 +63,7 @@
             padding: 1rem;
             background-color: rgba(255, 255, 255, 0.1);
             border-radius: 8px;
-            margin-bottom: 3rem; /* Menü ile admin info arası mesafe artırıldı */
+            margin-bottom: 3rem;
         }
         .admin-avatar {
             width: 40px;
@@ -79,33 +76,30 @@
             font-weight: bold;
             font-size: 1.2rem;
         }
-        .admin-name {
-            font-weight: 500;
-            font-size: 1rem;
-        }
+        .admin-name { font-weight: 500; font-size: 1rem; }
 
         .nav-link {
             display: flex;
             align-items: center;
-            gap: 15px; /* İkon ile yazı arası mesafe artırıldı */
-            padding: 1.2rem; /* Padding artırıldı */
+            gap: 15px;
+            padding: 1.2rem;
             color: rgba(255,255,255,0.8);
             text-decoration: none;
             border-radius: 8px;
-            margin-bottom: 1rem; /* Sekmeler arası mesafe artırıldı */
+            margin-bottom: 1rem;
             transition: var(--transition);
             cursor: pointer;
-            font-size: 1.05rem; /* Yazı boyutu biraz büyütüldü */
+            font-size: 1.05rem;
         }
 
         .nav-link:hover, .nav-link.active {
             background-color: var(--secondary-color);
             color: white;
-            transform: translateX(5px); /* Hover efektine hareket eklendi */
+            transform: translateX(5px);
         }
 
         .logout-btn {
-            margin-top: 3rem; /* Çıkış butonu daha aşağı alındı */
+            margin-top: 3rem;
             background-color: var(--accent-color);
             color: white;
             border: none;
@@ -119,16 +113,12 @@
             gap: 10px;
             transition: var(--transition);
         }
+        .logout-btn:hover { background-color: #c0392b; }
 
-        .logout-btn:hover {
-            background-color: #c0392b;
-        }
-
-        /* Ana İçerik */
         .main-content {
             flex-grow: 1;
             margin-left: 280px;
-            padding: 3rem; /* İçerik padding'i artırıldı */
+            padding: 3rem;
         }
 
         .header {
@@ -137,11 +127,10 @@
             align-items: center;
             margin-bottom: 2rem;
             background-color: var(--card-bg);
-            padding: 1.5rem 2rem; /* Header padding'i artırıldı */
+            padding: 1.5rem 2rem;
             border-radius: 12px;
             box-shadow: var(--shadow);
         }
-
         .header h2 { margin: 0; color: #2c3e50; }
 
         .action-btn {
@@ -157,10 +146,60 @@
             gap: 8px;
             transition: var(--transition);
         }
-
         .action-btn:hover { background-color: #27ae60; transform: translateY(-2px); }
 
-        /* Tablo Tasarımı */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        .stat-card {
+            background-color: var(--card-bg);
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            transition: var(--transition);
+        }
+        .stat-card:hover { transform: translateY(-5px); box-shadow: 0 8px 15px rgba(0,0,0,0.1); }
+        .stat-icon {
+            font-size: 3rem;
+            padding: 1rem;
+            border-radius: 50%;
+            color: white;
+            width: 64px;
+            height: 64px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .stat-icon.books { background-color: var(--info-color); }
+        .stat-icon.users { background-color: var(--success-color); }
+        .stat-icon.loans { background-color: var(--warning-color); }
+        .stat-icon.categories { background-color: #9b59b6; }
+        .stat-info h3 { margin: 0 0 0.5rem 0; font-size: 2rem; color: #333; }
+        .stat-info p { margin: 0; color: #777; }
+
+        .reports-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+        .report-card {
+            background-color: var(--card-bg);
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+        }
+        .report-card h4 { margin-top: 0; border-bottom: 2px solid var(--secondary-color); padding-bottom: 0.5rem; }
+        .report-list { list-style: none; padding: 0; }
+        .report-list li { display: flex; justify-content: space-between; padding: 0.75rem 0; border-bottom: 1px solid #eee; }
+        .report-list li:last-child { border-bottom: none; }
+        .report-list .count { font-weight: bold; background-color: #eee; padding: 0.2rem 0.5rem; border-radius: 5px; }
+
         .data-table {
             width: 100%;
             background-color: var(--card-bg);
@@ -169,19 +208,16 @@
             border-collapse: collapse;
             overflow: hidden;
         }
-
         .data-table th, .data-table td {
-            padding: 1.2rem; /* Tablo hücre boşlukları artırıldı */
+            padding: 1.2rem;
             text-align: left;
             border-bottom: 1px solid #eee;
         }
-
         .data-table th {
             background-color: rgba(248, 249, 250, 0.9);
             color: #2c3e50;
             font-weight: 600;
         }
-
         .data-table tr:hover { background-color: rgba(241, 241, 241, 0.8); }
 
         .btn-sm {
@@ -193,10 +229,8 @@
             margin-right: 5px;
             transition: var(--transition);
         }
-
         .btn-edit { background-color: var(--info-color); color: white; }
         .btn-edit:hover { background-color: #2980b9; }
-
         .btn-delete { background-color: var(--accent-color); color: white; }
         .btn-delete:hover { background-color: #c0392b; }
 
@@ -211,12 +245,10 @@
         .status-returned { background-color: #7f8c8d; }
         .status-overdue { background-color: var(--accent-color); }
 
-        /* Sekme İçerikleri */
         .tab-pane { display: none; animation: fadeIn 0.3s; }
         .tab-pane.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* Modal */
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background-color: rgba(0,0,0,0.6);
@@ -239,29 +271,24 @@
 
         .form-group { margin-bottom: 1rem; }
         .form-group label { display: block; margin-bottom: 0.5rem; font-weight: 500; }
-        .form-group input, .form-group select {
+        .form-group input, .form-group select, .form-group textarea {
             width: 100%; padding: 0.8rem;
             border: 1px solid #ddd; border-radius: 5px;
             box-sizing: border-box;
+            font-family: inherit;
         }
 
         .modal-footer {
             display: flex; justify-content: flex-end; gap: 10px; margin-top: 1.5rem;
         }
 
-        /* UYARI/ONAY MODALI */
-        #alertModal .modal {
-            text-align: center;
-            max-width: 400px;
-        }
+        #alertModal .modal { text-align: center; max-width: 400px; }
         .modal-icon { font-size: 3rem; margin-bottom: 1rem; }
         .modal-icon.success { color: var(--success-color); }
         .modal-icon.error { color: var(--accent-color); }
         .modal-icon.confirm { color: var(--secondary-color); }
-        
         .modal-title { font-size: 1.5rem; margin-bottom: 0.5rem; color: #333; }
         .modal-message { color: #666; margin-bottom: 1.5rem; font-size: 1.1rem; }
-        
         .modal-buttons { display: flex; justify-content: center; gap: 10px; }
         .modal-btn {
             padding: 0.7rem 1.5rem; border: none; border-radius: 8px;
@@ -278,266 +305,141 @@
 </head>
 <body>
 
-    <!-- Sidebar -->
     <div class="sidebar">
-        <div class="sidebar-header">
-            <i class="fas fa-user-shield"></i> Yönetici Paneli
-        </div>
-        
-        <!-- Admin Bilgisi -->
+        <div class="sidebar-header"><i class="fas fa-user-shield"></i> Yönetici Paneli</div>
         <div class="admin-info">
             <div class="admin-avatar" id="adminAvatar">A</div>
             <div class="admin-name" id="adminName">Admin</div>
         </div>
-
-        <div class="nav-link active" onclick="switchTab('books')">
-            <i class="fas fa-book"></i> Kitap Yönetimi
-        </div>
-        <div class="nav-link" onclick="switchTab('authors')">
-            <i class="fas fa-feather-alt"></i> Yazar Yönetimi
-        </div>
-        <div class="nav-link" onclick="switchTab('categories')">
-            <i class="fas fa-tags"></i> Kategori Yönetimi
-        </div>
-        <div class="nav-link" onclick="switchTab('users')">
-            <i class="fas fa-users"></i> Okur Yönetimi
-        </div>
-        <div class="nav-link" onclick="switchTab('loans')">
-            <i class="fas fa-hand-holding"></i> Ödünç Takibi
-        </div>
-        
-        <!-- Çıkış Yap Butonu -->
-        <button class="logout-btn" onclick="logout()">
-            <i class="fas fa-sign-out-alt"></i> Çıkış Yap
-        </button>
+        <div class="nav-link active" onclick="switchTab('dashboard')"><i class="fas fa-tachometer-alt"></i> Ana Sayfa</div>
+        <div class="nav-link" onclick="switchTab('books')"><i class="fas fa-book"></i> Kitap Yönetimi</div>
+        <div class="nav-link" onclick="switchTab('authors')"><i class="fas fa-feather-alt"></i> Yazar Yönetimi</div>
+        <div class="nav-link" onclick="switchTab('categories')"><i class="fas fa-tags"></i> Kategori Yönetimi</div>
+        <div class="nav-link" onclick="switchTab('users')"><i class="fas fa-users"></i> Okur Yönetimi</div>
+        <div class="nav-link" onclick="switchTab('loans')"><i class="fas fa-hand-holding"></i> Ödünç Takibi</div>
+        <div class="nav-link" onclick="switchTab('announcements')"><i class="fas fa-bullhorn"></i> Duyurular</div>
+        <div class="nav-link" onclick="switchTab('reviews')"><i class="fas fa-star"></i> Yorum Yönetimi</div>
+        <button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Çıkış Yap</button>
     </div>
 
-    <!-- Ana İçerik -->
     <div class="main-content">
-        
-        <!-- Kitap Yönetimi -->
-        <div id="books" class="tab-pane active">
-            <div class="header">
-                <h2>Kitap Listesi</h2>
-                <button class="action-btn" onclick="openBookModal()"><i class="fas fa-plus"></i> Yeni Kitap Ekle</button>
+        <div id="dashboard" class="tab-pane active">
+            <div class="header"><h2>Gösterge Paneli</h2></div>
+            <div class="stats-grid">
+                <div class="stat-card"><div class="stat-icon books"><i class="fas fa-book"></i></div><div class="stat-info"><h3 id="totalBooks">0</h3><p>Toplam Kitap</p></div></div>
+                <div class="stat-card"><div class="stat-icon users"><i class="fas fa-users"></i></div><div class="stat-info"><h3 id="totalUsers">0</h3><p>Toplam Okur</p></div></div>
+                <div class="stat-card"><div class="stat-icon loans"><i class="fas fa-hand-holding-heart"></i></div><div class="stat-info"><h3 id="activeLoans">0</h3><p>Ödünçteki Kitaplar</p></div></div>
+                <div class="stat-card"><div class="stat-icon categories"><i class="fas fa-tags"></i></div><div class="stat-info"><h3 id="totalCategories">0</h3><p>Toplam Kategori</p></div></div>
             </div>
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Kitap Adı</th>
-                        <th>Yazar</th>
-                        <th>Kategori</th>
-                        <th>Stok</th>
-                        <th>İşlemler</th>
-                    </tr>
-                </thead>
-                <tbody id="books-table-body"></tbody>
-            </table>
+            <div class="reports-grid">
+                <div class="report-card">
+                    <h4>En Popüler Kitaplar</h4>
+                    <ul class="report-list" id="popularBooksList"></ul>
+                </div>
+                <div class="report-card">
+                    <h4>En Aktif Okurlar</h4>
+                    <ul class="report-list" id="activeUsersList"></ul>
+                </div>
+            </div>
         </div>
-
-        <!-- Yazar Yönetimi -->
+        <div id="books" class="tab-pane">
+            <div class="header"><h2>Kitap Listesi</h2><button class="action-btn" onclick="openBookModal()"><i class="fas fa-plus"></i> Yeni Kitap Ekle</button></div>
+            <table class="data-table"><thead><tr><th>ID</th><th>Kitap Adı</th><th>Yazar</th><th>Kategori</th><th>Stok</th><th>İşlemler</th></tr></thead><tbody id="books-table-body"></tbody></table>
+        </div>
         <div id="authors" class="tab-pane">
-            <div class="header">
-                <h2>Yazar Listesi</h2>
-                <button class="action-btn" onclick="openAuthorModal()"><i class="fas fa-plus"></i> Yeni Yazar Ekle</button>
-            </div>
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Ad Soyad</th>
-                        <th>İşlemler</th>
-                    </tr>
-                </thead>
-                <tbody id="authors-table-body"></tbody>
-            </table>
+            <div class="header"><h2>Yazar Listesi</h2><button class="action-btn" onclick="openAuthorModal()"><i class="fas fa-plus"></i> Yeni Yazar Ekle</button></div>
+            <table class="data-table"><thead><tr><th>ID</th><th>Ad Soyad</th><th>İşlemler</th></tr></thead><tbody id="authors-table-body"></tbody></table>
         </div>
-
-        <!-- Kategori Yönetimi -->
         <div id="categories" class="tab-pane">
-            <div class="header">
-                <h2>Kategori Listesi</h2>
-                <button class="action-btn" onclick="openCategoryModal()"><i class="fas fa-plus"></i> Yeni Kategori Ekle</button>
-            </div>
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Kategori Adı</th>
-                        <th>İşlemler</th>
-                    </tr>
-                </thead>
-                <tbody id="categories-table-body"></tbody>
-            </table>
+            <div class="header"><h2>Kategori Listesi</h2><button class="action-btn" onclick="openCategoryModal()"><i class="fas fa-plus"></i> Yeni Kategori Ekle</button></div>
+            <table class="data-table"><thead><tr><th>ID</th><th>Kategori Adı</th><th>İşlemler</th></tr></thead><tbody id="categories-table-body"></tbody></table>
         </div>
-
-        <!-- Okur Yönetimi -->
         <div id="users" class="tab-pane">
-            <div class="header">
-                <h2>Okur Listesi</h2>
-                <button class="action-btn" onclick="openUserModal()"><i class="fas fa-plus"></i> Yeni Okur Ekle</button>
-            </div>
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Ad</th>
-                        <th>Kullanıcı Adı</th>
-                        <th>Email</th>
-                        <th>Roller</th>
-                        <th>İşlemler</th>
-                    </tr>
-                </thead>
-                <tbody id="users-table-body"></tbody>
-            </table>
+            <div class="header"><h2>Okur Listesi</h2><button class="action-btn" onclick="openUserModal()"><i class="fas fa-plus"></i> Yeni Okur Ekle</button></div>
+            <table class="data-table"><thead><tr><th>ID</th><th>Ad</th><th>Kullanıcı Adı</th><th>Email</th><th>Roller</th><th>Borç</th><th>İşlemler</th></tr></thead><tbody id="users-table-body"></tbody></table>
         </div>
-
-        <!-- Ödünç Takibi -->
         <div id="loans" class="tab-pane">
-            <div class="header">
-                <h2>Ödünç Alınan Kitaplar</h2>
-            </div>
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Kullanıcı</th>
-                        <th>Kitap</th>
-                        <th>Alınma Tarihi</th>
-                        <th>Son İade Tarihi</th>
-                        <th>Durum</th>
-                    </tr>
-                </thead>
-                <tbody id="loans-table-body"></tbody>
-            </table>
+            <div class="header"><h2>Ödünç Alınan Kitaplar</h2></div>
+            <table class="data-table"><thead><tr><th>ID</th><th>Kullanıcı</th><th>Kitap</th><th>Alınma Tarihi</th><th>Son İade Tarihi</th><th>İade Edildiği Tarih</th><th>Durum</th></tr></thead><tbody id="loans-table-body"></tbody></table>
         </div>
-
+        <div id="announcements" class="tab-pane">
+            <div class="header"><h2>Duyurular</h2><button class="action-btn" onclick="openAnnouncementModal()"><i class="fas fa-plus"></i> Yeni Duyuru Ekle</button></div>
+            <table class="data-table"><thead><tr><th>ID</th><th>Başlık</th><th>İçerik</th><th>İşlemler</th></tr></thead><tbody id="announcements-table-body"></tbody></table>
+        </div>
+        <div id="reviews" class="tab-pane">
+            <div class="header"><h2>Tüm Yorumlar</h2></div>
+            <table class="data-table"><thead><tr><th>ID</th><th>Kullanıcı</th><th>Yorum</th><th>Puan</th><th>Tarih</th><th>İşlemler</th></tr></thead><tbody id="reviews-table-body"></tbody></table>
+        </div>
     </div>
 
     <!-- MODALLAR -->
-    
-    <!-- Kitap Modalı -->
     <div id="bookModal" class="modal-overlay">
         <div class="modal">
             <h3 id="bookModalTitle">Kitap Ekle</h3>
             <form id="bookForm">
                 <input type="hidden" id="bookId">
-                <div class="form-group">
-                    <label>Kitap Adı</label>
-                    <input type="text" id="bookTitle" required>
-                </div>
-                <div class="form-group">
-                    <label>ISBN</label>
-                    <input type="text" id="bookIsbn" required>
-                </div>
-                <div class="form-group">
-                    <label>Yayın Yılı</label>
-                    <input type="number" id="bookYear" required>
-                </div>
-                <div class="form-group">
-                    <label>Sayfa Sayısı</label>
-                    <input type="number" id="bookPage" required>
-                </div>
-                <div class="form-group">
-                    <label>Stok</label>
-                    <input type="number" id="bookStock" required>
-                </div>
-                <div class="form-group">
-                    <label>Yazar ID (Virgülle ayırın)</label>
-                    <input type="text" id="bookAuthorIds" placeholder="Örn: 1, 2" required>
-                </div>
-                <div class="form-group">
-                    <label>Kategori ID (Virgülle ayırın)</label>
-                    <input type="text" id="bookCategoryIds" placeholder="Örn: 1, 2" required>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn-sm btn-delete" onclick="closeModal('bookModal')">İptal</button>
-                    <button type="submit" class="btn-sm btn-edit">Kaydet</button>
-                </div>
+                <div class="form-group"><label>Kitap Adı</label><input type="text" id="bookTitle" required></div>
+                <div class="form-group"><label>ISBN</label><input type="text" id="bookIsbn" required></div>
+                <div class="form-group"><label>Yayın Yılı</label><input type="number" id="bookYear" required></div>
+                <div class="form-group"><label>Sayfa Sayısı</label><input type="number" id="bookPage" required></div>
+                <div class="form-group"><label>Stok</label><input type="number" id="bookStock" required></div>
+                <div class="form-group"><label>Yazar ID (Virgülle ayırın)</label><input type="text" id="bookAuthorIds" placeholder="Örn: 1, 2" required></div>
+                <div class="form-group"><label>Kategori ID (Virgülle ayırın)</label><input type="text" id="bookCategoryIds" placeholder="Örn: 1, 2" required></div>
+                <div class="modal-footer"><button type="button" class="btn-sm btn-delete" onclick="closeModal('bookModal')">İptal</button><button type="submit" class="btn-sm btn-edit">Kaydet</button></div>
             </form>
         </div>
     </div>
 
-    <!-- Yazar Modalı -->
     <div id="authorModal" class="modal-overlay">
         <div class="modal">
             <h3 id="authorModalTitle">Yazar Ekle</h3>
             <form id="authorForm">
                 <input type="hidden" id="authorId">
-                <div class="form-group">
-                    <label>Ad</label>
-                    <input type="text" id="authorFirstName" required>
-                </div>
-                <div class="form-group">
-                    <label>Soyad</label>
-                    <input type="text" id="authorLastName" required>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn-sm btn-delete" onclick="closeModal('authorModal')">İptal</button>
-                    <button type="submit" class="btn-sm btn-edit">Kaydet</button>
-                </div>
+                <div class="form-group"><label>Ad</label><input type="text" id="authorFirstName" required></div>
+                <div class="form-group"><label>Soyad</label><input type="text" id="authorLastName" required></div>
+                <div class="modal-footer"><button type="button" class="btn-sm btn-delete" onclick="closeModal('authorModal')">İptal</button><button type="submit" class="btn-sm btn-edit">Kaydet</button></div>
             </form>
         </div>
     </div>
 
-    <!-- Kategori Modalı -->
     <div id="categoryModal" class="modal-overlay">
         <div class="modal">
             <h3 id="categoryModalTitle">Kategori Ekle</h3>
             <form id="categoryForm">
                 <input type="hidden" id="categoryId">
-                <div class="form-group">
-                    <label>Kategori Adı</label>
-                    <input type="text" id="categoryName" required>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn-sm btn-delete" onclick="closeModal('categoryModal')">İptal</button>
-                    <button type="submit" class="btn-sm btn-edit">Kaydet</button>
-                </div>
+                <div class="form-group"><label>Kategori Adı</label><input type="text" id="categoryName" required></div>
+                <div class="modal-footer"><button type="button" class="btn-sm btn-delete" onclick="closeModal('categoryModal')">İptal</button><button type="submit" class="btn-sm btn-edit">Kaydet</button></div>
             </form>
         </div>
     </div>
 
-    <!-- Okur Modalı -->
     <div id="userModal" class="modal-overlay">
         <div class="modal">
             <h3 id="userModalTitle">Okur Ekle</h3>
             <form id="userForm">
                 <input type="hidden" id="userId">
-                <div class="form-group">
-                    <label>Ad</label>
-                    <input type="text" id="userName" required>
-                </div>
-                <div class="form-group">
-                    <label>Kullanıcı Adı</label>
-                    <input type="text" id="userUsername" required>
-                </div>
-                <div class="form-group">
-                    <label>Email</label>
-                    <input type="email" id="userEmail" required>
-                </div>
-                <div class="form-group">
-                    <label>Adres</label>
-                    <input type="text" id="userAddress" required>
-                </div>
-                <div class="form-group">
-                    <label>Şifre (Sadece yeni kullanıcı için)</label>
-                    <input type="password" id="userPassword">
-                </div>
-                <div class="form-group">
-                    <label>Roller (Virgülle ayırın: ROLE_USER, ROLE_ADMIN)</label>
-                    <input type="text" id="userRoles" placeholder="Örn: ROLE_USER, ROLE_ADMIN" required>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn-sm btn-delete" onclick="closeModal('userModal')">İptal</button>
-                    <button type="submit" class="btn-sm btn-edit">Kaydet</button>
-                </div>
+                <div class="form-group"><label>Ad</label><input type="text" id="userName" required></div>
+                <div class="form-group"><label>Kullanıcı Adı</label><input type="text" id="userUsername" required></div>
+                <div class="form-group"><label>Email</label><input type="email" id="userEmail" required></div>
+                <div class="form-group"><label>Adres</label><input type="text" id="userAddress" required></div>
+                <div class="form-group"><label>Şifre</label><input type="password" id="userPassword"></div>
+                <div class="form-group"><label>Roller (Virgülle ayırın: ROLE_USER, ROLE_ADMIN)</label><input type="text" id="userRoles" placeholder="Örn: ROLE_USER, ROLE_ADMIN" required></div>
+                <div class="modal-footer"><button type="button" class="btn-sm btn-delete" onclick="closeModal('userModal')">İptal</button><button type="submit" class="btn-sm btn-edit">Kaydet</button></div>
             </form>
         </div>
     </div>
 
-    <!-- UYARI/ONAY MODALI -->
+    <div id="announcementModal" class="modal-overlay">
+        <div class="modal">
+            <h3>Yeni Duyuru Ekle</h3>
+            <form id="announcementForm">
+                <div class="form-group"><label>Başlık</label><input type="text" id="announcementTitle" required></div>
+                <div class="form-group"><label>İçerik</label><textarea id="announcementContent" rows="5" required></textarea></div>
+                <div class="modal-footer"><button type="button" class="btn-sm btn-delete" onclick="closeModal('announcementModal')">İptal</button><button type="submit" class="btn-sm btn-edit">Yayınla</button></div>
+            </form>
+        </div>
+    </div>
+
     <div id="alertModal" class="modal-overlay">
         <div class="modal">
             <div id="modalIcon" class="modal-icon"></div>
@@ -582,49 +484,39 @@
                 btnsEl.appendChild(cancelBtn);
                 btnsEl.appendChild(confirmBtn);
             }
-
             modal.classList.add('active');
         }
 
-        function closeAlert() {
-            document.getElementById('alertModal').classList.remove('active');
-        }
+        function closeAlert() { document.getElementById('alertModal').classList.remove('active'); }
 
         window.addEventListener('DOMContentLoaded', () => {
-            if (!token) {
-                window.location.href = '/staff-login.html';
-                return;
-            }
-            
-            // Admin Adını Göster
+            if (!token) { window.location.href = '/staff-login.html'; return; }
             try {
                 const base64Url = token.split('.')[1];
                 const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
                 const jsonPayload = decodeURIComponent(window.atob(base64).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
                 const payload = JSON.parse(jsonPayload);
-                
                 const username = payload.sub || 'Admin';
                 document.getElementById('adminName').textContent = username;
                 document.getElementById('adminAvatar').textContent = username.charAt(0).toUpperCase();
-            } catch (e) {
-                console.error("Token okunamadı", e);
-            }
-
-            loadBooks();
+            } catch (e) { console.error("Token okunamadı", e); }
+            loadDashboardStats();
         });
 
         function switchTab(tabName) {
             document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
             document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-            
             document.getElementById(tabName).classList.add('active');
             event.currentTarget.classList.add('active');
 
+            if(tabName === 'dashboard') loadDashboardStats();
             if(tabName === 'books') loadBooks();
             if(tabName === 'authors') loadAuthors();
             if(tabName === 'categories') loadCategories();
             if(tabName === 'users') loadUsers();
             if(tabName === 'loans') loadLoans();
+            if(tabName === 'announcements') loadAnnouncements();
+            if(tabName === 'reviews') loadAllReviews();
         }
 
         function closeModal(modalId) {
@@ -636,11 +528,42 @@
             }
         }
 
+        function openModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) modal.classList.add('active');
+        }
+
         function logout() {
             showAlert('confirm', 'Çıkış', 'Çıkış yapmak istediğinize emin misiniz?', () => {
                 localStorage.clear();
                 window.location.href = '/index.html';
             });
+        }
+
+        async function loadDashboardStats() {
+            try {
+                const response = await fetch('/rest/api/dashboard/stats', { headers: { 'Authorization': `Bearer ${token}` } });
+                const data = await response.json();
+                if (response.ok) {
+                    const stats = data.payload;
+                    document.getElementById('totalBooks').textContent = stats.totalBooks;
+                    document.getElementById('totalUsers').textContent = stats.totalUsers;
+                    document.getElementById('activeLoans').textContent = stats.activeLoans;
+                    document.getElementById('totalCategories').textContent = stats.totalCategories;
+
+                    const popularBooksList = document.getElementById('popularBooksList');
+                    popularBooksList.innerHTML = '';
+                    stats.popularBooks.forEach(book => {
+                        popularBooksList.innerHTML += `<li>${book.title} <span class="count">${book.count} kez</span></li>`;
+                    });
+
+                    const activeUsersList = document.getElementById('activeUsersList');
+                    activeUsersList.innerHTML = '';
+                    stats.activeUsers.forEach(user => {
+                        activeUsersList.innerHTML += `<li>${user.username} <span class="count">${user.count} kitap</span></li>`;
+                    });
+                }
+            } catch (e) { console.error("İstatistikler yüklenemedi:", e); }
         }
 
         // --- KİTAP İŞLEMLERİ ---
@@ -655,18 +578,7 @@
                 books.forEach(book => {
                     const authorNames = book.authors.map(a => `${a.firstName} ${a.lastName}`).join(', ');
                     const categoryNames = book.categories.map(c => c.category).join(', ');
-                    const row = `
-                        <tr>
-                            <td>${book.id}</td>
-                            <td>${book.title}</td>
-                            <td>${authorNames}</td>
-                            <td>${categoryNames}</td>
-                            <td>${book.stock ?? 0}</td>
-                            <td>
-                                <button class="btn-sm btn-edit" onclick='openBookModal(${JSON.stringify(book)})'><i class="fas fa-edit"></i></button>
-                                <button class="btn-sm btn-delete" onclick="deleteBook(${book.id})"><i class="fas fa-trash"></i></button>
-                            </td>
-                        </tr>`;
+                    const row = `<tr><td>${book.id}</td><td>${book.title}</td><td>${authorNames}</td><td>${categoryNames}</td><td>${book.stock ?? 0}</td><td><button class="btn-sm btn-edit" onclick='openBookModal(${JSON.stringify(book)})'><i class="fas fa-edit"></i></button><button class="btn-sm btn-delete" onclick="deleteBook(${book.id})"><i class="fas fa-trash"></i></button></td></tr>`;
                     tbody.innerHTML += row;
                 });
             } catch (e) { console.error(e); tbody.innerHTML = '<tr><td colspan="6">Hata!</td></tr>'; }
@@ -699,7 +611,6 @@
             const id = document.getElementById('bookId').value;
             const method = id ? 'PUT' : 'POST';
             const url = id ? `/rest/api/books/update/${id}` : '/rest/api/books/create';
-            
             const body = {
                 title: document.getElementById('bookTitle').value,
                 isbn: document.getElementById('bookIsbn').value,
@@ -709,39 +620,22 @@
                 authorIds: document.getElementById('bookAuthorIds').value.split(',').map(s => parseInt(s.trim())),
                 categoryIds: document.getElementById('bookCategoryIds').value.split(',').map(s => parseInt(s.trim()))
             };
-
             try {
-                const response = await fetch(url, {
-                    method: method,
-                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                    body: JSON.stringify(body)
-                });
+                const response = await fetch(url, { method: method, headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify(body) });
                 const data = await response.json();
-                if(response.ok) {
-                    showAlert('success', 'Başarılı', 'İşlem başarıyla tamamlandı.');
-                    closeModal('bookModal');
-                    loadBooks();
-                } else { 
-                    showAlert('error', 'Hata', 'Alanları doğru doldurunuz');
-                }
-            } catch (err) { console.error(err); showAlert('error', 'Hata', 'Bir hata oluştu!'); }
+                if(response.ok) { showAlert('success', 'Başarılı', 'İşlem başarıyla tamamlandı.'); closeModal('bookModal'); loadBooks(); }
+                else { showAlert('error', 'Hata', 'Alanları doğru doldurunuz'); }
+            } catch (err) { showAlert('error', 'Hata', 'Bir hata oluştu!'); }
         });
 
         async function deleteBook(id) {
             showAlert('confirm', 'Silme Onayı', 'Bu kitabı silmek istediğinize emin misiniz?', async () => {
                 try {
-                    const response = await fetch(`/rest/api/books/delete/${id}`, {
-                        method: 'DELETE',
-                        headers: { 'Authorization': `Bearer ${token}` }
-                    });
+                    const response = await fetch(`/rest/api/books/delete/${id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } });
                     const data = await response.json();
-                    if(response.ok) {
-                        showAlert('success', 'Başarılı', data.payload || 'Kitap silindi.');
-                        loadBooks();
-                    } else {
-                        showAlert('error', 'Hata', data.errorMessage || 'Bilinmeyen hata');
-                    }
-                } catch (e) { console.error(e); showAlert('error', 'Hata', 'Bir hata oluştu!'); }
+                    if(response.ok) { showAlert('success', 'Başarılı', data.payload || 'Kitap silindi.'); loadBooks(); }
+                    else { showAlert('error', 'Hata', data.errorMessage || 'Bilinmeyen hata'); }
+                } catch (e) { showAlert('error', 'Hata', 'Bir hata oluştu!'); }
             });
         }
 
@@ -751,18 +645,11 @@
             tbody.innerHTML = '<tr><td colspan="3">Yükleniyor...</td></tr>';
             try {
                 const response = await fetch('/rest/api/authors', { headers: { 'Authorization': `Bearer ${token}` } });
-                const authors = await response.json();
+                const data = await response.json();
+                const authors = data.payload; // DÜZELTME: Artık RootEntity dönüyor
                 tbody.innerHTML = '';
                 authors.forEach(author => {
-                    const row = `
-                        <tr>
-                            <td>${author.id}</td>
-                            <td>${author.firstName} ${author.lastName}</td>
-                            <td>
-                                <button class="btn-sm btn-edit" onclick='openAuthorModal(${JSON.stringify(author)})'><i class="fas fa-edit"></i></button>
-                                <button class="btn-sm btn-delete" onclick="deleteAuthor(${author.id})"><i class="fas fa-trash"></i></button>
-                            </td>
-                        </tr>`;
+                    const row = `<tr><td>${author.id}</td><td>${author.firstName} ${author.lastName}</td><td><button class="btn-sm btn-edit" onclick='openAuthorModal(${JSON.stringify(author)})'><i class="fas fa-edit"></i></button><button class="btn-sm btn-delete" onclick="deleteAuthor(${author.id})"><i class="fas fa-trash"></i></button></td></tr>`;
                     tbody.innerHTML += row;
                 });
             } catch (e) { console.error(e); tbody.innerHTML = '<tr><td colspan="3">Hata!</td></tr>'; }
@@ -789,24 +676,11 @@
             const id = document.getElementById('authorId').value;
             const method = id ? 'PUT' : 'POST';
             const url = id ? `/rest/api/authors/${id}` : '/rest/api/authors';
-            
-            const body = {
-                firstName: document.getElementById('authorFirstName').value,
-                lastName: document.getElementById('authorLastName').value
-            };
-
+            const body = { firstName: document.getElementById('authorFirstName').value, lastName: document.getElementById('authorLastName').value };
             try {
-                const response = await fetch(url, {
-                    method: method,
-                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                    body: JSON.stringify(body)
-                });
+                const response = await fetch(url, { method: method, headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify(body) });
                 const data = await response.json();
-                if(response.ok) { 
-                    showAlert('success', 'Başarılı', 'İşlem başarıyla tamamlandı.');
-                    closeModal('authorModal'); 
-                    loadAuthors(); 
-                }
+                if(response.ok) { showAlert('success', 'Başarılı', 'İşlem başarıyla tamamlandı.'); closeModal('authorModal'); loadAuthors(); }
                 else { showAlert('error', 'Hata', 'Alanları doğru doldurunuz'); }
             } catch (err) { showAlert('error', 'Hata', 'Bir hata oluştu!'); }
         });
@@ -814,17 +688,9 @@
         async function deleteAuthor(id) {
             showAlert('confirm', 'Silme Onayı', 'Bu yazarı silmek istediğinize emin misiniz?', async () => {
                 try {
-                    const response = await fetch(`/rest/api/authors/${id}`, {
-                        method: 'DELETE',
-                        headers: { 'Authorization': `Bearer ${token}` }
-                    });
-                    if(response.ok) { 
-                        showAlert('success', 'Başarılı', 'Yazar silindi.');
-                        loadAuthors(); 
-                    }
-                    else { 
-                        showAlert('error', 'Hata', 'Silinemedi: İlişkili kitaplar olabilir.');
-                    }
+                    const response = await fetch(`/rest/api/authors/${id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } });
+                    if(response.ok) { showAlert('success', 'Başarılı', 'Yazar silindi.'); loadAuthors(); }
+                    else { showAlert('error', 'Hata', 'Silinemedi: İlişkili kitaplar olabilir.'); }
                 } catch (e) { showAlert('error', 'Hata', 'Bir hata oluştu!'); }
             });
         }
@@ -836,18 +702,10 @@
             try {
                 const response = await fetch('/rest/api/categories', { headers: { 'Authorization': `Bearer ${token}` } });
                 const data = await response.json();
-                const categories = data.payload;
+                const categories = data.payload; // DÜZELTME: Artık RootEntity dönüyor
                 tbody.innerHTML = '';
                 categories.forEach(cat => {
-                    const row = `
-                        <tr>
-                            <td>${cat.id}</td>
-                            <td>${cat.category}</td>
-                            <td>
-                                <button class="btn-sm btn-edit" onclick='openCategoryModal(${JSON.stringify(cat)})'><i class="fas fa-edit"></i></button>
-                                <button class="btn-sm btn-delete" onclick="deleteCategory(${cat.id})"><i class="fas fa-trash"></i></button>
-                            </td>
-                        </tr>`;
+                    const row = `<tr><td>${cat.id}</td><td>${cat.category}</td><td><button class="btn-sm btn-edit" onclick='openCategoryModal(${JSON.stringify(cat)})'><i class="fas fa-edit"></i></button><button class="btn-sm btn-delete" onclick="deleteCategory(${cat.id})"><i class="fas fa-trash"></i></button></td></tr>`;
                     tbody.innerHTML += row;
                 });
             } catch (e) { console.error(e); tbody.innerHTML = '<tr><td colspan="3">Hata!</td></tr>'; }
@@ -873,21 +731,11 @@
             const id = document.getElementById('categoryId').value;
             const method = id ? 'PUT' : 'POST';
             const url = id ? `/rest/api/categories/${id}` : '/rest/api/categories';
-            
             const body = { category: document.getElementById('categoryName').value };
-
             try {
-                const response = await fetch(url, {
-                    method: method,
-                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                    body: JSON.stringify(body)
-                });
+                const response = await fetch(url, { method: method, headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify(body) });
                 const data = await response.json();
-                if(response.ok) { 
-                    showAlert('success', 'Başarılı', 'İşlem başarıyla tamamlandı.');
-                    closeModal('categoryModal'); 
-                    loadCategories(); 
-                }
+                if(response.ok) { showAlert('success', 'Başarılı', 'İşlem başarıyla tamamlandı.'); closeModal('categoryModal'); loadCategories(); }
                 else { showAlert('error', 'Hata', 'Alanları doğru doldurunuz'); }
             } catch (err) { showAlert('error', 'Hata', 'Bir hata oluştu!'); }
         });
@@ -895,17 +743,9 @@
         async function deleteCategory(id) {
             showAlert('confirm', 'Silme Onayı', 'Bu kategoriyi silmek istediğinize emin misiniz?', async () => {
                 try {
-                    const response = await fetch(`/rest/api/categories/${id}`, {
-                        method: 'DELETE',
-                        headers: { 'Authorization': `Bearer ${token}` }
-                    });
-                    if(response.ok) { 
-                        showAlert('success', 'Başarılı', 'Kategori silindi.');
-                        loadCategories(); 
-                    }
-                    else { 
-                        showAlert('error', 'Hata', 'Silinemedi: İlişkili kitaplar olabilir.');
-                    }
+                    const response = await fetch(`/rest/api/categories/${id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } });
+                    if(response.ok) { showAlert('success', 'Başarılı', 'Kategori silindi.'); loadCategories(); }
+                    else { showAlert('error', 'Hata', 'Silinemedi: İlişkili kitaplar olabilir.'); }
                 } catch (e) { showAlert('error', 'Hata', 'Bir hata oluştu!'); }
             });
         }
@@ -913,7 +753,7 @@
         // --- OKUR İŞLEMLERİ ---
         async function loadUsers() {
             const tbody = document.getElementById('users-table-body');
-            tbody.innerHTML = '<tr><td colspan="6">Yükleniyor...</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="7">Yükleniyor...</td></tr>';
             try {
                 const response = await fetch('/rest/api/users', { headers: { 'Authorization': `Bearer ${token}` } });
                 const data = await response.json();
@@ -921,28 +761,17 @@
                 tbody.innerHTML = '';
                 users.forEach(user => {
                     const roles = user.roles.map(r => r.replace('ROLE_', '')).join(', ');
-                    const row = `
-                        <tr>
-                            <td>${user.id}</td>
-                            <td>${user.name}</td>
-                            <td>${user.username}</td>
-                            <td>${user.email}</td>
-                            <td>${roles}</td>
-                            <td>
-                                <button class="btn-sm btn-edit" onclick='openUserModal(${JSON.stringify(user)})'><i class="fas fa-edit"></i></button>
-                                <button class="btn-sm btn-delete" onclick="deleteUser(${user.id})"><i class="fas fa-trash"></i></button>
-                            </td>
-                        </tr>`;
+                    const penalty = user.penalty ? user.penalty.toFixed(2) : '0.00';
+                    const row = `<tr><td>${user.id}</td><td>${user.name}</td><td>${user.username}</td><td>${user.email}</td><td>${roles}</td><td>${penalty} TL</td><td><button class="btn-sm btn-edit" onclick='openUserModal(${JSON.stringify(user)})'><i class="fas fa-edit"></i></button><button class="btn-sm btn-delete" onclick="deleteUser(${user.id})"><i class="fas fa-trash"></i></button></td></tr>`;
                     tbody.innerHTML += row;
                 });
-            } catch (e) { console.error(e); tbody.innerHTML = '<tr><td colspan="6">Hata!</td></tr>'; }
+            } catch (e) { console.error(e); tbody.innerHTML = '<tr><td colspan="7">Hata!</td></tr>'; }
         }
 
         function openUserModal(user = null) {
             const modal = document.getElementById('userModal');
             const title = document.getElementById('userModalTitle');
             const passwordField = document.getElementById('userPassword');
-            
             if (user) {
                 title.textContent = 'Okur Düzenle';
                 document.getElementById('userId').value = user.id;
@@ -966,97 +795,58 @@
         document.getElementById('userForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const id = document.getElementById('userId').value;
-            
-            if (id) {
-                showAlert('confirm', 'Güncelleme Onayı', 'Kullanıcıyı güncellemek istiyor musunuz?', () => {
-                    submitUserForm(id);
-                });
-            } else {
-                submitUserForm(id);
-            }
+            if (id) { showAlert('confirm', 'Güncelleme Onayı', 'Kullanıcıyı güncellemek istiyor musunuz?', () => { submitUserForm(id); }); }
+            else { submitUserForm(id); }
         });
 
         async function submitUserForm(id) {
             const method = id ? 'PUT' : 'POST';
             const url = id ? `/rest/api/users/${id}` : '/rest/api/users';
-            
             let body;
-            if (id) { // Güncelleme
-                body = {
-                    name: document.getElementById('userName').value,
-                    email: document.getElementById('userEmail').value,
-                    address: document.getElementById('userAddress').value,
-                    roles: document.getElementById('userRoles').value.split(',').map(s => s.trim())
-                };
-            } else { // Ekleme
-                body = {
-                    name: document.getElementById('userName').value,
-                    username: document.getElementById('userUsername').value,
-                    password: document.getElementById('userPassword').value,
-                    email: document.getElementById('userEmail').value,
-                    address: document.getElementById('userAddress').value,
-                    authorities: document.getElementById('userRoles').value.split(',').map(s => s.trim())
-                };
+            if (id) {
+                body = { name: document.getElementById('userName').value, email: document.getElementById('userEmail').value, address: document.getElementById('userAddress').value, roles: document.getElementById('userRoles').value.split(',').map(s => s.trim()) };
+            } else {
+                body = { name: document.getElementById('userName').value, username: document.getElementById('userUsername').value, password: document.getElementById('userPassword').value, email: document.getElementById('userEmail').value, address: document.getElementById('userAddress').value, authorities: document.getElementById('userRoles').value.split(',').map(s => s.trim()) };
             }
-
             try {
-                const response = await fetch(url, {
-                    method: method,
-                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                    body: JSON.stringify(body)
-                });
+                const response = await fetch(url, { method: method, headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify(body) });
                 const data = await response.json();
                 if(response.ok) {
-                    if (id) {
-                        showAlert('success', 'Başarılı', 'Kullanıcı başarıyla güncellendi.');
-                    } else {
-                        showAlert('success', 'Başarılı', 'Yeni bir kullanıcı eklendi.');
-                    }
-                    closeModal('userModal');
-                    loadUsers();
-                } else { 
-                    showAlert('error', 'Hata', `Başarısız: ${data.errorMessage || 'Alanları doğru doldurunuz'}`);
-                }
-            } catch (err) { console.error(err); showAlert('error', 'Hata', 'Bir hata oluştu!'); }
+                    if (id) showAlert('success', 'Başarılı', 'Kullanıcı başarıyla güncellendi.');
+                    else showAlert('success', 'Başarılı', 'Yeni bir kullanıcı eklendi.');
+                    closeModal('userModal'); loadUsers();
+                } else { showAlert('error', 'Hata', `Başarısız: ${data.errorMessage || 'Alanları doğru doldurunuz'}`); }
+            } catch (err) { showAlert('error', 'Hata', 'Bir hata oluştu!'); }
         }
 
         async function deleteUser(id) {
             showAlert('confirm', 'Silme Onayı', 'Kullanıcıyı gerçekten silmek istiyor musunuz?', async () => {
                 try {
-                    const response = await fetch(`/rest/api/users/${id}`, {
-                        method: 'DELETE',
-                        headers: { 'Authorization': `Bearer ${token}` }
-                    });
+                    const response = await fetch(`/rest/api/users/${id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } });
                     const data = await response.json();
-                    if(response.ok) {
-                        showAlert('success', 'Başarılı', data.payload || 'Kullanıcı silindi.');
-                        loadUsers();
-                    } else {
-                        showAlert('error', 'Hata', data.errorMessage || 'Bilinmeyen hata');
-                    }
-                } catch (e) { console.error(e); showAlert('error', 'Hata', 'Bir hata oluştu!'); }
+                    if(response.ok) { showAlert('success', 'Başarılı', data.payload || 'Kullanıcı silindi.'); loadUsers(); }
+                    else { showAlert('error', 'Hata', data.errorMessage || 'Bilinmeyen hata'); }
+                } catch (e) { showAlert('error', 'Hata', 'Bir hata oluştu!'); }
             });
         }
 
         // --- ÖDÜNÇ İŞLEMLERİ ---
         async function loadLoans() {
             const tbody = document.getElementById('loans-table-body');
-            tbody.innerHTML = '<tr><td colspan="6">Yükleniyor...</td></tr>';
-            
+            tbody.innerHTML = '<tr><td colspan="7">Yükleniyor...</td></tr>';
             try {
-                const response = await fetch('/rest/api/loans', {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
+                const response = await fetch('/rest/api/loans', { headers: { 'Authorization': `Bearer ${token}` } });
                 const data = await response.json();
                 const loans = data.payload;
-
                 tbody.innerHTML = '';
                 loans.forEach(loan => {
-                    const loanDate = new Date(loan.takingDate).toLocaleDateString('tr-TR');
+                    const loanDate = new Date(loan.loanDate).toLocaleDateString('tr-TR');
                     const dueDate = new Date(loan.dueDate).toLocaleDateString('tr-TR');
+                    const returnDate = loan.returnDate ? new Date(loan.returnDate).toLocaleDateString('tr-TR') : '-';
+                    
                     const isReturned = loan.returnDate != null;
                     const isOverdue = !isReturned && new Date(loan.dueDate) < new Date();
-
+                    
                     let statusBadge;
                     if (isReturned) {
                         statusBadge = `<span class="status-badge status-returned">İade Edildi</span>`;
@@ -1069,19 +859,105 @@
                     const row = `
                         <tr>
                             <td>${loan.id}</td>
-                            <td>${loan.userName}</td>
-                            <td>${loan.bookName}</td>
+                            <td>${loan.username}</td>
+                            <td>${loan.bookTitle}</td>
                             <td>${loanDate}</td>
                             <td>${dueDate}</td>
+                            <td>${returnDate}</td>
                             <td>${statusBadge}</td>
-                        </tr>
-                    `;
+                        </tr>`;
                     tbody.innerHTML += row;
                 });
             } catch (error) {
                 console.error(error);
-                tbody.innerHTML = '<tr><td colspan="6" style="color:red">Hata oluştu!</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="7" style="color:red">Hata oluştu!</td></tr>';
             }
+        }
+
+        // --- DUYURU İŞLEMLERİ ---
+        async function loadAnnouncements() {
+            const tbody = document.getElementById('announcements-table-body');
+            tbody.innerHTML = '<tr><td colspan="4">Yükleniyor...</td></tr>';
+            try {
+                const response = await fetch('/rest/api/announcements', { headers: { 'Authorization': `Bearer ${token}` } });
+                const data = await response.json();
+                const announcements = data.payload;
+                tbody.innerHTML = '';
+                announcements.forEach(ann => {
+                    const row = `<tr><td>${ann.id}</td><td>${ann.title}</td><td>${ann.content.substring(0, 50)}...</td><td><button class="btn-sm btn-delete" onclick="deleteAnnouncement(${ann.id})"><i class="fas fa-trash"></i></button></td></tr>`;
+                    tbody.innerHTML += row;
+                });
+            } catch (e) { console.error(e); tbody.innerHTML = '<tr><td colspan="4">Hata!</td></tr>'; }
+        }
+
+        function openAnnouncementModal() {
+            document.getElementById('announcementForm').reset();
+            openModal('announcementModal');
+        }
+
+        document.getElementById('announcementForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const body = { title: document.getElementById('announcementTitle').value, content: document.getElementById('announcementContent').value };
+            try {
+                const response = await fetch('/rest/api/announcements', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify(body) });
+                if(response.ok) { showAlert('success', 'Başarılı', 'Duyuru yayınlandı.'); closeModal('announcementModal'); loadAnnouncements(); }
+                else { showAlert('error', 'Hata', 'Duyuru yayınlanamadı.'); }
+            } catch (err) { showAlert('error', 'Hata', 'Bir hata oluştu!'); }
+        });
+
+        async function deleteAnnouncement(id) {
+            showAlert('confirm', 'Silme Onayı', 'Bu duyuruyu silmek istediğinize emin misiniz?', async () => {
+                try {
+                    const response = await fetch(`/rest/api/announcements/${id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } });
+                    if(response.ok) { showAlert('success', 'Başarılı', 'Duyuru silindi.'); loadAnnouncements(); }
+                    else { showAlert('error', 'Hata', 'Silme işlemi başarısız oldu.'); }
+                } catch (e) { showAlert('error', 'Hata', 'Bir hata oluştu!'); }
+            });
+        }
+
+        // --- YORUM YÖNETİMİ ---
+        async function loadAllReviews() {
+            const tbody = document.getElementById('reviews-table-body');
+            tbody.innerHTML = '<tr><td colspan="6">Yükleniyor...</td></tr>';
+            try {
+                const response = await fetch('/rest/api/reviews', { headers: { 'Authorization': `Bearer ${token}` } });
+                const data = await response.json();
+                const reviews = data.payload;
+                tbody.innerHTML = '';
+                reviews.forEach(review => {
+                    const stars = '★'.repeat(review.rating) + '☆'.repeat(5 - review.rating);
+                    const reviewDate = new Date(review.createTime).toLocaleDateString('tr-TR');
+                    const row = `
+                        <tr>
+                            <td>${review.id}</td>
+                            <td>${review.username}</td>
+                            <td>${review.comment.substring(0, 70)}...</td>
+                            <td>${stars}</td>
+                            <td>${reviewDate}</td>
+                            <td>
+                                <button class="btn-sm btn-delete" onclick="deleteReview(${review.id})"><i class="fas fa-trash"></i></button>
+                            </td>
+                        </tr>`;
+                    tbody.innerHTML += row;
+                });
+            } catch (e) { console.error(e); tbody.innerHTML = '<tr><td colspan="6">Hata!</td></tr>'; }
+        }
+
+        async function deleteReview(id) {
+            showAlert('confirm', 'Silme Onayı', 'Bu yorumu silmek istediğinize emin misiniz?', async () => {
+                try {
+                    const response = await fetch(`/rest/api/reviews/${id}`, {
+                        method: 'DELETE',
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    if(response.ok) {
+                        showAlert('success', 'Başarılı', 'Yorum silindi.');
+                        loadAllReviews();
+                    } else {
+                        showAlert('error', 'Hata', 'Silme işlemi başarısız oldu.');
+                    }
+                } catch (e) { showAlert('error', 'Hata', 'Bir hata oluştu!'); }
+            });
         }
     </script>
 </body>
