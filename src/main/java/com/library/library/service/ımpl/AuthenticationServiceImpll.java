@@ -11,6 +11,7 @@ import com.library.library.model.User;
 import com.library.library.repository.RefreshTokenRepository;
 import com.library.library.repository.UserRepository;
 import com.library.library.service.AuthenticationService;
+import com.library.library.service.EmailService; // EKLENDİ
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -30,13 +31,15 @@ public class AuthenticationServiceImpll implements AuthenticationService {
     private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationProvider authenticationProvider;
+    private final EmailService emailService; // EKLENDİ
 
-    public AuthenticationServiceImpll(UserRepository userRepository, RefreshTokenRepository refreshTokenRepository, JwtService jwtService, PasswordEncoder passwordEncoder, AuthenticationProvider authenticationProvider) {
+    public AuthenticationServiceImpll(UserRepository userRepository, RefreshTokenRepository refreshTokenRepository, JwtService jwtService, PasswordEncoder passwordEncoder, AuthenticationProvider authenticationProvider, EmailService emailService) { // GÜNCELLENDİ
         this.userRepository = userRepository;
         this.refreshTokenRepository = refreshTokenRepository;
         this.jwtService = jwtService;
         this.passwordEncoder = passwordEncoder;
         this.authenticationProvider = authenticationProvider;
+        this.emailService = emailService; // EKLENDİ
     }
 
     private User createUser(CreateUserRequest request) {
@@ -46,7 +49,6 @@ public class AuthenticationServiceImpll implements AuthenticationService {
         user.setPassword(passwordEncoder.encode(request.password()));
         user.setEmail(request.email());
         user.setAddress(request.address());
-        // DÜZELTİLDİ: Rolleri artık request'ten alıyor.
         user.setRole(request.authorities()); 
         User savedUser = userRepository.save(user);
         return savedUser;
@@ -56,7 +58,6 @@ public class AuthenticationServiceImpll implements AuthenticationService {
         RefreshToken refreshToken = new RefreshToken();
         refreshToken.setUser(user);
         refreshToken.setRefreshToken(UUID.randomUUID().toString());
-        // 4 saatlik geçerlilik süresi
         refreshToken.setExpiredDate(new Date(System.currentTimeMillis() + 1000L * 60 * 60 * 4)); 
         return refreshTokenRepository.save(refreshToken);
     }
@@ -68,6 +69,11 @@ public class AuthenticationServiceImpll implements AuthenticationService {
     @Override
     public DtoUser register(CreateUserRequest request) {
         User savedUser = createUser(request);
+
+        // E-posta gönderme işlemi eklendi
+        String subject = "Kütüphanemize Hoş Geldiniz!";
+        String text = "Merhaba " + savedUser.getName() + ",\n\nKütüphane sistemimize kaydınız başarıyla tamamlanmıştır.";
+        emailService.sendEmail(savedUser.getEmail(), subject, text);
 
         DtoUser dtoUser = new DtoUser();
         dtoUser.setName(savedUser.getName());

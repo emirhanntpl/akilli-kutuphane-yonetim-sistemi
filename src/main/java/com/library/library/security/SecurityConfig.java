@@ -47,6 +47,7 @@ public class SecurityConfig {
                                 .requestMatchers("/rest/api/reviews/**").authenticated()
                                 .requestMatchers("/rest/api/loans/**").hasAnyRole("USER", "ADMIN")
                                 .requestMatchers("/rest/api/users/{userId}/favorites/**").hasAnyRole("USER", "ADMIN")
+                                .requestMatchers("/rest/api/reservations/**").hasAnyRole("USER", "ADMIN") // EKLENDİ
 
                                 // ADMİN'E ÖZEL YAZMA İZİNLERİ
                                 .requestMatchers("/api/admin/**").hasRole("ADMIN")

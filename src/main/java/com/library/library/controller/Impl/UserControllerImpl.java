@@ -5,16 +5,12 @@ import com.library.library.controller.RootEntity;
 import com.library.library.dto.DtoBook;
 import com.library.library.dto.DtoUser;
 import com.library.library.dto.UpdateUserRequest;
-import com.library.library.model.Book;
 import com.library.library.model.CreateUserRequest;
 import com.library.library.service.UserService;
 import jakarta.validation.Valid;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/rest/api/users")
@@ -56,7 +52,7 @@ public class UserControllerImpl extends RestBaseController {
     // --- FAVORİ ENDPOINT'LERİ ---
 
     @GetMapping("/{userId}/favorites")
-    public RootEntity<Set<Book>> getFavorites(@PathVariable Long userId) {
+    public RootEntity<List<DtoBook>> getFavorites(@PathVariable Long userId) {
         return ok(userService.getFavorites(userId));
     }
 

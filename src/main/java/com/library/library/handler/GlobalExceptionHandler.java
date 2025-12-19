@@ -18,8 +18,8 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleBaseException(BaseException ex) {
         var messageType = ex.getMessageType();
         ErrorResponse errorResponse = new ErrorResponse(
-                messageType.getMessage(),
-                messageType.getCode(),
+                messageType.getMessage(), // .getMessage() kullanılıyor
+                messageType.getCode(),    // .getCode() kullanılıyor
                 ex.getStatus().value(),
                 LocalDateTime.now()
         );

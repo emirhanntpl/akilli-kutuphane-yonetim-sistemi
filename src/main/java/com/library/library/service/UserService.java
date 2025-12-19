@@ -5,7 +5,10 @@ import com.library.library.dto.DtoUser;
 import com.library.library.dto.UpdateUserRequest;
 import com.library.library.exception.BaseException;
 import com.library.library.exception.MessageType;
-import com.library.library.model.*;
+import com.library.library.model.Book;
+import com.library.library.model.CreateUserRequest;
+import com.library.library.model.Loan;
+import com.library.library.model.User;
 import com.library.library.repository.BookRepository;
 import com.library.library.repository.LoanRepository;
 import com.library.library.repository.RefreshTokenRepository;
@@ -16,9 +19,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @AllArgsConstructor
@@ -26,10 +29,11 @@ import java.util.stream.Collectors;
 public class UserService {
 
     private final UserRepository userRepository;
-    private final BookRepository bookRepository;
     private final BCryptPasswordEncoder passwordEncoder;
     private final LoanRepository loanRepository;
     private final RefreshTokenRepository refreshTokenRepository;
+    private final BookRepository bookRepository;
+    private final EmailService emailService;
 
     public List<DtoUser> getAllUsers() {
         return userRepository.findAll().stream()
@@ -53,6 +57,7 @@ public class UserService {
         return userRepository.findByUsername(username);
     }
 
+    @Transactional // EKLENDİ
     public User createUser(CreateUserRequest request) {
         User newUser = User.builder()
                 .name(request.name())
@@ -62,7 +67,15 @@ public class UserService {
                 .address(request.address())
                 .role(request.authorities())
                 .build();
-        return userRepository.save(newUser);
+        
+        User savedUser = userRepository.save(newUser);
+        
+        System.out.println("Kullanıcı oluşturuldu. Mail gönderimi deneniyor...");
+        String subject = "Kütüphanemize Hoş Geldiniz!";
+        String text = "Merhaba " + savedUser.getName() + ",\n\nKütüphane sistemimize kaydınız başarıyla tamamlanmıştır.";
+        emailService.sendEmail(savedUser.getEmail(), subject, text);
+
+        return savedUser;
     }
 
     public DtoUser updateUser(Long userId, UpdateUserRequest request) {
@@ -80,14 +93,20 @@ public class UserService {
 
     @Transactional
     public void deleteUser(Long userId) {
-        if (!userRepository.existsById(userId)) {
-            throw new BaseException(MessageType.NO_RECORD_EXIST, HttpStatus.NOT_FOUND);
-        }
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new BaseException(MessageType.NO_RECORD_EXIST, HttpStatus.NOT_FOUND));
+
         List<Loan> activeLoans = loanRepository.findByUserIdAndReturnDateIsNull(userId);
         if (!activeLoans.isEmpty()){
             throw new BaseException(MessageType.USER_HAS_UNRETURNED_BOOKS, HttpStatus.BAD_REQUEST);
         }
-        userRepository.deleteById(userId);
+
+        user.getFavoriteBooks().clear();
+        user.getRole().clear();
+        
+        refreshTokenRepository.deleteByUserId(userId);
+
+        userRepository.delete(user);
     }
 
     public Double getPenalty(Long userId) {
@@ -114,8 +133,20 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public Set<Book> getFavorites(Long userId) {
+    public List<DtoBook> getFavorites(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new BaseException(MessageType.USERNAME_NOT_FOUND, HttpStatus.NOT_FOUND));
-        return user.getFavoriteBooks();
+        
+        return user.getFavoriteBooks().stream().map(book -> {
+            DtoBook dtoBook = new DtoBook();
+            dtoBook.setId(book.getId());
+            dtoBook.setTitle(book.getTitle());
+            dtoBook.setAuthors(book.getAuthors());
+            dtoBook.setCategories(book.getCategories());
+            dtoBook.setIsbn(book.getIsbn());
+            dtoBook.setProductionYear(book.getProductionYear());
+            dtoBook.setPageOfNumber(book.getPageOfNumber());
+            dtoBook.setStock(book.getStock());
+            return dtoBook;
+        }).collect(Collectors.toList());
     }
 }

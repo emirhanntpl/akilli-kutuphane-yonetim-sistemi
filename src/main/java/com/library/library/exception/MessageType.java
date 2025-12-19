@@ -1,10 +1,6 @@
 package com.library.library.exception;
 
-import lombok.Getter;
-
-@Getter
 public enum MessageType {
-
     NO_RECORD_EXIST("1004","Kayıt Bulunamadı,Lütfen tekrar deneyiniz."),
     TOKEN_IS_VALID("1005","TOKEN SÜRESİ DOLMUŞ"),
     USERNAME_NOT_FOUND("1006","GEÇERSİZ KULLANICI"),
@@ -22,18 +18,27 @@ public enum MessageType {
     INVALID_CATEGORY_ID("1018","Geçersiz kategori ID'si"),
     BOOK_ALREADY_ON_LOAN("1019","Bu kitap zaten başka bir kullanıcı tarafından ödünç alınmış."),
     NO_SUCH_RECORD_FOUND("1020","BÖYLE BİR KAYIT BULUNAMADI."),
-    
+
 
     BOOK_NOT_IN_STOCK("1021", "Bu kitap stokta mevcut değil."),
     BOOK_ALREADY_RETURNED("1022", "Bu kitap zaten iade edilmiş."),
+    BOOK_IS_IN_STOCK_CANNOT_RESERVE("1023","Kitap stokta varsa rezervasyon yapılamaz"),
+    USER_ALREADY_HAS_RESERVATION_FOR_BOOK("1024","Kullanıcının bu kitap için zaten bir rezervasyon var"),
 
     GENERAL_EXCEPTION("9999","Genel bir hata oluştu,Lütfen tekrar deneyiniz.");
-
     private final String code;
     private final String message;
 
     MessageType(String code, String message) {
         this.code = code;
         this.message = message;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public String getMessage() {
+        return message;
     }
 }

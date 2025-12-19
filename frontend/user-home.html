@@ -50,6 +50,7 @@
         .user-details { display: flex; flex-direction: column; line-height: 1.2; }
         .user-name { font-weight: 600; font-size: 0.95rem; }
         .user-role { font-size: 0.8rem; opacity: 0.8; }
+        .datetime-info { font-size: 0.8rem; opacity: 0.8; margin-left: 20px; } /* YENİ */
         .navbar-right { display: flex; align-items: center; gap: 20px; }
         .penalty-info { background-color: var(--warning-color); padding: 0.5rem 1rem; border-radius: 20px; font-weight: bold; font-size: 0.9rem; display: flex; align-items: center; gap: 5px; }
         .nav-links { display: flex; gap: 20px; }
@@ -107,14 +108,14 @@
         .badge { display: inline-block; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.8rem; font-weight: bold; background-color: #eef2f7; color: var(--secondary-color); margin-top: 1rem; }
         .card-footer { margin-top: auto; padding-top: 1rem; display: flex; flex-direction: column; gap: 10px; }
         
-        .borrow-btn, .reviews-btn, .view-reviews-btn { width: 100%; color: white; border: none; padding: 0.8rem; border-radius: 8px; cursor: pointer; font-size: 1rem; font-weight: bold; transition: var(--transition); }
+        .action-btn { width: 100%; color: white; border: none; padding: 0.8rem; border-radius: 8px; cursor: pointer; font-size: 1rem; font-weight: bold; transition: var(--transition); }
         .borrow-btn { background-color: var(--success-color); }
         .borrow-btn:hover { background-color: #27ae60; }
         .borrow-btn:disabled { background-color: #95a5a6; cursor: not-allowed; }
+        .reserve-btn { background-color: var(--info-color); }
+        .reserve-btn:hover { background-color: #8e44ad; }
         .reviews-btn { background-color: var(--secondary-color); }
         .reviews-btn:hover { background-color: #2980b9; }
-        .view-reviews-btn { background-color: var(--info-color); }
-        .view-reviews-btn:hover { background-color: #8e44ad; }
         .return-btn { width: 100%; background-color: var(--warning-color); color: white; border: none; padding: 0.8rem; border-radius: 8px; cursor: pointer; font-size: 1rem; font-weight: bold; transition: var(--transition); }
         .return-btn:hover { background-color: #e67e22; }
         .loader { text-align: center; padding: 2rem; color: white; font-size: 1.2rem; text-shadow: 1px 1px 2px black; }
@@ -177,6 +178,7 @@
                     <span class="user-role" id="userRole">Okur</span>
                 </div>
             </div>
+            <div id="datetime-info" class="datetime-info"></div> <!-- YENİ -->
         </div>
         <div class="navbar-right">
             <div class="nav-links">
@@ -216,10 +218,8 @@
             <button class="modal-close-btn" onclick="closeModal('reviewModal')">&times;</button>
             <h3 id="reviewModalTitle">Kitap Yorumları</h3>
             
-            <!-- Yorum Listesi -->
             <div class="modal-body" id="reviewList"></div>
             
-            <!-- Yorum Yapma Formu -->
             <form id="reviewForm">
                 <h4>Yorum Yap</h4>
                 <input type="hidden" id="reviewBookId">
@@ -231,7 +231,7 @@
                     <input type="radio" id="star1" name="rating" value="1" /><label for="star1" title="1 star">★</label>
                 </div>
                 <textarea id="reviewComment" rows="3" placeholder="Bu kitap hakkında ne düşünüyorsunuz?" required></textarea>
-                <button type="submit" class="borrow-btn" style="margin-top: 1rem;">Yorumu Gönder</button>
+                <button type="submit" class="action-btn borrow-btn" style="margin-top: 1rem;">Yorumu Gönder</button>
             </form>
         </div>
     </div>
@@ -248,7 +248,16 @@
     <script>
         let currentUserId = null;
         let favoriteBookIds = new Set();
+        let userReservations = new Map();
         const token = localStorage.getItem('accessToken');
+
+        // YENİ: Saat ve Tarih Fonksiyonu
+        function updateDateTime() {
+            const now = new Date();
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' };
+            const formattedDateTime = now.toLocaleDateString('tr-TR', options);
+            document.getElementById('datetime-info').textContent = formattedDateTime;
+        }
 
         function showModal(type, title, message, onConfirm = null) {
             const modal = document.getElementById('alertModal');
@@ -291,7 +300,6 @@
             document.getElementById(modalId).classList.remove('active');
         }
 
-        // Modal dışına tıklayınca kapatma
         window.onclick = function(event) {
             if (event.target.classList.contains('modal-overlay')) {
                 event.target.classList.remove('active');
@@ -396,6 +404,7 @@
                             stockInfo.textContent = `Stok: ${currentStock - 1}`;
                         }
                     }
+                    fetchUserReservations();
                 } else {
                     const errorMessage = result.errorMessage || "İşlem başarısız oldu.";
                     showModal('error', 'Hata', errorMessage);
@@ -407,6 +416,47 @@
                 showModal('error', 'Hata', 'Bir ağ hatası oluştu. Lütfen tekrar deneyin.');
                 buttonElement.disabled = false;
                 buttonElement.textContent = "Ödünç Al";
+            }
+        }
+
+        function initiateReservation(bookId, buttonElement) {
+            if (!currentUserId) {
+                showModal('error', 'Hata', 'Kullanıcı kimliği bulunamadı. Lütfen tekrar giriş yapın.');
+                return;
+            }
+
+            showModal('confirm', 'Rezervasyon Onayı', 'Bu kitap için sıraya girmek istediğinize emin misiniz?', () => {
+                performReservation(bookId, buttonElement);
+            });
+        }
+
+        async function performReservation(bookId, buttonElement) {
+            buttonElement.disabled = true;
+            buttonElement.innerHTML = '<i class="fas fa-spinner fa-spin"></i> İşleniyor...';
+
+            try {
+                const response = await fetch(`/rest/api/reservations/user/${currentUserId}/book/${bookId}`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    showModal('success', 'Başarılı', 'Kitap için başarıyla sıraya girdiniz. Kitap geldiğinde size haber vereceğiz.');
+                    buttonElement.textContent = "Sıraya Girildi";
+                    fetchUserReservations();
+                } else {
+                    const errorMessage = result.message || "Rezervasyon işlemi başarısız oldu.";
+                    showModal('error', 'Hata', errorMessage);
+                    buttonElement.disabled = false;
+                    buttonElement.textContent = "Rezerve Et";
+                }
+            } catch (error) {
+                console.error("Rezervasyon hatası:", error);
+                showModal('error', 'Hata', 'Bir ağ hatası oluştu. Lütfen tekrar deneyin.');
+                buttonElement.disabled = false;
+                buttonElement.textContent = "Rezerve Et";
             }
         }
 
@@ -423,9 +473,7 @@
             try {
                 const response = await fetch(`/rest/api/loans/returnBook/${loanId}`, {
                     method: 'PUT',
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
+                    headers: { 'Authorization': `Bearer ${token}` }
                 });
 
                 const result = await response.json();
@@ -581,6 +629,22 @@
             }
         }
 
+        async function fetchUserReservations() {
+            if (!currentUserId) return;
+            try {
+                const response = await fetch(`/rest/api/reservations/user/${currentUserId}`, { headers: { 'Authorization': `Bearer ${token}` } });
+                const reservations = await response.json();
+                userReservations.clear();
+                if (Array.isArray(reservations)) {
+                    reservations.forEach(res => {
+                        userReservations.set(res.bookId, res.status);
+                    });
+                }
+            } catch (error) {
+                console.error("Kullanıcı rezervasyonları yüklenemedi:", error);
+            }
+        }
+
         function renderBook(book) {
             const authorNames = book.authors.map(a => `${a.firstName} ${a.lastName}`).join(', ');
             const categoryNames = book.categories.map(c => c.category).join(', ');
@@ -588,6 +652,21 @@
             const isFavorited = favoriteBookIds.has(book.id);
             
             const safeTitle = book.title.replace(/'/g, "\\'");
+
+            let actionButton;
+            const userReservationStatus = userReservations.get(book.id);
+
+            if (userReservationStatus === 'NOTIFIED') {
+                actionButton = `<button class="action-btn borrow-btn" onclick="initiateBorrow(${book.id}, this)">Ödünç Al (Rezerve)</button>`;
+            } else if (stock > 0) {
+                actionButton = `<button class="action-btn borrow-btn" onclick="initiateBorrow(${book.id}, this)">Ödünç Al</button>`;
+            } else {
+                if (userReservationStatus === 'WAITING') {
+                    actionButton = `<button class="action-btn reserve-btn" disabled>Sıraya Girildi</button>`;
+                } else {
+                    actionButton = `<button class="action-btn reserve-btn" onclick="initiateReservation(${book.id}, this)">Rezerve Et</button>`;
+                }
+            }
 
             return `
                 <div class="card">
@@ -601,10 +680,8 @@
                         <div class="card-info"><i class="fas fa-bookmark"></i> ${categoryNames || 'Kategori Yok'}</div>
                         <div class="card-info stock-info"><i class="fas fa-cubes"></i> Stok: ${stock}</div>
                         <div class="card-footer">
-                            <button class="borrow-btn" onclick="initiateBorrow(${book.id}, this)" ${stock <= 0 ? 'disabled' : ''}>
-                                ${stock > 0 ? 'Ödünç Al' : 'Stokta Yok'}
-                            </button>
-                            <button class="reviews-btn" onclick="openReviewModal(${book.id}, '${safeTitle}')">
+                            ${actionButton}
+                            <button class="action-btn reviews-btn" onclick="openReviewModal(${book.id}, '${safeTitle}')">
                                 <i class="fas fa-star"></i> Yorumlar
                             </button>
                         </div>
@@ -667,7 +744,6 @@
             }
         }
 
-        // --- FAVORİ İŞLEMLERİ ---
         async function fetchFavorites() {
             if (!currentUserId) return;
             const container = document.getElementById('favorites-container');
@@ -723,7 +799,6 @@
             }
         }
 
-        // --- YORUM İŞLEMLERİ ---
         async function openReviewModal(bookId, bookTitle) {
             document.getElementById('reviewModalTitle').textContent = `${bookTitle} - Yorumlar`;
             document.getElementById('reviewBookId').value = bookId;
@@ -791,7 +866,6 @@
                 });
                 if (response.ok) {
                     alert('Yorumunuz için teşekkürler!');
-                    // Yorumları yeniden yükle
                     const bookTitle = document.getElementById('reviewModalTitle').textContent.split(' - ')[0];
                     openReviewModal(bookId, bookTitle);
                 } else {
@@ -832,9 +906,14 @@
             if (!currentUserId) {
                 console.error("Token'dan 'userId' claim'i okunamadı.");
             } else {
-                await fetchFavorites(); // Önce favorileri çek
+                await fetchUserReservations();
+                await fetchFavorites();
                 fetchPenalty();
             }
+
+            // Saat ve tarihi başlat
+            updateDateTime();
+            setInterval(updateDateTime, 1000);
 
             fetchData('/rest/api/books', 'books-container', renderBook);
             fetchData('/rest/api/authors', 'authors-container', renderAuthor);
