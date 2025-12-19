@@ -24,7 +24,7 @@ public class DtoUser extends DtoBaseEntity{
     @NotNull
     private String address;
     private int penalty;
+    private Double balance; // YENİ EKLENDİ
 
-    // YENİ EKLENEN ALAN
     private Set<Role> roles;
 }

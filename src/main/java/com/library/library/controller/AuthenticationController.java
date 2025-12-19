@@ -5,6 +5,7 @@ import com.library.library.dto.AuthResponse;
 import com.library.library.dto.DtoUser;
 import com.library.library.dto.RefreshTokenRequest;
 import com.library.library.model.CreateUserRequest;
+import org.springframework.web.bind.annotation.RequestParam;
 
 public interface AuthenticationController {
 
@@ -14,5 +15,7 @@ public interface AuthenticationController {
 
     public RootEntity<AuthResponse> refreshToken(RefreshTokenRequest request);
 
-
+    // YENİ ENDPOINTLER
+    RootEntity<String> forgotPassword(String email);
+    RootEntity<String> resetPassword(String token, String newPassword);
 }

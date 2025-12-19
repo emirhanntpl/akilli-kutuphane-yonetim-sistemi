@@ -58,15 +58,20 @@
             background-color: #4cae4c;
         }
 
-        .back-link {
+        .links-container {
             margin-top: 1.5rem;
-            display: inline-block;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .links-container a {
             color: #eee;
             text-decoration: none;
             font-size: 0.9rem;
         }
 
-        .back-link:hover {
+        .links-container a:hover {
             color: white;
             text-decoration: underline;
         }
@@ -80,7 +85,10 @@
             <input type="password" id="password" placeholder="Şifre" required>
             <button type="submit">Giriş Yap</button>
         </form>
-        <a href="/index.html" class="back-link">Ana Sayfaya Dön</a>
+        <div class="links-container">
+            <a href="/index.html">Ana Sayfaya Dön</a>
+            <a href="/forgot-password.html">Şifremi Unuttum</a>
+        </div>
     </div>
 
     <script>
@@ -105,7 +113,6 @@
                 if (response.ok) {
                     const data = await response.json();
                     
-                    // DÜZELTME: Gelen veri RootEntity olduğu için payload'ı kontrol et
                     const authPayload = data.payload;
 
                     if (!authPayload || !authPayload.accessToken) {

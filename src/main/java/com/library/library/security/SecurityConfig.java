@@ -21,10 +21,13 @@ public class SecurityConfig {
             "/authenticate",
             "/register",
             "/refreshToken",
+            "/forgot-password",
+            "/reset-password",
             "/index.html",
             "/login.html",
             "/staff-login.html",
             "/register.html",
+            "/reset-password.html",
             "/", 
             "/*.html", 
             "/*.css", 
@@ -47,7 +50,17 @@ public class SecurityConfig {
                                 .requestMatchers("/rest/api/reviews/**").authenticated()
                                 .requestMatchers("/rest/api/loans/**").hasAnyRole("USER", "ADMIN")
                                 .requestMatchers("/rest/api/users/{userId}/favorites/**").hasAnyRole("USER", "ADMIN")
-                                .requestMatchers("/rest/api/reservations/**").hasAnyRole("USER", "ADMIN") // EKLENDİ
+                                .requestMatchers("/rest/api/reservations/**").hasAnyRole("USER", "ADMIN")
+                                
+                                // Bakiye ve Borç Ödeme için spesifik izinler
+                                .requestMatchers(HttpMethod.POST, "/rest/api/users/*/load-balance").hasAnyRole("USER", "ADMIN")
+                                .requestMatchers(HttpMethod.POST, "/rest/api/users/*/pay-penalty").hasAnyRole("USER", "ADMIN")
+                                
+                                // Borç ve Bakiye Görüntüleme (GET) için spesifik izinler
+                                .requestMatchers(HttpMethod.GET, "/rest/api/users/*/penalty").hasAnyRole("USER", "ADMIN")
+                                .requestMatchers(HttpMethod.GET, "/rest/api/users/*/balance").hasAnyRole("USER", "ADMIN")
+
+                                .requestMatchers("/rest/api/users/**").hasAnyRole("USER", "ADMIN")
 
                                 // ADMİN'E ÖZEL YAZMA İZİNLERİ
                                 .requestMatchers("/api/admin/**").hasRole("ADMIN")

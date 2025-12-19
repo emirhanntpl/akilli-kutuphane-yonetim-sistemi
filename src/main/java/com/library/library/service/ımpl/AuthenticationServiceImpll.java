@@ -11,13 +11,15 @@ import com.library.library.model.User;
 import com.library.library.repository.RefreshTokenRepository;
 import com.library.library.repository.UserRepository;
 import com.library.library.service.AuthenticationService;
-import com.library.library.service.EmailService; // EKLENDİ
+import com.library.library.service.EmailService;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Optional;
 import java.util.Set;
@@ -31,15 +33,15 @@ public class AuthenticationServiceImpll implements AuthenticationService {
     private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationProvider authenticationProvider;
-    private final EmailService emailService; // EKLENDİ
+    private final EmailService emailService;
 
-    public AuthenticationServiceImpll(UserRepository userRepository, RefreshTokenRepository refreshTokenRepository, JwtService jwtService, PasswordEncoder passwordEncoder, AuthenticationProvider authenticationProvider, EmailService emailService) { // GÜNCELLENDİ
+    public AuthenticationServiceImpll(UserRepository userRepository, RefreshTokenRepository refreshTokenRepository, JwtService jwtService, PasswordEncoder passwordEncoder, AuthenticationProvider authenticationProvider, EmailService emailService) {
         this.userRepository = userRepository;
         this.refreshTokenRepository = refreshTokenRepository;
         this.jwtService = jwtService;
         this.passwordEncoder = passwordEncoder;
         this.authenticationProvider = authenticationProvider;
-        this.emailService = emailService; // EKLENDİ
+        this.emailService = emailService;
     }
 
     private User createUser(CreateUserRequest request) {
@@ -70,7 +72,6 @@ public class AuthenticationServiceImpll implements AuthenticationService {
     public DtoUser register(CreateUserRequest request) {
         User savedUser = createUser(request);
 
-        // E-posta gönderme işlemi eklendi
         String subject = "Kütüphanemize Hoş Geldiniz!";
         String text = "Merhaba " + savedUser.getName() + ",\n\nKütüphane sistemimize kaydınız başarıyla tamamlanmıştır.";
         emailService.sendEmail(savedUser.getEmail(), subject, text);
@@ -120,5 +121,43 @@ public class AuthenticationServiceImpll implements AuthenticationService {
         String accessToken = jwtService.generateToken(user);
         RefreshToken savedRefreshToken = createRefreshToken(user);
         return new AuthResponse(accessToken, savedRefreshToken.getRefreshToken());
+    }
+
+    @Override
+    @Transactional
+    public void forgotPassword(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new BaseException(MessageType.USERNAME_NOT_FOUND, HttpStatus.NOT_FOUND));
+
+        String token = UUID.randomUUID().toString();
+        user.setResetPasswordToken(token);
+        user.setResetPasswordTokenExpiry(LocalDateTime.now().plusMinutes(15)); 
+        userRepository.save(user);
+
+        // DÜZELTİLDİ: Link formatı düzeltildi
+        String resetLink = "http://localhost:8080/reset-password.html?token=" + token;
+        String subject = "Şifre Sıfırlama İsteği";
+        String text = "Merhaba " + user.getName() + ",\n\n"
+                    + "Şifrenizi sıfırlamak için aşağıdaki linke tıklayın:\n"
+                    + resetLink + "\n\n"
+                    + "Bu link 15 dakika boyunca geçerlidir.";
+        
+        emailService.sendEmail(user.getEmail(), subject, text);
+    }
+
+    @Override
+    @Transactional
+    public void resetPassword(String token, String newPassword) {
+        User user = userRepository.findByResetPasswordToken(token)
+                .orElseThrow(() -> new BaseException(MessageType.NO_RECORD_EXIST, HttpStatus.BAD_REQUEST));
+
+        if (user.getResetPasswordTokenExpiry().isBefore(LocalDateTime.now())) {
+            throw new BaseException(MessageType.REFRESH_TOKEN_IS_VALID, HttpStatus.BAD_REQUEST); 
+        }
+
+        user.setPassword(passwordEncoder.encode(newPassword));
+        user.setResetPasswordToken(null);
+        user.setResetPasswordTokenExpiry(null);
+        userRepository.save(user);
     }
 }

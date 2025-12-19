@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -26,7 +27,18 @@ public class User extends BaseEntity implements UserDetails {
     @Column(unique = true)
     private String email;
     private String address;
+    
     private double penalty;
+    
+    @Column(columnDefinition = "double precision default 0.0")
+    private Double balance = 0.0; // YENİ EKLENDİ
+
+    // Şifre Sıfırlama Alanları
+    @Column(name = "reset_password_token")
+    private String resetPasswordToken;
+
+    @Column(name = "reset_password_token_expiry")
+    private LocalDateTime resetPasswordTokenExpiry;
 
     public void addPenalty(double amount) {
         this.penalty += amount;
@@ -44,7 +56,6 @@ public class User extends BaseEntity implements UserDetails {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private Set<RefreshToken> refreshTokens = new HashSet<>();
 
-    // YENİ İLİŞKİ
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "user_favorite_books",
             joinColumns = @JoinColumn(name = "user_id"),

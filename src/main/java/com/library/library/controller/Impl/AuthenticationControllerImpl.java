@@ -12,6 +12,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import static com.library.library.controller.RootEntity.ok;
@@ -39,5 +40,20 @@ public class AuthenticationControllerImpl implements AuthenticationController {
     @Override
     public RootEntity<AuthResponse> refreshToken(@Valid @RequestBody RefreshTokenRequest request) {
         return ok(authenticationService.refreshToken(request));
+    }
+
+    // YENİ ENDPOINTLER
+    @PostMapping("/forgot-password")
+    @Override
+    public RootEntity<String> forgotPassword(@RequestParam String email) {
+        authenticationService.forgotPassword(email);
+        return ok("Şifre sıfırlama linki e-posta adresinize gönderildi.");
+    }
+
+    @PostMapping("/reset-password")
+    @Override
+    public RootEntity<String> resetPassword(@RequestParam String token, @RequestParam String newPassword) {
+        authenticationService.resetPassword(token, newPassword);
+        return ok("Şifreniz başarıyla güncellendi.");
     }
 }

@@ -50,9 +50,10 @@
         .user-details { display: flex; flex-direction: column; line-height: 1.2; }
         .user-name { font-weight: 600; font-size: 0.95rem; }
         .user-role { font-size: 0.8rem; opacity: 0.8; }
-        .datetime-info { font-size: 0.8rem; opacity: 0.8; margin-left: 20px; } /* YENİ */
+        .datetime-info { font-size: 0.8rem; opacity: 0.8; margin-left: 20px; }
         .navbar-right { display: flex; align-items: center; gap: 20px; }
         .penalty-info { background-color: var(--warning-color); padding: 0.5rem 1rem; border-radius: 20px; font-weight: bold; font-size: 0.9rem; display: flex; align-items: center; gap: 5px; }
+        .balance-info { background-color: var(--success-color); padding: 0.5rem 1rem; border-radius: 20px; font-weight: bold; font-size: 0.9rem; display: flex; align-items: center; gap: 5px; }
         .nav-links { display: flex; gap: 20px; }
         .nav-btn { background: none; border: none; color: rgba(255, 255, 255, 0.8); font-size: 1rem; cursor: pointer; padding: 0.5rem 1rem; transition: var(--transition); border-radius: 5px; font-weight: 500; }
         .nav-btn:hover, .nav-btn.active { color: white; background-color: rgba(255, 255, 255, 0.2); }
@@ -120,6 +121,54 @@
         .return-btn:hover { background-color: #e67e22; }
         .loader { text-align: center; padding: 2rem; color: white; font-size: 1.2rem; text-shadow: 1px 1px 2px black; }
 
+        /* Cüzdan Stilleri */
+        .wallet-container {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            padding: 2rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .wallet-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .wallet-balance {
+            font-size: 2.5rem;
+            color: var(--success-color);
+            font-weight: bold;
+        }
+        .wallet-form .form-group {
+            margin-bottom: 1.5rem;
+        }
+        .wallet-form label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+            color: #333;
+        }
+        .wallet-form input {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        .pay-penalty-btn {
+            background-color: var(--warning-color);
+            color: white;
+            width: 100%;
+            padding: 1rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 1rem;
+        }
+        .pay-penalty-btn:hover { background-color: #d35400; }
+
         /* MODAL STİLLERİ */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.6); display: flex; justify-content: center; align-items: center; z-index: 2000; opacity: 0; visibility: hidden; transition: all 0.3s ease; backdrop-filter: blur(3px); }
         .modal-overlay.active { opacity: 1; visibility: visible; }
@@ -178,7 +227,7 @@
                     <span class="user-role" id="userRole">Okur</span>
                 </div>
             </div>
-            <div id="datetime-info" class="datetime-info"></div> <!-- YENİ -->
+            <div id="datetime-info" class="datetime-info"></div>
         </div>
         <div class="navbar-right">
             <div class="nav-links">
@@ -189,7 +238,9 @@
                 <button class="nav-btn" onclick="switchTab('announcements')"><i class="fas fa-bullhorn"></i> Duyurular</button>
                 <button class="nav-btn" onclick="switchTab('my-loans')"><i class="fas fa-hand-holding-heart"></i> Ödünç Aldıklarım</button>
                 <button class="nav-btn" onclick="switchTab('history')"><i class="fas fa-history"></i> Geçmiş</button>
+                <button class="nav-btn" onclick="switchTab('wallet')"><i class="fas fa-wallet"></i> Cüzdanım</button>
             </div>
+            <div class="balance-info" id="balanceInfo"><i class="fas fa-wallet"></i> 0.00 TL</div>
             <div class="penalty-info" id="penaltyInfo"><i class="fas fa-coins"></i> Borç: 0.00 TL</div>
             <button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Çıkış</button>
         </div>
@@ -207,6 +258,47 @@
         <div id="announcements" class="tab-content"><div id="announcements-container" class="grid-container"></div></div>
         <div id="my-loans" class="tab-content"><div id="my-loans-container" class="grid-container"></div></div>
         <div id="history" class="tab-content"><div id="history-container" class="grid-container"></div></div>
+        
+        <!-- Cüzdan Sekmesi -->
+        <div id="wallet" class="tab-content">
+            <div class="wallet-container">
+                <div class="wallet-header">
+                    <h3>Mevcut Bakiyeniz</h3>
+                    <div class="wallet-balance" id="walletBalanceDisplay">0.00 TL</div>
+                </div>
+                
+                <form id="loadBalanceForm" class="wallet-form">
+                    <h4>Bakiye Yükle</h4>
+                    <div class="form-group">
+                        <label>Yüklenecek Tutar (TL)</label>
+                        <input type="number" id="loadAmount" min="1" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Kart Numarası</label>
+                        <input type="text" id="cardNumber" placeholder="16 haneli kart numarası" maxlength="16" required>
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <div class="form-group" style="flex: 1;">
+                            <label>Son Kullanma (AA/YY)</label>
+                            <input type="text" id="expiryDate" placeholder="01/25" maxlength="5" required>
+                        </div>
+                        <div class="form-group" style="flex: 1;">
+                            <label>CVV</label>
+                            <input type="text" id="cvv" placeholder="123" maxlength="3" required>
+                        </div>
+                    </div>
+                    <button type="submit" class="action-btn borrow-btn">Bakiye Yükle</button>
+                </form>
+
+                <hr style="margin: 2rem 0; border: 0; border-top: 1px solid #eee;">
+
+                <div class="wallet-header">
+                    <h3>Borç Durumu</h3>
+                    <div class="wallet-balance" id="walletPenaltyDisplay" style="color: var(--warning-color);">0.00 TL</div>
+                    <button id="payPenaltyBtn" class="pay-penalty-btn" onclick="payPenalty()">Borcu Öde</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- MODALLAR -->
@@ -218,8 +310,10 @@
             <button class="modal-close-btn" onclick="closeModal('reviewModal')">&times;</button>
             <h3 id="reviewModalTitle">Kitap Yorumları</h3>
             
+            <!-- Yorum Listesi -->
             <div class="modal-body" id="reviewList"></div>
             
+            <!-- Yorum Yapma Formu -->
             <form id="reviewForm">
                 <h4>Yorum Yap</h4>
                 <input type="hidden" id="reviewBookId">
@@ -251,7 +345,6 @@
         let userReservations = new Map();
         const token = localStorage.getItem('accessToken');
 
-        // YENİ: Saat ve Tarih Fonksiyonu
         function updateDateTime() {
             const now = new Date();
             const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' };
@@ -326,8 +419,11 @@
             }
 
             document.getElementById(tabName).classList.add('active');
-            document.getElementById('searchInput').value = '';
-            filterItems();
+            
+            if (tabName !== 'wallet') {
+                document.getElementById('searchInput').value = '';
+                filterItems();
+            }
             
             if (!loadData) return;
 
@@ -338,6 +434,7 @@
             else if (tabName === 'authors') fetchData('/rest/api/authors', 'authors-container', renderAuthor);
             else if (tabName === 'categories') fetchData('/rest/api/categories', 'categories-container', renderCategory);
             else if (tabName === 'announcements') fetchData('/rest/api/announcements', 'announcements-container', renderAnnouncement);
+            else if (tabName === 'wallet') { fetchBalance(); fetchPenalty(); }
         }
 
         function filterItems() {
@@ -731,17 +828,109 @@
         async function fetchPenalty() {
             if (!currentUserId) return;
             try {
-                const response = await fetch(`/rest/api/users/${currentUserId}/penalty`, {
+                // Cache'i engellemek için timestamp ekliyoruz
+                const response = await fetch(`/rest/api/users/${currentUserId}/penalty?t=${new Date().getTime()}`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 const data = await response.json();
+                console.log("Borç Verisi:", data); // DEBUG İÇİN EKLENDİ
                 if (response.ok) {
                     const penalty = data.payload || 0;
                     document.getElementById('penaltyInfo').innerHTML = `<i class="fas fa-coins"></i> Borç: ${penalty.toFixed(2)} TL`;
+                    document.getElementById('walletPenaltyDisplay').textContent = `${penalty.toFixed(2)} TL`;
+                    
+                    const payBtn = document.getElementById('payPenaltyBtn');
+                    if (penalty > 0) {
+                        payBtn.disabled = false;
+                        payBtn.style.backgroundColor = 'var(--warning-color)';
+                        payBtn.style.cursor = 'pointer';
+                    } else {
+                        payBtn.disabled = true;
+                        payBtn.style.backgroundColor = '#ccc';
+                        payBtn.style.cursor = 'not-allowed';
+                    }
                 }
             } catch (error) {
                 console.error("Borç bilgisi alınamadı:", error);
             }
+        }
+
+        // YENİ: Bakiye Çekme
+        async function fetchBalance() {
+            if (!currentUserId) return;
+            try {
+                // Cache'i engellemek için timestamp ekliyoruz
+                const response = await fetch(`/rest/api/users/${currentUserId}/balance?t=${new Date().getTime()}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await response.json();
+                if (response.ok) {
+                    const balance = data.payload || 0;
+                    document.getElementById('balanceInfo').innerHTML = `<i class="fas fa-wallet"></i> ${balance.toFixed(2)} TL`;
+                    document.getElementById('walletBalanceDisplay').textContent = `${balance.toFixed(2)} TL`;
+                }
+            } catch (error) {
+                console.error("Bakiye bilgisi alınamadı:", error);
+            }
+        }
+
+        // YENİ: Bakiye Yükleme Formu
+        document.getElementById('loadBalanceForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const amount = parseFloat(document.getElementById('loadAmount').value);
+            const cardNumber = document.getElementById('cardNumber').value;
+            const expiryDate = document.getElementById('expiryDate').value;
+            const cvv = document.getElementById('cvv').value;
+
+            const body = { amount, cardNumber, expiryDate, cvv };
+
+            try {
+                const response = await fetch(`/rest/api/users/${currentUserId}/load-balance`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify(body)
+                });
+                
+                const result = await response.json();
+
+                if (response.ok) {
+                    showModal('success', 'Başarılı', 'Bakiye başarıyla yüklendi.');
+                    document.getElementById('loadBalanceForm').reset();
+                    fetchBalance();
+                } else {
+                    // Hata mesajını daha detaylı göster
+                    console.log("Hata Detayı:", result); // Konsola yazdır
+                    let errorMsg = result.errorMessage || 'Bakiye yüklenemedi.';
+                    showModal('error', 'Hata', errorMsg);
+                }
+            } catch (err) {
+                console.error("Bakiye yükleme hatası:", err);
+                showModal('error', 'Hata', 'Bir hata oluştu.');
+            }
+        });
+
+        // YENİ: Borç Ödeme
+        async function payPenalty() {
+            showModal('confirm', 'Ödeme Onayı', 'Borcunuzu bakiyenizden ödemek istiyor musunuz?', async () => {
+                try {
+                    const response = await fetch(`/rest/api/users/${currentUserId}/pay-penalty`, {
+                        method: 'POST',
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    
+                    const result = await response.json();
+
+                    if (response.ok) {
+                        showModal('success', 'Başarılı', 'Borcunuz ödendi.');
+                        fetchBalance();
+                        fetchPenalty();
+                    } else {
+                        showModal('error', 'Hata', result.errorMessage || 'Ödeme başarısız.');
+                    }
+                } catch (err) {
+                    showModal('error', 'Hata', 'Bir hata oluştu.');
+                }
+            });
         }
 
         async function fetchFavorites() {
@@ -909,9 +1098,9 @@
                 await fetchUserReservations();
                 await fetchFavorites();
                 fetchPenalty();
+                fetchBalance();
             }
 
-            // Saat ve tarihi başlat
             updateDateTime();
             setInterval(updateDateTime, 1000);
 

@@ -3,11 +3,11 @@ package com.library.library;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableAsync;
-import org.springframework.scheduling.annotation.EnableScheduling; // EKLENDİ
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
 @EnableAsync
-@EnableScheduling // EKLENDİ
+@EnableScheduling
 public class LibraryApplication {
 
 	public static void main(String[] args) {
