@@ -25,14 +25,14 @@ public class Transaction {
     private User user;
 
     @Column(nullable = false)
-    private Double amount; // İşlem tutarı (Pozitif: Gelir, Negatif: Gider/İade)
+    private Double amount;
 
     @Column(nullable = false)
-    private String description; // İşlem açıklaması (Örn: "Bakiye Yükleme", "Borç Ödeme")
+    private String description;
 
     @Column(nullable = false)
     private LocalDateTime transactionDate;
 
     @Enumerated(EnumType.STRING)
-    private TransactionType type; // INCOME (Gelir), EXPENSE (Gider)
+    private TransactionType type;
 }

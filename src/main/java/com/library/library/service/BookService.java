@@ -14,6 +14,8 @@ public interface BookService {
     List<DtoBook> getAllBooks();
     void updateAllStocks(Integer stock);
 
-    // YENİ EKLENEN METOT
     List<DtoBook> getBooksByCategoryId(Long categoryId);
+    
+    // YENİ EKLENDİ
+    List<DtoBook> getBooksByAuthorId(Long authorId);
 }

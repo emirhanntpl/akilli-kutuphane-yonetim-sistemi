@@ -51,8 +51,6 @@ public class UserControllerImpl extends RestBaseController {
         return ok("Kullanıcı başarıyla silindi.");
     }
 
-    // --- FAVORİ ENDPOINT'LERİ ---
-
     @GetMapping("/{userId}/favorites")
     public RootEntity<List<DtoBook>> getFavorites(@PathVariable Long userId) {
         return ok(userService.getFavorites(userId));
@@ -70,8 +68,6 @@ public class UserControllerImpl extends RestBaseController {
         return ok("Kitap favorilerden çıkarıldı.");
     }
 
-    // --- BAKİYE VE BORÇ ENDPOINT'LERİ ---
-
     @PostMapping("/{userId}/load-balance")
     public RootEntity<Double> loadBalance(@PathVariable Long userId, @RequestBody @Valid LoadBalanceRequest request) {
         return ok(userService.loadBalance(userId, request));
@@ -88,8 +84,6 @@ public class UserControllerImpl extends RestBaseController {
         return ok(userService.getBalance(userId));
     }
 
-    // --- ADMİN ENDPOINTLERİ ---
-
     @PostMapping("/{userId}/penalty/add")
     public RootEntity<String> addPenalty(@PathVariable Long userId, @RequestParam Double amount) {
         userService.addPenaltyToUser(userId, amount);
@@ -102,6 +96,7 @@ public class UserControllerImpl extends RestBaseController {
         return ok("Borç silindi.");
     }
 
+    // YENİ EKLENDİ
     @GetMapping("/transactions")
     public RootEntity<List<DtoTransaction>> getAllTransactions() {
         return ok(userService.getAllTransactions());

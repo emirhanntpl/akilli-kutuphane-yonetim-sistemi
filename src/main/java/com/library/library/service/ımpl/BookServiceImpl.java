@@ -53,6 +53,14 @@ public class BookServiceImpl implements BookService {
                 .collect(Collectors.toList());
     }
 
+
+    @Override
+    public List<DtoBook> getBooksByAuthorId(Long authorId) {
+        return bookRepository.findBooksByAuthorId(authorId).stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+    }
+
     private DtoBook convertToDto(Book book) {
         DtoBook dtoBook = new DtoBook();
         dtoBook.setId(book.getId());

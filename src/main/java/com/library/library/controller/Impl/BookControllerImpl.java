@@ -41,6 +41,12 @@ public class BookControllerImpl extends RestBaseController implements BookContro
         return ok(bookService.getBooksByCategoryId(categoryId));
     }
 
+    // YENİ EKLENDİ
+    @GetMapping("/author/{authorId}")
+    public RootEntity<List<DtoBook>> getBooksByAuthorId(@PathVariable Long authorId) {
+        return ok(bookService.getBooksByAuthorId(authorId));
+    }
+
     @PostMapping("/create")
     @Override
     public RootEntity<Book> createBook(@RequestBody @Valid DtoBookIU dtoBookIU) {

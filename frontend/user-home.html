@@ -22,7 +22,7 @@
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
-            background-image: url('https://images.unsplash.com/photo-1507842217343-583bb7270b66?q=80&w=2070&auto=format&fit=crop');
+            background-image: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url('https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?q=80&w=2070&auto=format&fit=crop');
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
@@ -30,7 +30,8 @@
         }
 
         .navbar {
-            background-color: var(--primary-color);
+            background-color: rgba(44, 62, 80, 0.85);
+            backdrop-filter: blur(10px);
             color: white;
             padding: 0.8rem 2rem;
             display: flex;
@@ -39,8 +40,7 @@
             position: sticky;
             top: 0;
             z-index: 1000;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.5);
-            backdrop-filter: blur(5px);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
         }
 
         .navbar-left { display: flex; align-items: center; gap: 20px; }
@@ -72,7 +72,7 @@
         .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 2rem; }
         .card { background-color: var(--card-bg); border-radius: 12px; box-shadow: var(--shadow); overflow: hidden; transition: var(--transition); display: flex; flex-direction: column; position: relative; }
         .card:hover { transform: translateY(-10px); box-shadow: 0 12px 20px rgba(0,0,0,0.4); }
-        .category-card { cursor: pointer; }
+        .category-card, .author-card { cursor: pointer; } /* YENİ */
         
         .favorite-btn {
             position: absolute;
@@ -789,7 +789,7 @@
 
         function renderAuthor(author) {
             const fullName = `${author.firstName || ''} ${author.lastName || ''}`.trim();
-            return `<div class="card"><div class="card-header-img author-cover"></div><div class="card-body"><h3 class="card-title">${fullName || 'İsimsiz Yazar'}</h3></div></div>`;
+            return `<div class="card author-card" onclick="filterBooksByAuthor(${author.id}, this)"><div class="card-header-img author-cover"></div><div class="card-body"><h3 class="card-title">${fullName || 'İsimsiz Yazar'}</h3></div></div>`;
         }
 
         function renderCategory(category) {
@@ -825,15 +825,23 @@
             fetchData(`/rest/api/books/category/${categoryId}`, 'books-container', renderBook);
         }
 
+        // YENİ: Yazara göre filtreleme
+        function filterBooksByAuthor(authorId, element) {
+            document.querySelectorAll('.author-card').forEach(c => c.style.border = 'none');
+            element.style.border = '2px solid var(--secondary-color)';
+
+            switchTab('books', false);
+            fetchData(`/rest/api/books/author/${authorId}`, 'books-container', renderBook);
+        }
+
         async function fetchPenalty() {
             if (!currentUserId) return;
             try {
-                // Cache'i engellemek için timestamp ekliyoruz
                 const response = await fetch(`/rest/api/users/${currentUserId}/penalty?t=${new Date().getTime()}`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 const data = await response.json();
-                console.log("Borç Verisi:", data); // DEBUG İÇİN EKLENDİ
+                console.log("Borç Verisi:", data);
                 if (response.ok) {
                     const penalty = data.payload || 0;
                     document.getElementById('penaltyInfo').innerHTML = `<i class="fas fa-coins"></i> Borç: ${penalty.toFixed(2)} TL`;
@@ -855,11 +863,9 @@
             }
         }
 
-        // YENİ: Bakiye Çekme
         async function fetchBalance() {
             if (!currentUserId) return;
             try {
-                // Cache'i engellemek için timestamp ekliyoruz
                 const response = await fetch(`/rest/api/users/${currentUserId}/balance?t=${new Date().getTime()}`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
@@ -874,7 +880,6 @@
             }
         }
 
-        // YENİ: Bakiye Yükleme Formu
         document.getElementById('loadBalanceForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const amount = parseFloat(document.getElementById('loadAmount').value);
@@ -898,8 +903,7 @@
                     document.getElementById('loadBalanceForm').reset();
                     fetchBalance();
                 } else {
-                    // Hata mesajını daha detaylı göster
-                    console.log("Hata Detayı:", result); // Konsola yazdır
+                    console.log("Hata Detayı:", result);
                     let errorMsg = result.errorMessage || 'Bakiye yüklenemedi.';
                     showModal('error', 'Hata', errorMsg);
                 }
@@ -909,7 +913,6 @@
             }
         });
 
-        // YENİ: Borç Ödeme
         async function payPenalty() {
             showModal('confirm', 'Ödeme Onayı', 'Borcunuzu bakiyenizden ödemek istiyor musunuz?', async () => {
                 try {

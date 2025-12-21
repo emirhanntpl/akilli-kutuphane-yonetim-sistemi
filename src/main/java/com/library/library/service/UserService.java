@@ -34,7 +34,7 @@ public class UserService {
     private final RefreshTokenRepository refreshTokenRepository;
     private final BookRepository bookRepository;
     private final EmailService emailService;
-    private final TransactionRepository transactionRepository; // EKLENDİ
+    private final TransactionRepository transactionRepository;
 
     public List<DtoUser> getAllUsers() {
         return userRepository.findAll().stream()
@@ -73,7 +73,6 @@ public class UserService {
         
         User savedUser = userRepository.save(newUser);
         
-        System.out.println("Kullanıcı oluşturuldu. Mail gönderimi deneniyor...");
         String subject = "Kütüphanemize Hoş Geldiniz!";
         String text = "Merhaba " + savedUser.getName() + ",\n\nKütüphane sistemimize kaydınız başarıyla tamamlanmıştır.";
         emailService.sendEmail(savedUser.getEmail(), subject, text);
@@ -118,8 +117,6 @@ public class UserService {
         return user.getPenalty();
     }
 
-    // --- FAVORİ İŞLEMLERİ ---
-
     @Transactional
     public void addFavorite(Long userId, Long bookId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new BaseException(MessageType.USERNAME_NOT_FOUND, HttpStatus.NOT_FOUND));
@@ -153,19 +150,14 @@ public class UserService {
         }).collect(Collectors.toList());
     }
 
-    // --- BAKİYE VE BORÇ İŞLEMLERİ ---
-
     @Transactional
     public Double loadBalance(Long userId, LoadBalanceRequest request) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BaseException(MessageType.USERNAME_NOT_FOUND, HttpStatus.NOT_FOUND));
         
-        System.out.println("Kart Bilgileri Doğrulandı: " + request.cardNumber());
-        
         double currentBalance = user.getBalance() != null ? user.getBalance() : 0.0;
         user.setBalance(currentBalance + request.amount());
         
-        // İşlem Kaydı
         Transaction transaction = Transaction.builder()
                 .user(user)
                 .amount(request.amount())
@@ -197,7 +189,6 @@ public class UserService {
         user.setBalance(balance - penalty);
         user.setPenalty(0.0);
         
-        // İşlem Kaydı (Borç ödemesi de kasaya gelir olarak girer)
         Transaction transaction = Transaction.builder()
                 .user(user)
                 .amount(penalty)
@@ -215,8 +206,6 @@ public class UserService {
                 .orElseThrow(() -> new BaseException(MessageType.USERNAME_NOT_FOUND, HttpStatus.NOT_FOUND));
         return user.getBalance() != null ? user.getBalance() : 0.0;
     }
-
-    // --- ADMİN İŞLEMLERİ ---
 
     @Transactional
     public void addPenaltyToUser(Long userId, Double amount) {
@@ -250,5 +239,10 @@ public class UserService {
                         t.getType()
                 ))
                 .collect(Collectors.toList());
+    }
+
+    public Double getTotalIncome() {
+        Double total = transactionRepository.sumAmountByType(TransactionType.INCOME);
+        return total != null ? total : 0.0;
     }
 }

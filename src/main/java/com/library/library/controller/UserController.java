@@ -20,7 +20,6 @@ public interface UserController {
 
     ResponseEntity<Void> deleteUser(Long userId);
 
-    // YENİ ENDPOINTLER
     RootEntity<Double> getPenalty(Long userId);
     RootEntity<List<DtoBook>> getFavorites(Long userId);
     RootEntity<String> addFavorite(Long userId, Long bookId);
@@ -30,8 +29,9 @@ public interface UserController {
     RootEntity<String> payPenalty(Long userId);
     RootEntity<Double> getBalance(Long userId);
 
-    // ADMİN ENDPOINTLERİ
     RootEntity<String> addPenalty(Long userId, Double amount);
     RootEntity<String> removePenalty(Long userId, Double amount);
+    
+    // YENİ EKLENDİ
     RootEntity<List<DtoTransaction>> getAllTransactions();
 }

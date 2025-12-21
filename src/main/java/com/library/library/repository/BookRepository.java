@@ -17,4 +17,8 @@ public interface BookRepository extends JpaRepository<Book, Long> {
 
     @Query("SELECT b FROM Book b JOIN b.categories c WHERE c.id = :categoryId")
     List<Book> findBooksByCategoryId(@Param("categoryId") Long categoryId);
+
+    // YENİ EKLENDİ: Yazar ID'sine göre kitapları getir
+    @Query("SELECT b FROM Book b JOIN b.authors a WHERE a.id = :authorId")
+    List<Book> findBooksByAuthorId(@Param("authorId") Long authorId);
 }

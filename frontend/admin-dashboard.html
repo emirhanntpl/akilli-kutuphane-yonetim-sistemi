@@ -22,7 +22,7 @@
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
-            background-image: url('https://images.unsplash.com/photo-1481627834876-b7833e8f5570?q=80&w=2070&auto=format&fit=crop');
+            background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?q=80&w=1973&auto=format&fit=crop');
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
@@ -33,7 +33,8 @@
 
         .sidebar {
             width: 250px;
-            background-color: var(--primary-color);
+            background-color: rgba(44, 62, 80, 0.85);
+            backdrop-filter: blur(10px);
             color: white;
             display: flex;
             flex-direction: column;
@@ -41,7 +42,6 @@
             position: fixed;
             height: 100%;
             overflow-y: auto;
-            backdrop-filter: blur(5px);
             box-shadow: 2px 0 10px rgba(0,0,0,0.3);
         }
 
@@ -181,6 +181,7 @@
         .stat-icon.users { background-color: var(--success-color); }
         .stat-icon.loans { background-color: var(--warning-color); }
         .stat-icon.categories { background-color: #9b59b6; }
+        .stat-icon.income { background-color: #27ae60; }
         .stat-info h3 { margin: 0 0 0.5rem 0; font-size: 2rem; color: #333; }
         .stat-info p { margin: 0; color: #777; }
 
@@ -234,7 +235,7 @@
         .btn-edit:hover { background-color: #2980b9; }
         .btn-delete { background-color: var(--accent-color); color: white; }
         .btn-delete:hover { background-color: #c0392b; }
-        .btn-money { background-color: var(--success-color); color: white; } /* YENİ */
+        .btn-money { background-color: var(--success-color); color: white; }
         .btn-money:hover { background-color: #27ae60; }
 
         .status-badge {
@@ -276,7 +277,8 @@
         .form-group label { display: block; margin-bottom: 0.5rem; font-weight: 500; }
         .form-group input, .form-group select, .form-group textarea {
             width: 100%; padding: 0.8rem;
-            border: 1px solid #ddd; border-radius: 5px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
             box-sizing: border-box;
             font-family: inherit;
         }
@@ -321,7 +323,7 @@
         <div class="nav-link" onclick="switchTab('categories')"><i class="fas fa-tags"></i> Kategori Yönetimi</div>
         <div class="nav-link" onclick="switchTab('users')"><i class="fas fa-users"></i> Okur Yönetimi</div>
         <div class="nav-link" onclick="switchTab('loans')"><i class="fas fa-hand-holding"></i> Ödünç Takibi</div>
-        <div class="nav-link" onclick="switchTab('transactions')"><i class="fas fa-cash-register"></i> Kasa Hareketleri</div> <!-- YENİ -->
+        <div class="nav-link" onclick="switchTab('transactions')"><i class="fas fa-cash-register"></i> Kasa Hareketleri</div>
         <div class="nav-link" onclick="switchTab('announcements')"><i class="fas fa-bullhorn"></i> Duyurular</div>
         <div class="nav-link" onclick="switchTab('reviews')"><i class="fas fa-star"></i> Yorum Yönetimi</div>
         <button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Çıkış Yap</button>
@@ -367,8 +369,17 @@
             <div class="header"><h2>Ödünç Alınan Kitaplar</h2></div>
             <table class="data-table"><thead><tr><th>ID</th><th>Kullanıcı</th><th>Kitap</th><th>Alınma Tarihi</th><th>Son İade Tarihi</th><th>İade Edildiği Tarih</th><th>Durum</th></tr></thead><tbody id="loans-table-body"></tbody></table>
         </div>
-        <div id="transactions" class="tab-pane"> <!-- YENİ -->
+        <div id="transactions" class="tab-pane">
             <div class="header"><h2>Kasa Hareketleri</h2></div>
+            <div class="stats-grid" style="margin-bottom: 2rem;">
+                <div class="stat-card">
+                    <div class="stat-icon income"><i class="fas fa-wallet"></i></div>
+                    <div class="stat-info">
+                        <h3 id="totalIncome">0.00 TL</h3>
+                        <p>Toplam Kasa Geliri</p>
+                    </div>
+                </div>
+            </div>
             <table class="data-table"><thead><tr><th>ID</th><th>Kullanıcı</th><th>Tutar</th><th>Açıklama</th><th>Tarih</th><th>Tip</th></tr></thead><tbody id="transactions-table-body"></tbody></table>
         </div>
         <div id="announcements" class="tab-pane">
@@ -438,7 +449,6 @@
         </div>
     </div>
 
-    <!-- YENİ: Borç Yönetimi Modalı -->
     <div id="penaltyModal" class="modal-overlay">
         <div class="modal">
             <h3>Borç Yönetimi</h3>
@@ -560,7 +570,7 @@
             if(tabName === 'categories') loadCategories();
             if(tabName === 'users') loadUsers();
             if(tabName === 'loans') loadLoans();
-            if(tabName === 'transactions') loadTransactions(); // YENİ
+            if(tabName === 'transactions') loadTransactions();
             if(tabName === 'announcements') loadAnnouncements();
             if(tabName === 'reviews') loadAllReviews();
         }
@@ -808,18 +818,18 @@
                 users.forEach(user => {
                     const roles = user.roles.map(r => r.replace('ROLE_', '')).join(', ');
                     const penalty = user.penalty ? user.penalty.toFixed(2) : '0.00';
-                    const balance = user.balance ? user.balance.toFixed(2) : '0.00'; // YENİ
+                    const balance = user.balance ? user.balance.toFixed(2) : '0.00';
                     const row = `
                         <tr>
                             <td>${user.id}</td>
                             <td>${user.name}</td>
                             <td>${user.username}</td>
                             <td>${user.email}</td>
-                            <td>${balance} TL</td> <!-- YENİ -->
+                            <td>${balance} TL</td>
                             <td>${penalty} TL</td>
                             <td>
                                 <button class="btn-sm btn-edit" onclick='openUserModal(${JSON.stringify(user)})'><i class="fas fa-edit"></i></button>
-                                <button class="btn-sm btn-money" onclick="openPenaltyModal(${user.id})"><i class="fas fa-coins"></i></button> <!-- YENİ -->
+                                <button class="btn-sm btn-money" onclick="openPenaltyModal(${user.id})"><i class="fas fa-coins"></i></button>
                                 <button class="btn-sm btn-delete" onclick="deleteUser(${user.id})"><i class="fas fa-trash"></i></button>
                             </td>
                         </tr>`;
@@ -966,6 +976,14 @@
             const tbody = document.getElementById('transactions-table-body');
             tbody.innerHTML = '<tr><td colspan="6">Yükleniyor...</td></tr>';
             try {
+                // Toplam Geliri Çek
+                const incomeResponse = await fetch('/rest/api/dashboard/total-income', { headers: { 'Authorization': `Bearer ${token}` } });
+                if (incomeResponse.ok) {
+                    const incomeData = await incomeResponse.json();
+                    document.getElementById('totalIncome').textContent = incomeData.payload.toFixed(2) + ' TL';
+                }
+
+                // İşlemleri Çek
                 const response = await fetch('/rest/api/users/transactions', { headers: { 'Authorization': `Bearer ${token}` } });
                 const data = await response.json();
                 const transactions = data.payload;
