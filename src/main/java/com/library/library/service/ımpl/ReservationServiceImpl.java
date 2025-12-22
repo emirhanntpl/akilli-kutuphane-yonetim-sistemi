@@ -53,7 +53,7 @@ public class ReservationServiceImpl implements ReservationService {
         return convertToDto(savedReservation);
     }
 
-    // YENİ EKLENDİ
+
     @Override
     public List<DtoReservation> getUserReservations(Long userId) {
         if (!userRepository.existsById(userId)) {
@@ -64,7 +64,7 @@ public class ReservationServiceImpl implements ReservationService {
                 .collect(Collectors.toList());
     }
 
-    // YENİ EKLENDİ
+
     private DtoReservation convertToDto(Reservation reservation) {
         return new DtoReservation(
                 reservation.getId(),

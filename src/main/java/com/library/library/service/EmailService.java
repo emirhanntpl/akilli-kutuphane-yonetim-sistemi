@@ -2,7 +2,6 @@ package com.library.library.service;
 
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
-// import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -19,7 +18,6 @@ public class EmailService {
         System.out.println("EmailService başlatıldı.");
     }
 
-    // @Async // Hata tespiti için geçici olarak devre dışı bırakıldı
     public void sendEmail(String to, String subject, String text) {
         System.out.println("Mail gönderimi tetiklendi. Alıcı: " + to);
         System.out.println("Gönderici (from): " + fromEmail);

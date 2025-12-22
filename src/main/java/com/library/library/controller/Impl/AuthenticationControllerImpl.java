@@ -42,7 +42,6 @@ public class AuthenticationControllerImpl implements AuthenticationController {
         return ok(authenticationService.refreshToken(request));
     }
 
-    // YENİ ENDPOINTLER
     @PostMapping("/forgot-password")
     @Override
     public RootEntity<String> forgotPassword(@RequestParam String email) {

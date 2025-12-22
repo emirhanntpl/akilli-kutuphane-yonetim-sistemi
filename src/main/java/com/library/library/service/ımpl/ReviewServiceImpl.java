@@ -53,7 +53,7 @@ public class ReviewServiceImpl implements ReviewService {
         return convertToDto(savedReview);
     }
 
-    // YENİ EKLENEN METOTLAR
+
     @Override
     public List<DtoReview> getAllReviews() {
         return reviewRepository.findAll().stream()

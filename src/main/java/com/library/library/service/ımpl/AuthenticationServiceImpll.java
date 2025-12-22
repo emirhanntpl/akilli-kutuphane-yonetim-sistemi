@@ -134,7 +134,7 @@ public class AuthenticationServiceImpll implements AuthenticationService {
         user.setResetPasswordTokenExpiry(LocalDateTime.now().plusMinutes(15)); 
         userRepository.save(user);
 
-        // DÜZELTİLDİ: Link formatı düzeltildi
+
         String resetLink = "http://localhost:8080/reset-password.html?token=" + token;
         String subject = "Şifre Sıfırlama İsteği";
         String text = "Merhaba " + user.getName() + ",\n\n"
