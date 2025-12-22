@@ -5,13 +5,8 @@ import com.library.library.dto.DtoBookIU;
 import com.library.library.dto.UpdateBookRequest;
 import com.library.library.exception.BaseException;
 import com.library.library.exception.MessageType;
-import com.library.library.model.Author;
-import com.library.library.model.Book;
-import com.library.library.model.Category;
-import com.library.library.repository.AuthorsRepository;
-import com.library.library.repository.BookRepository;
-import com.library.library.repository.CategoryRepository;
-import com.library.library.repository.LoanRepository;
+import com.library.library.model.*;
+import com.library.library.repository.*;
 import com.library.library.service.BookService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
@@ -31,12 +26,18 @@ public class BookServiceImpl implements BookService {
     private final AuthorsRepository authorsRepository;
     private final CategoryRepository  categoryRepository;
     private final LoanRepository loanRepository;
+    private final ReservationRepository reservationRepository;
+    private final UserRepository userRepository;
+    private final ReviewRepository reviewRepository; // YENİ
 
-    public BookServiceImpl(BookRepository bookRepository, AuthorsRepository authorsRepository, CategoryRepository categoryRepository, LoanRepository loanRepository) {
+    public BookServiceImpl(BookRepository bookRepository, AuthorsRepository authorsRepository, CategoryRepository categoryRepository, LoanRepository loanRepository, ReservationRepository reservationRepository, UserRepository userRepository, ReviewRepository reviewRepository) { // GÜNCELLENDİ
         this.bookRepository = bookRepository;
         this.authorsRepository = authorsRepository;
         this.categoryRepository = categoryRepository;
         this.loanRepository = loanRepository;
+        this.reservationRepository = reservationRepository;
+        this.userRepository = userRepository;
+        this.reviewRepository = reviewRepository; // YENİ
     }
 
     @Override
@@ -101,18 +102,46 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
+    @Transactional
     public void deleteBook(DtoBookIU dtoBookIU) {
-        Optional<Book> OptBookId = bookRepository.findById(dtoBookIU.getId());
-        if (OptBookId.isEmpty()){
-            throw new BaseException(MessageType.INVALID_BOOK_NAME, HttpStatus.BAD_REQUEST);
-        }
-        Book book = OptBookId.get();
+        Book book = bookRepository.findById(dtoBookIU.getId())
+                .orElseThrow(() -> new BaseException(MessageType.INVALID_BOOK_NAME, HttpStatus.BAD_REQUEST));
+
+        // 1. Aktif ödünç kontrolü (Hala iade edilmemişse silme)
         boolean onLoan = loanRepository.existsByBookIdAndReturnDateIsNull(book.getId());
         if (onLoan){
             throw new BaseException(MessageType.BOOK_ON_LOAN,HttpStatus.BAD_REQUEST);
         }
+
+        // 2. Aktif rezervasyon kontrolü (Bekleyen veya bildirilmişse silme)
+        boolean isReserved = reservationRepository.existsByBookIdAndStatus(book.getId(), ReservationStatus.WAITING) ||
+                             reservationRepository.existsByBookIdAndStatus(book.getId(), ReservationStatus.NOTIFIED);
+        if (isReserved) {
+            throw new BaseException(MessageType.BOOK_IS_RESERVED, HttpStatus.BAD_REQUEST);
+        }
+
+        // 3. Geçmiş ödünç kayıtlarını sil (İade edilmiş olanlar)
+        List<Loan> pastLoans = loanRepository.findByBookId(book.getId());
+        loanRepository.deleteAll(pastLoans);
+
+        // 4. Geçmiş rezervasyon kayıtlarını sil (Tamamlanmış veya iptal edilmiş olanlar)
+        List<Reservation> pastReservations = reservationRepository.findByBookId(book.getId());
+        reservationRepository.deleteAll(pastReservations);
+
+        // 5. Kitaba ait yorumları sil
+        List<Review> reviews = reviewRepository.findByBookId(book.getId());
+        reviewRepository.deleteAll(reviews);
+
+        // 6. Favori ilişkilerini temizle
+        List<User> usersWithFavorite = userRepository.findByFavoriteBooksContains(book);
+        for (User user : usersWithFavorite) {
+            user.getFavoriteBooks().remove(book);
+        }
+        userRepository.saveAll(usersWithFavorite);
+
+        // 7. Son olarak kitabı sil
         bookRepository.delete(book);
-        System.out.println(book.getTitle()  + " Adlı kitap  silindi.");
+        System.out.println(book.getTitle()  + " adlı kitap ve tüm ilişkili verileri silindi.");
     }
 
     @Override
