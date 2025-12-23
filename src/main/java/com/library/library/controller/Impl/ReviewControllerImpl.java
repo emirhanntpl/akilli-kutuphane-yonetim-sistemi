@@ -18,7 +18,7 @@ public class ReviewControllerImpl extends RestBaseController {
 
     private final ReviewService reviewService;
 
-    // Admin için tüm yorumları getir
+
     @GetMapping
     public RootEntity<List<DtoReview>> getAllReviews() {
         return ok(reviewService.getAllReviews());
@@ -34,7 +34,7 @@ public class ReviewControllerImpl extends RestBaseController {
         return ok(reviewService.createReview(request));
     }
 
-    // Admin için yorum silme
+
     @DeleteMapping("/{id}")
     public RootEntity<String> deleteReview(@PathVariable Long id) {
         reviewService.deleteReview(id);

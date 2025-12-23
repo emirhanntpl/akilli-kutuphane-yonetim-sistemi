@@ -21,7 +21,7 @@ public class Review extends BaseEntity {
     @NotNull
     @Min(1)
     @Max(5)
-    private Integer rating; // 1-5 arası puan
+    private Integer rating;
 
     @NotNull
     @Column(length = 1000)

@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/rest/api/loans") // Ana yolu buraya taşıdık
+@RequestMapping("/rest/api/loans")
 public class LoansControllerImpl extends RestBaseController implements LoansController {
 
     private final LoansService loansService;
@@ -21,7 +21,7 @@ public class LoansControllerImpl extends RestBaseController implements LoansCont
         this.loansService = loansService;
     }
 
-    // YENİ EKLENEN ENDPOINT
+
     @GetMapping
     public RootEntity<List<DtoLoan>> getAllLoans() {
         return ok(loansService.getAllLoans());

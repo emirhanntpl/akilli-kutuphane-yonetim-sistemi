@@ -69,6 +69,7 @@ public class AuthenticationServiceImpll implements AuthenticationService {
     }
 
     @Override
+    @Transactional
     public DtoUser register(CreateUserRequest request) {
         User savedUser = createUser(request);
 
@@ -133,7 +134,6 @@ public class AuthenticationServiceImpll implements AuthenticationService {
         user.setResetPasswordToken(token);
         user.setResetPasswordTokenExpiry(LocalDateTime.now().plusMinutes(15)); 
         userRepository.save(user);
-
 
         String resetLink = "http://localhost:8080/reset-password.html?token=" + token;
         String subject = "Şifre Sıfırlama İsteği";

@@ -96,7 +96,7 @@ public class UserControllerImpl extends RestBaseController {
         return ok("Borç silindi.");
     }
 
-    // YENİ EKLENDİ
+
     @GetMapping("/transactions")
     public RootEntity<List<DtoTransaction>> getAllTransactions() {
         return ok(userService.getAllTransactions());

@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/rest/api/categories") // Ana yolu buraya taşıdık
+@RequestMapping("/rest/api/categories")
 public class CategoryControllerImpl extends RestBaseController implements CategoryController {
 
     private final CategoryService categoryService;

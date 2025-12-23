@@ -20,7 +20,7 @@ public class ReservationController {
         return ResponseEntity.ok(reservationService.createReservation(userId, bookId));
     }
 
-    // YENİ EKLENDİ
+
     @GetMapping("/user/{userId}")
     public ResponseEntity<List<DtoReservation>> getUserReservations(@PathVariable Long userId) {
         return ResponseEntity.ok(reservationService.getUserReservations(userId));

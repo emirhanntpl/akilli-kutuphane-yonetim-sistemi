@@ -61,22 +61,22 @@ public class LoansServiceImpl implements LoansService {
         User user = userRepository.findById(userId).orElseThrow(() -> new BaseException(USERNAME_NOT_FOUND, BAD_REQUEST));
         Book book = bookRepository.findById(bookId).orElseThrow(() -> new BaseException(INVALID_BOOK_NAME, BAD_REQUEST));
 
-        // Rezervasyon kontrolü
+
         Optional<Reservation> userReservation = reservationRepository.findByUserIdAndBookIdAndStatus(userId, bookId, ReservationStatus.NOTIFIED);
 
         if (book.getStock() <= 0) {
-            // Stokta yok ama kullanıcı için rezerve edilmiş mi?
+
             if (userReservation.isEmpty()) {
                 throw new BaseException(BOOK_NOT_IN_STOCK, HttpStatus.BAD_REQUEST);
             }
         }
 
-        // Eğer kitap rezerve edildiyse, stoktan düşme. Değilse düş.
+
         if (userReservation.isEmpty()) {
             book.setStock(book.getStock() - 1);
             bookRepository.save(book);
         } else {
-            // Rezervasyon kullanıldı, durumu güncelle.
+
             Reservation reservation = userReservation.get();
             reservation.setStatus(ReservationStatus.COMPLETED);
             reservationRepository.save(reservation);

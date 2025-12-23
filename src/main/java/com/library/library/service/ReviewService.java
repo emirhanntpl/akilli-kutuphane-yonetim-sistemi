@@ -8,7 +8,7 @@ public interface ReviewService {
     List<DtoReview> getReviewsByBookId(Long bookId);
     DtoReview createReview(CreateReviewRequest request);
     
-    // YENİ EKLENEN METOTLAR
+
     List<DtoReview> getAllReviews();
     void deleteReview(Long reviewId);
 }

@@ -10,6 +10,6 @@ public interface LoansService {
     List<DtoLoan> getLoansByUserId(Long userId);
     DtoLoan returnBook(Long borrowingId);
 
-    // YENİ EKLENEN METOT
+
     List<DtoLoan> getAllLoans();
 }

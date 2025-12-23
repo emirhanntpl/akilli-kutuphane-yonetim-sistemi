@@ -15,7 +15,7 @@ public interface AuthenticationController {
 
     public RootEntity<AuthResponse> refreshToken(RefreshTokenRequest request);
 
-    // YENİ ENDPOINTLER
+
     RootEntity<String> forgotPassword(String email);
     RootEntity<String> resetPassword(String token, String newPassword);
 }

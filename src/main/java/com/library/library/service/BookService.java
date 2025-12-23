@@ -16,6 +16,6 @@ public interface BookService {
 
     List<DtoBook> getBooksByCategoryId(Long categoryId);
     
-    // YENİ EKLENDİ
+
     List<DtoBook> getBooksByAuthorId(Long authorId);
 }

@@ -107,39 +107,39 @@ public class BookServiceImpl implements BookService {
         Book book = bookRepository.findById(dtoBookIU.getId())
                 .orElseThrow(() -> new BaseException(MessageType.INVALID_BOOK_NAME, HttpStatus.BAD_REQUEST));
 
-        // 1. Aktif ödünç kontrolü (Hala iade edilmemişse silme)
+
         boolean onLoan = loanRepository.existsByBookIdAndReturnDateIsNull(book.getId());
         if (onLoan){
             throw new BaseException(MessageType.BOOK_ON_LOAN,HttpStatus.BAD_REQUEST);
         }
 
-        // 2. Aktif rezervasyon kontrolü (Bekleyen veya bildirilmişse silme)
+
         boolean isReserved = reservationRepository.existsByBookIdAndStatus(book.getId(), ReservationStatus.WAITING) ||
                              reservationRepository.existsByBookIdAndStatus(book.getId(), ReservationStatus.NOTIFIED);
         if (isReserved) {
             throw new BaseException(MessageType.BOOK_IS_RESERVED, HttpStatus.BAD_REQUEST);
         }
 
-        // 3. Geçmiş ödünç kayıtlarını sil (İade edilmiş olanlar)
+
         List<Loan> pastLoans = loanRepository.findByBookId(book.getId());
         loanRepository.deleteAll(pastLoans);
 
-        // 4. Geçmiş rezervasyon kayıtlarını sil (Tamamlanmış veya iptal edilmiş olanlar)
+
         List<Reservation> pastReservations = reservationRepository.findByBookId(book.getId());
         reservationRepository.deleteAll(pastReservations);
 
-        // 5. Kitaba ait yorumları sil
+
         List<Review> reviews = reviewRepository.findByBookId(book.getId());
         reviewRepository.deleteAll(reviews);
 
-        // 6. Favori ilişkilerini temizle
+
         List<User> usersWithFavorite = userRepository.findByFavoriteBooksContains(book);
         for (User user : usersWithFavorite) {
             user.getFavoriteBooks().remove(book);
         }
         userRepository.saveAll(usersWithFavorite);
 
-        // 7. Son olarak kitabı sil
+
         bookRepository.delete(book);
         System.out.println(book.getTitle()  + " adlı kitap ve tüm ilişkili verileri silindi.");
     }

@@ -96,26 +96,33 @@
             const email = document.getElementById('email').value;
             const address = document.getElementById('address').value;
 
-            const response = await fetch('/register', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    name,
-                    username,
-                    password,
-                    email,
-                    address,
-                    authorities: ['ROLE_USER'] // Rolleri tekrar sabitledik
-                })
-            });
+            try {
+                const response = await fetch('/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        name,
+                        username,
+                        password,
+                        email,
+                        address,
+                        authorities: ['ROLE_USER']
+                    })
+                });
 
-            if (response.ok) {
-                alert('Kayıt başarılı! Lütfen giriş yapın.');
-                window.location.href = '/login.html';
-            } else {
-                alert('Kayıt başarısız! Lütfen bilgileri kontrol edin.');
+                if (response.ok) {
+                    alert('Kayıt başarılı! Lütfen giriş yapın.');
+                    window.location.href = '/login.html';
+                } else {
+                    const errorData = await response.json();
+                    console.error("Kayıt Hatası:", errorData);
+                    alert(`Kayıt başarısız! Hata: ${errorData.errorMessage || 'Bilinmeyen hata'}`);
+                }
+            } catch (error) {
+                console.error("Ağ Hatası:", error);
+                alert('Sunucuya bağlanırken bir hata oluştu.');
             }
         });
     </script>

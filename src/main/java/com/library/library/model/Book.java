@@ -49,7 +49,7 @@ public class Book extends BaseEntity {
     @JsonIgnore
     private Set<Review> reviews = new HashSet<>();
 
-    // YENİ İLİŞKİ
+
     @ManyToMany(mappedBy = "favoriteBooks")
     @JsonIgnore
     private Set<User> favoritedByUsers = new HashSet<>();

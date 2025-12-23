@@ -26,7 +26,7 @@ public class DashboardControllerImpl extends RestBaseController {
         return ok(dashboardService.getDashboardStats());
     }
 
-    // YENİ EKLENDİ
+
     @GetMapping("/total-income")
     public RootEntity<Double> getTotalIncome() {
         return ok(userService.getTotalIncome());

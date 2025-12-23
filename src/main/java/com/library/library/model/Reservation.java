@@ -33,7 +33,7 @@ public class Reservation {
     @Column(name = "status", nullable = false)
     private ReservationStatus status;
 
-    // Kitap geldiğinde kullanıcıya haber verilen zaman
+
     @Column(name = "notification_date")
     private LocalDateTime notificationDate;
 }
